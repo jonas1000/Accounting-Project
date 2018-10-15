@@ -15,5 +15,5 @@ To install the database follow this steps:</p>
   <li><p>As of now there are no proper installer, so you will have to delete the folder install if you are going to use the project(if desired so).</p></li>
 </ol>
 <br>
-<h3>Patricipating in development</h3>
+<h3>Participating in development</h3>
 <p>If you wish to participate in and help the development of this project or have any suggestion for new futures, please feel welcome.</p>
