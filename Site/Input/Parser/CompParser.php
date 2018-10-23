@@ -19,11 +19,9 @@ if(!$DBConn->HasError())
 		printf("warning detected: " . $DBConn->GetWarning());
 }
 else
-{
 	printf("Error: " . $DBConn->GetError());
-}
 
-$DBQuery = "INSERT INTO VIEW_COMPANY(COU_DATA_ID, COMP_ACCESS, COMP_AVAIL) VALUES(".$_POST['Data'].", ".$_POST['Data_Access'].", ".$_POST['Data_Hidden'].")";
+$DBQuery = "INSERT INTO VIEW_COMPANY(COU_DATA_ID, COMP_ACCESS, COMP_AVAIL) VALUES(".$_POST['Data'].", ".$_POST['Access2'].", ".$_POST['Hidden2'].")";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 
@@ -35,9 +33,7 @@ if(!$DBConn->HasError())
 		printf("warning detected: " . $DBConn->GetWarning());
 }
 else
-{
 	printf("Error: " . $DBConn->GetError());
-}
 
 $DBConn->closeConn();
 

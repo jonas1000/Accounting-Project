@@ -8,14 +8,14 @@ printf("</html>");
 header("Content-Type: text/html; charset='UTF-8'");
 
 require("../Site/DBConnData.php");
-require("../Site/DBErrorMsg.php");
-require("../Site/DBWarnMsg.php");
-require("../Site/DBSuccMsg.php");
+require("../Site/DebugLogComMessage/DBErrorMsg.php");
+require("../Site/DebugLogComMessage/DBWarnMsg.php");
+require("../Site/DebugLogComMessage/DBSuccMsg.php");
 require("../Site/DBConnManager.php");
 
 $DBQuery = "";
 
-$DBConn = new DBConnManager($ServerName, $DBUserName, $DBPassWord, $ConnEncoding);
+$DBConn = new DBConnManager($_SERVER['ServerName'], $_SERVER['DBUserName'], $_SERVER['DBPassWord'], $_SERVER['ConnEncoding']);
 
 /*----Table created in database*/
 /*--------<CONNECT TO DATABASE>--------*/
@@ -23,7 +23,7 @@ if($DBConn->HasWarning())
 	printf("<br>WARNING: while establishing connection: " . $DBConn->GetWarning());
 
 /*--------<DROP EXISTING DATABASE>--------*/
-$DBQuery = "DROP DATABASE IF EXISTS " . $DBName;
+$DBQuery = "DROP DATABASE IF EXISTS " . $_SERVER['DBName'];
 
 $DBConn->ExecQuery($DBQuery);
 
@@ -52,7 +52,7 @@ if(!$DBConn->HasError())
 else
 	printf("<br>ERROR 2 - Error creating database: " . $DBConn->GetError());
 
-$DBQuery = "USE " . $DBName . ";";
+$DBQuery = "USE " . $_SERVER['DBName'] . ";";
 
 $DBConn->ExecQuery($DBQuery);
 
@@ -245,6 +245,7 @@ $DBQuery="CREATE TABLE IF NOT EXISTS EMPLOYEE_DATA
 	EMPLOYEE_DATA_ID INT AUTO_INCREMENT,
 	EMPLOYEE_DATA_Salary DECIMAL(65,2) NOT NULL,
 	EMPLOYEE_DATA_BDay DATE NOT NULL,
+	EMPLOYEE_DATA_Email VARCHAR(128) NOT NULL UNIQUE COLLATE utf8_unicode_ci,
 	EMPLOYEE_DATA_Name VARCHAR(64) NOT NULL UNIQUE COLLATE utf8_unicode_ci,
 	EMPLOYEE_DATA_PassWord VARCHAR(255) NOT NULL UNIQUE COLLATE utf8_unicode_ci,
 	EMPLOYEE_DATA_CDate TIMESTAMP NOT NULL DEFAULT NOW(),

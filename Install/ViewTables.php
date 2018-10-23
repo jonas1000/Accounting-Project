@@ -25,6 +25,27 @@ if(!$DBConn->HasError())
 else
 	printf("<br>ERROR 1 " . $DBViewErrorMsg . $DBConn->GetError());
 
+$DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_EMPLOYEE_LOGIN AS
+SELECT
+EMPLOYEE.EMPLOYEE_ID AS EMP_ID,
+EMPLOYEE_DATA.EMPLOYEE_DATA_Email AS EMP_Email,
+EMPLOYEE_DATA.EMPLOYEE_DATA_PassWord AS EMP_Pass,
+EMPLOYEE.AVAILABLE_ID AS EMP_AVAIL,
+EMPLOYEE.ACCESS_LEVEL_ID AS EMP_ACCESS,
+EMPLOYEE.EMPLOYEE_CDate AS EMP_CDate
+FROM
+EMPLOYEE,
+EMPLOYEE_DATA
+WHERE
+EMPLOYEE.EMPLOYEE_DATA_ID = EMPLOYEE_DATA.EMPLOYEE_DATA_ID;";
+
+$DBConn->ExecQuery($DBQuery);
+
+if(!$DBConn->HasError())
+	printf("<br>" . $DBViewSuccMsg);
+else
+	printf("<br>ERROR 2 " . $DBViewErrorMsg . $DBConn->GetError());
+
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_EMPLOYEE_POSITION AS
 SELECT
 EMPLOYEE_POSITION.EMPLOYEE_POSITION_ID AS EMP_ID,
@@ -40,7 +61,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 2 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 3 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_EMPLOYEE_DATA AS
 SELECT
@@ -60,7 +81,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 3 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 4 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_EMPLOYEE_GENERAL AS
 SELECT
@@ -68,10 +89,11 @@ EMPLOYEE.EMPLOYEE_ID AS EMP_ID,
 EMPLOYEE.ACCESS_LEVEL_ID AS EMP_ACCESS,
 EMPLOYEE_DATA.ACCESS_LEVEL_ID AS EMP_DATA_ACCESS,
 EMPLOYEE_POSITION.ACCESS_LEVEL_ID AS EMP_POS_ACCESS,
-EMPLOYEE.AVAILABLE_ID AS EMP_AVAIL_ID,
+EMPLOYEE.AVAILABLE_ID AS EMP_AVAIL,
 EMPLOYEE_POSITION.AVAILABLE_ID AS EMP_AVAIL_POS,
 EMPLOYEE_DATA.AVAILABLE_ID AS EMP_AVAIL_DATA,
 EMPLOYEE_DATA.EMPLOYEE_DATA_Salary AS EMP_Sal,
+EMPLOYEE_DATA.EMPLOYEE_DATA_Email AS EMP_Email,
 EMPLOYEE_DATA.EMPLOYEE_DATA_Name AS EMP_Name,
 EMPLOYEE_DATA.EMPLOYEE_DATA_PassWord AS EMP_PassWord,
 EMPLOYEE_POSITION.EMPLOYEE_POSITION_Title AS EMP_Title,
@@ -89,7 +111,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 4 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 5 " . $DBViewErrorMsg . $DBConn->GetError());
 
 /*--------<VIEW COUNTRY TABLES>--------*/
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_COUNTRY AS
@@ -107,7 +129,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 5 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 6 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_COUNTRY_DATA AS
 SELECT
@@ -127,7 +149,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 6 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 7 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_COUNTRY_GENERAL AS
 SELECT
@@ -152,7 +174,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 7 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 8 " . $DBViewErrorMsg . $DBConn->GetError());
 
 /*--------<VIEW JOB TABLES>--------*/
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_JOB_ASSIGMENT AS
@@ -171,7 +193,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 8 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 9 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_JOB AS
 SELECT
@@ -190,7 +212,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 9 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 10 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_JOB_DATA AS
 SELECT
@@ -208,7 +230,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 10 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 11 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_JOB_INCOME AS
 SELECT
@@ -226,15 +248,15 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 11 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 12 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_JOB_OUTCOME AS
 SELECT
 JOB_OUTCOME.JOB_OUTCOME_ID AS JOB_ID,
 JOB_OUTCOME.ACCESS_LEVEL_ID AS JOB_ACCESS,
 JOB_OUTCOME.AVAILABLE_ID AS JOB_AVAIL,
-JOB_OUTCOME.JOB_OUTCOME_Expenses AS JOB_Expenses,
-JOB_OUTCOME.JOB_OUTCOME_Damage AS JOB_Damage,
+JOB_OUTCOME.JOB_OUTCOME_Expenses AS JOB_Exp,
+JOB_OUTCOME.JOB_OUTCOME_Damage AS JOB_Dam,
 JOB_OUTCOME.JOB_OUTCOME_CDate AS JOB_CDate
 FROM
 JOB_OUTCOME;";
@@ -244,7 +266,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 12 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 13 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_JOB_INCOME_TIME AS
 SELECT
@@ -263,7 +285,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 13 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 14 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_JOB_GENERAL AS
 SELECT
@@ -277,7 +299,7 @@ JOB_OUTCOME.ACCESS_LEVEL_ID AS JOB_OUT_ACCESS,
 JOB_INCOME.ACCESS_LEVEL_ID AS JOB_INC_ACCESS,
 COMPANY.ACCESS_LEVEL_ID AS COMP_ACCESS,
 COMPANY_DATA.ACCESS_LEVEL_ID AS COMP_DATA_ACCESS,
-JOB.AVAILABLE_ID AS JOB_AVAIL_ID,
+JOB.AVAILABLE_ID AS JOB_AVAIL,
 JOB_DATA.AVAILABLE_ID AS JOB_DATA_AVAIL,
 JOB_INCOME.AVAILABLE_ID AS JOB_INC_AVAIL,
 JOB_OUTCOME.AVAILABLE_ID AS JOB_OUT_AVAIL,
@@ -288,8 +310,8 @@ COMPANY_DATA.COMPANY_DATA_Date As COMP_Date,
 JOB_DATA.JOB_DATA_Date AS JOB_Date,
 JOB_INCOME.JOB_INCOME_Price AS JOB_Price,
 JOB_INCOME.JOB_INCOME_PIA AS JOB_PIA,
-JOB_OUTCOME.JOB_OUTCOME_Expenses AS JOB_Expenses,
-JOB_OUTCOME.JOB_OUTCOME_Damage AS JOB_Damage
+JOB_OUTCOME.JOB_OUTCOME_Expenses AS JOB_Exp,
+JOB_OUTCOME.JOB_OUTCOME_Damage AS JOB_Dam
 FROM
 JOB,
 JOB_DATA,
@@ -309,7 +331,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 14 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 15 " . $DBViewErrorMsg . $DBConn->GetError());
 
 /*--------<VIEW SHAREHOLDER TABLES>--------*/
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_SHAREHOLDER AS
@@ -326,7 +348,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 15 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 16 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_SHAREHOLDER_GENERAL AS
 SELECT
@@ -356,7 +378,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 16 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 17 " . $DBViewErrorMsg . $DBConn->GetError());
 
 /*--------<VIEW COMPANY TABLES>--------*/
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_COMPANY AS
@@ -373,7 +395,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 17 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 18 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_COMPANY_DATA AS
 SELECT
@@ -391,7 +413,7 @@ $DBConn->ExecQuery($DBQuery);
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 18 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 19 " . $DBViewErrorMsg . $DBConn->GetError());
 
 $DBQuery="CREATE ALGORITHM = MERGE VIEW VIEW_COMPANY_GENERAL AS
 SELECT
@@ -403,15 +425,25 @@ COMPANY.ACCESS_LEVEL_ID AS COMP_ACCESS,
 COMPANY_DATA.AVAILABLE_ID AS COMP_DATA_AVAIL,
 COMPANY.AVAILABLE_ID AS COMP_AVAIL,
 COMPANY_DATA.COMPANY_DATA_Title AS COMP_Title,
-COMPANY_DATA.COMPANY_DATA_Date AS COMP_Date
+COMPANY_DATA.COMPANY_DATA_Date AS COMP_Date,
+COUNTRY_DATA.COUNTRY_DATA_Title AS COU_Title,
+COUNTRY_DATA.COUNTRY_DATA_Tax AS COU_Tax,
+COUNTRY_DATA.COUNTRY_DATA_InterestRate AS COU_IR,
+COUNTRY_DATA.COUNTRY_DATA_Date AS COU_Date
 FROM
 COMPANY,
-COMPANY_DATA;";
+COMPANY_DATA,
+COUNTRY,
+COUNTRY_DATA
+WHERE
+COMPANY.COMPANY_DATA_ID = COMPANY_DATA.COMPANY_DATA_ID
+AND COMPANY_DATA.COUNTRY_ID = COUNTRY.COUNTRY_ID
+AND COUNTRY_DATA.COUNTRY_DATA_ID = COUNTRY.COUNTRY_DATA_ID;";
 
 $DBConn->ExecQuery($DBQuery);
 
 if(!$DBConn->HasError())
 	printf("<br>" . $DBViewSuccMsg);
 else
-	printf("<br>ERROR 19 " . $DBViewErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 20 " . $DBViewErrorMsg . $DBConn->GetError());
 ?>

@@ -15,9 +15,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 1 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -35,9 +33,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 2 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -55,9 +51,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 3 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -72,9 +66,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 4 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -91,9 +83,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 5 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -108,9 +98,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 6 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -144,9 +132,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 7 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -154,21 +140,20 @@ else
 $DBQuery="INSERT INTO EMPLOYEE_DATA
 (EMPLOYEE_DATA_Salary,
 EMPLOYEE_DATA_BDay,
+EMPLOYEE_DATA_Email,
 EMPLOYEE_DATA_Name,
 EMPLOYEE_DATA_PassWord,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
 VALUES
-(0,\"1970-1-1\",\"Μενέλαος Μπρούνζης\",\"" . password_hash("MenPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",3,2),
-(0,\"1970-1-1\",\"Μιχαήλ Καλογιάννης\",\"" . password_hash("MixPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",2,2),
-(0,\"1970-1-1\",\"Καληγούλα Κακογιάννης\",\"" . password_hash("calPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",1,2);";
+(0,\"1970-1-1\",\"Μενέλαος Μπρούνζης\",\"Men@email.com\",\"" . password_hash("MenPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",3,2),
+(0,\"1970-1-1\",\"Μιχαήλ Καλογιάννης\",\"Mix@email.com\",\"" . password_hash("MixPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",2,2),
+(0,\"1970-1-1\",\"Καληγούλα Κακογιάννης\",\"kal@email.com\",\"" . password_hash("calPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",1,2);";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 8 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -187,9 +172,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 9 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -205,9 +188,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 10 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -224,9 +205,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 11 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -243,9 +222,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 12 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -263,9 +240,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 13 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -283,9 +258,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 14 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -302,9 +275,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 15 " . $DBInsErrorMsg . $DBConn->GetError());
 
@@ -324,9 +295,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-{
 	printf("<br>" . $DBInsSuccMsg);
-}
 else
 	printf("<br>ERROR 16 " . $DBInsErrorMsg . $DBConn->GetError());
 
