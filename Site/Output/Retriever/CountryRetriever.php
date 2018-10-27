@@ -1,18 +1,16 @@
 <?php
-
-header("Content-Type: text/html; charset='utf-8'");
-
-require("../../DBConData.php");
-require("../../DBConnManager.php");
-
+require("../DBConnData.php");
+require("../DBConnManager.php");
 
 function CountryGeneralRetriever()
 {
-	$DBConn = new DBConnManager($ServerName, $DBUserName, $DBPassWord);
+	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
 
 	$DBQuery = "SELECT * FROM VIEW_COUNTRY_GENERAL WHERE COU_AVAIL = 2";
 
-	$Result = $DBConn->ExecQuery($DBQuery, FALSE);
+	$DBConn->ExecQuery($DBQuery, FALSE);
+
+	$Result = $DBConn->GetResult();
 
 	if(!$DBConn->HasError())
 	{

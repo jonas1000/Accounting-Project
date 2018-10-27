@@ -1,13 +1,10 @@
 <?php
-
-header("Content-Type: text/html; charset='utf-8'");
-
 require("../../DatabaseConData.php");
 require("../../DBConnManager.php");
 
 $DBConn = new DBConnManager($ServerName, $DBUserName, $DBPassWord);
 
-$DBQuery = "INSERT INTO VIEW_EMPLOYEE_POSITION(EMP_Title, EMP_ACCESS, EMP_AVAIL) VALUES(".$_POST['Title'].", ".$_POST['Access'].", ".$_POST['hidden'].")";
+$DBQuery = "INSERT INTO VIEW_SHAREHOLDER(EMP_ID, SHARE_ACCESS, SHARE_AVAIL) VALUES(".$_POST['Employee'].", ".$_POST['Access'].", ".$_POST['hidden'].")";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 

@@ -31,7 +31,7 @@ class DBConnManager
 		else
 			$ConnEncoding = $InEncoding;
 
-		$this->ExecQuery("USE " . $_SERVER['DBName'], FALSE);
+		$this->ExecQuery("USE " . $_SESSION['DBName'], FALSE);
 	}
 
 	public function __destruct()

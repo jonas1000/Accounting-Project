@@ -1,8 +1,15 @@
 <?php
+require("../Data/HeaderData/HeaderData.php");
 
-header("Content-Type: text/html; charset='utf-8'");
+require("../Output/Retriever/JobRetriever.php");
 
-require("Output/Retriever/JobRetriever.php");
+printf("<!DOCTYPE HTML>");
+printf("<html>");
+printf("<head>");
+printf("<meta charset=utf8>");
+printf("<title>Job Overview</title>");
+printf("</head>");
+printf("<body>");
 
 $JobRows = JobGeneralRetriever();
 
@@ -18,5 +25,7 @@ foreach($JobRows as $JobRow => $JobData)
 		printf("<br> <b>Damage</b>: " . $JobData['JOB_Dam'] . "<br>");
 }
 
+printf("</body>");
+printf("</html>");
 
 ?>

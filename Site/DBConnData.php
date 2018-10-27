@@ -1,14 +1,18 @@
 <?php
+session_start();
+
+$_SESSION['Debug'] = TRUE;
+
 //The encoding the connect to the database will use.
-$_SERVER['ConnEncoding'] = "utf8";
+$_SESSION['ConnEncoding'] = "utf8";
 
 //The Host server name for establishing the desired connection to the database.
-$_SERVER['ServerName'] = "localhost";
+$_SESSION['ServerName'] = "localhost";
 
 //The database name to connect and execute querys in.
-$_SERVER['DBName'] = "CompanyAccountDB";
+$_SESSION['DBName'] = "CompanyAccountDB";
 
 //The User name and password to the host to be able to enter the database.
-$_SERVER['DBUserName'] = "root";
-$_SERVER['DBPassWord'] = "";
+$_SESSION['DBUserName'] = "root";
+$_SESSION['DBPassWord'] = "";
 ?>

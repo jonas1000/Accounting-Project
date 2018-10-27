@@ -2,11 +2,11 @@
 require("../DBConnData.php");
 require("../DBConnManager.php");
 
-function JobGeneralRetriever()
+function ShareholderGeneralRetriever()
 {
 	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
 
-	$DBQuery = "SELECT * FROM VIEW_JOB_GENERAL WHERE JOB_AVAIL = 2;";
+	$DBQuery = "SELECT * FROM VIEW_SHAREHOLDER_GENERAL WHERE SHARE_AVAIL = 2;";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 

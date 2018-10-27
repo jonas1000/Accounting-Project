@@ -1,11 +1,12 @@
 <?php
+require("../Site/Data/HeaderData/HeaderData.php");
+
 printf("<!DOCTYPE html>");
 printf("<html>");
 printf("<head>");
 printf("<meta charset=utf8>");
 printf("</head>");
 printf("</html>");
-header("Content-Type: text/html; charset='UTF-8'");
 
 require("../Site/DBConnData.php");
 require("../Site/DebugLogComMessage/DBErrorMsg.php");
@@ -15,7 +16,7 @@ require("../Site/DBConnManager.php");
 
 $DBQuery = "";
 
-$DBConn = new DBConnManager($_SERVER['ServerName'], $_SERVER['DBUserName'], $_SERVER['DBPassWord'], $_SERVER['ConnEncoding']);
+$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord'], $_SESSION['ConnEncoding']);
 
 /*----Table created in database*/
 /*--------<CONNECT TO DATABASE>--------*/
@@ -23,7 +24,7 @@ if($DBConn->HasWarning())
 	printf("<br>WARNING: while establishing connection: " . $DBConn->GetWarning());
 
 /*--------<DROP EXISTING DATABASE>--------*/
-$DBQuery = "DROP DATABASE IF EXISTS " . $_SERVER['DBName'];
+$DBQuery = "DROP DATABASE IF EXISTS " . $_SESSION['DBName'];
 
 $DBConn->ExecQuery($DBQuery);
 
@@ -52,7 +53,7 @@ if(!$DBConn->HasError())
 else
 	printf("<br>ERROR 2 - Error creating database: " . $DBConn->GetError());
 
-$DBQuery = "USE " . $_SERVER['DBName'] . ";";
+$DBQuery = "USE " . $_SESSION['DBName'] . ";";
 
 $DBConn->ExecQuery($DBQuery);
 
@@ -111,9 +112,6 @@ $DBQuery="CREATE TABLE IF NOT EXISTS COUNTRY_DATA
 (
 	COUNTRY_DATA_ID INT AUTO_INCREMENT,
 	COUNTRY_DATA_Title varchar(64) NOT NULL COLLATE utf8_unicode_ci,
-	COUNTRY_DATA_Tax DECIMAL(8,4) NOT NULL DEFAULT 0,
-	COUNTRY_DATA_InterestRate DECIMAL(8,4) NOT NULL DEFAULT 0,
-	COUNTRY_DATA_Date DATE NOT NULL,
 	COUNTRY_DATA_CDate TIMESTAMP NOT NULL DEFAULT NOW(),
 	ACCESS_LEVEL_ID INT NOT NULL,
 	AVAILABLE_ID INT NOT NULL,
@@ -160,6 +158,62 @@ if(!$DBConn->HasError())
 else
 	printf("<br>ERROR 7 " . $DBTableErrorMsg . $DBConn->GetError());
 
+/*--------<CREATE TABLE COUNTY_DATA>--------*/
+$DBQuery="CREATE TABLE IF NOT EXISTS COUNTY_DATA
+(
+	COUNTY_DATA_ID INT AUTO_INCREMENT,
+	COUNTY_DATA_Title VARCHAR(32) NOT NULL,
+	COUNTY_DATA_Tax DECIMAL(8,4) NOT NULL DEFAULT 0,
+	COUNTY_DATA_InterestRate DECIMAL(8,4) NOT NULL DEFAULT 0,
+	COUNTY_DATA_Date DATE NOT NULL,
+	COUNTY_DATA_CDate TIMESTAMP NOT NULL DEFAULT NOW(),
+	ACCESS_LEVEL_ID INT NOT NULL,
+	AVAILABLE_ID INT NOT NULL,
+	PRIMARY KEY(COUNTY_DATA_ID),
+	FOREIGN KEY(ACCESS_LEVEL_ID) REFERENCES ACCESS_LEVEL(ACCESS_LEVEL_ID),
+	FOREIGN KEY(AVAILABLE_ID) REFERENCES AVAILABLE(AVAILABLE_ID)
+)ENGINE=innoDB COLLATE utf8_unicode_ci;";
+
+$DBConn->ExecQuery($DBQuery);
+
+if(!$DBConn->HasError())
+{
+	printf("<br>" . $DBTableSuccCreaMsg);
+
+	if($DBConn->HasWarning())
+		printf("<br>" . $DBTableWarmMsg . " COUNTRY: " . $DBConn->GetWarning());
+}
+else
+	printf("<br>ERROR 8 " . $DBTableErrorMsg . $DBConn->GetError());
+
+/*--------<CREATE TABLE COUNTY>--------*/
+$DBQuery="CREATE TABLE IF NOT EXISTS COUNTY
+(
+	COUNTY_ID INT AUTO_INCREMENT,
+	COUNTY_CDate TIMESTAMP NOT NULL DEFAULT NOW(),
+	ACCESS_LEVEL_ID INT NOT NULL,
+	COUNTRY_ID INT NOT NULL,
+	COUNTY_DATA_ID INT NOT NULL,
+	AVAILABLE_ID INT NOT NULL,
+	PRIMARY KEY(COUNTY_ID),
+	FOREIGN KEY(ACCESS_LEVEL_ID) REFERENCES ACCESS_LEVEL(ACCESS_LEVEL_ID),
+	FOREIGN KEY(COUNTRY_ID) REFERENCES COUNTRY(COUNTRY_ID),
+	FOREIGN KEY(COUNTY_DATA_ID) REFERENCES COUNTY_DATA(COUNTY_DATA_ID),
+	FOREIGN KEY(AVAILABLE_ID) REFERENCES AVAILABLE(AVAILABLE_ID)
+)ENGINE=innoDB COLLATE utf8_unicode_ci;";
+
+$DBConn->ExecQuery($DBQuery);
+
+if(!$DBConn->HasError())
+{
+	printf("<br>" . $DBTableSuccCreaMsg);
+
+	if($DBConn->HasWarning())
+		printf("<br>" . $DBTableWarmMsg . " COUNTRY: " . $DBConn->GetWarning());
+}
+else
+	printf("<br>ERROR 9 " . $DBTableErrorMsg . $DBConn->GetError());
+
 /*--------<CREATE TABLE COMPANY_DATA>--------*/
 $DBQuery="CREATE TABLE IF NOT EXISTS COMPANY_DATA
 (
@@ -168,10 +222,10 @@ $DBQuery="CREATE TABLE IF NOT EXISTS COMPANY_DATA
 	COMPANY_DATA_Date DATE NOT NULL,
 	COMPANY_DATA_CDate TIMESTAMP NOT NULL DEFAULT NOW(),
 	ACCESS_LEVEL_ID INT NOT NULL,
-	COUNTRY_ID INT NOT NULL,
+	COUNTY_ID INT NOT NULL,
 	AVAILABLE_ID INT NOT NULL,
 	PRIMARY KEY(COMPANY_DATA_ID),
-	FOREIGN KEY(COUNTRY_ID) REFERENCES COUNTRY(COUNTRY_ID),
+	FOREIGN KEY(COUNTY_ID) REFERENCES COUNTY(COUNTY_ID),
 	FOREIGN KEY(ACCESS_LEVEL_ID) REFERENCES ACCESS_LEVEL(ACCESS_LEVEL_ID),
 	FOREIGN KEY(AVAILABLE_ID) REFERENCES AVAILABLE(AVAILABLE_ID)
 )ENGINE=innoDB COLLATE utf8_unicode_ci;";
@@ -186,7 +240,7 @@ if(!$DBConn->HasError())
 		printf("<br>" . $DBTableWarmMsg . " COMPANY_DATA: " . $DBConn->GetWarning());
 }
 else
-	printf("<br>ERROR 8 " . $DBTableErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 10 " . $DBTableErrorMsg . $DBConn->GetError());
 
 /*--------<CREATE TABLE COMPANY>--------*/
 $DBQuery="CREATE TABLE IF NOT EXISTS COMPANY
@@ -212,7 +266,7 @@ if(!$DBConn->HasError())
 		printf("<br>" . $DBTableWarmMsg . " COMPANY: " . $DBConn->GetWarning());
 }
 else
-	printf("<br>ERROR 9 " . $DBTableErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 11 " . $DBTableErrorMsg . $DBConn->GetError());
 
 /*--------<CREATE TABLE EMPLOYEE_POSITION>--------*/
 $DBQuery="CREATE TABLE IF NOT EXISTS EMPLOYEE_POSITION
@@ -237,7 +291,7 @@ if(!$DBConn->HasError())
 		printf("<br>" . $DBTableWarmMsg . " EMPLOYEE_POSITION: " . $DBConn->GetWarning());
 }
 else
-	printf("<br>ERROR 10 " . $DBTableErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 12 " . $DBTableErrorMsg . $DBConn->GetError());
 
 /*--------<CREATE TABLE EMPLOYEE_DATA>--------*/
 $DBQuery="CREATE TABLE IF NOT EXISTS EMPLOYEE_DATA
@@ -266,7 +320,7 @@ if(!$DBConn->HasError())
 		printf("<br>" . $DBTableWarmMsg . " EMPLOYEE_DATA: " . $DBConn->GetWarning());
 }
 else
-	printf("<br>ERROR 11 " . $DBTableErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 13 " . $DBTableErrorMsg . $DBConn->GetError());
 
 /*--------<CREATE TABLE EMPLOYEE>--------*/
 $DBQuery="CREATE TABLE IF NOT EXISTS EMPLOYEE
@@ -296,7 +350,7 @@ if(!$DBConn->HasError())
 		printf("<br>" . $DBTableWarmMsg . " EMPLOYEE: " . $DBConn->GetWarning());
 }
 else
-	printf("<br>ERROR 12 " . $DBTableErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 14 " . $DBTableErrorMsg . $DBConn->GetError());
 
 /*--------<CREATE TABLE JOB_INCOME>--------*/
 $DBQuery="CREATE TABLE IF NOT EXISTS JOB_INCOME
@@ -322,7 +376,7 @@ if(!$DBConn->HasError())
 		printf("<br>" . $DBTableWarmMsg . " JOB_INCOME " . $DBConn->GetWarning());
 }
 else
-	printf("<br>ERROR 13 " . $DBTableErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 15 " . $DBTableErrorMsg . $DBConn->GetError());
 
 /*--------<CREATE TABLE JOB_INCOME_IN_TIME>--------*/
 $DBQuery="CREATE TABLE IF NOT EXISTS JOB_INCOME_TIME
@@ -350,7 +404,7 @@ if(!$DBConn->HasError())
 		printf("<br>" . $DBTableWarmMsg . " JOB_INCOME_TIME: " . $DBConn->GetWarning());
 }
 else
-	printf("<br>ERROR 14 " . $DBTableErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 16 " . $DBTableErrorMsg . $DBConn->GetError());
 
 /*--------<CREATE TABLE JOB_OUTCOME>--------*/
 $DBQuery="CREATE TABLE IF NOT EXISTS JOB_OUTCOME
@@ -376,7 +430,7 @@ if(!$DBConn->HasError())
 		printf("<br>" . $DBTableWarmMsg . " JOB_OUTCOME: " . $DBConn->GetWarning());
 }
 else
-	printf("<br>ERROR 15 " . $DBTableErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 17 " . $DBTableErrorMsg . $DBConn->GetError());
 
 /*--------<CREATE TABLE JOB_DATA>--------*/
 $DBQuery="CREATE TABLE IF NOT EXISTS JOB_DATA
@@ -405,7 +459,7 @@ if(!$DBConn->HasError())
 		printf("<br>" . $DBTableWarmMsg . " JOB_DATA: " . $DBConn->GetWarning());
 }
 else
-	printf("<br>ERROR 16 " . $DBTableErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 18 " . $DBTableErrorMsg . $DBConn->GetError());
 
 /*--------<CREATE TABLE JOB>--------*/
 $DBQuery="CREATE TABLE IF NOT EXISTS JOB
@@ -434,7 +488,7 @@ if(!$DBConn->HasError())
 		printf("<br>" . $DBTableWarmMsg . " JOB: " . $DBConn->GetWarning());
 }
 else
-	printf("<br>ERROR 17 " . $DBTableErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 19 " . $DBTableErrorMsg . $DBConn->GetError());
 
 /*--------<CREATE TABLE JOB_ASSIGMENT>--------*/
 $DBQuery="CREATE TABLE IF NOT EXISTS JOB_ASSIGMENT
@@ -444,11 +498,13 @@ $DBQuery="CREATE TABLE IF NOT EXISTS JOB_ASSIGMENT
 	ACCESS_LEVEL_ID INT NOT NULL,
 	EMPLOYEE_ID INT NOT NULL,
 	JOB_ID INT NOT NULL,
+	COUNTY_ID INT NOT NULL,
 	AVAILABLE_ID INT NOT NULL,
 	PRIMARY KEY(JOB_ASSIGMENT_ID),
 	FOREIGN KEY(ACCESS_LEVEL_ID) REFERENCES ACCESS_LEVEL(ACCESS_LEVEL_ID),
 	FOREIGN KEY(EMPLOYEE_ID) REFERENCES EMPLOYEE(EMPLOYEE_ID),
 	FOREIGN KEY(JOB_ID) REFERENCES JOB(JOB_ID),
+	FOREIGN KEY(COUNTY_ID) REFERENCES COUNTY(COUNTY_ID),
 	FOREIGN KEY(AVAILABLE_ID) REFERENCES AVAILABLE(AVAILABLE_ID)
 )ENGINE=innoDB COLLATE utf8_unicode_ci;";
 
@@ -462,7 +518,7 @@ if(!$DBConn->HasError())
 		printf("<br>" . $DBTableWarmMsg . " JOB_ASSIGMENT: " . $DBConn->GetWarning());
 }
 else
-	printf("<br>ERROR 18 " . $DBTableErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 20 " . $DBTableErrorMsg . $DBConn->GetError());
 
 /*--------<CREATE TABLE SHAREHOLDER>--------*/
 $DBQuery="CREATE TABLE IF NOT EXISTS SHAREHOLDER
@@ -488,7 +544,7 @@ if(!$DBConn->HasError())
 		printf("<br>" . $DBTableWarmMsg . " SHAREHOLDER: " . $DBConn->GetWarning());
 }
 else
-	printf("<br>ERROR 19 " . $DBTableErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 21 " . $DBTableErrorMsg . $DBConn->GetError());
 
 require("ViewTables.php");
 require("DemoData.php");

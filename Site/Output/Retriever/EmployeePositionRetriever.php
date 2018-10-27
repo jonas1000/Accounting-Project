@@ -2,11 +2,11 @@
 require("../DBConnData.php");
 require("../DBConnManager.php");
 
-function JobGeneralRetriever()
+function EmployeePositionRetriever()
 {
 	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
 
-	$DBQuery = "SELECT * FROM VIEW_JOB_GENERAL WHERE JOB_AVAIL = 2;";
+	$DBQuery = "SELECT * FROM VIEW_EMPLOYEE_POSITION WHERE EMP_AVAIL = 2";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 
@@ -14,7 +14,7 @@ function JobGeneralRetriever()
 
 	if(!$DBConn->HasError())
 	{
-		printf("Result array received");
+		printf("query executed");
 
 		if($DBConn->HasWarning())
 			printf("warning detected: " . $DBConn->GetWarning());
