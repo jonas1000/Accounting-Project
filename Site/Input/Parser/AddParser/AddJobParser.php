@@ -1,10 +1,13 @@
 <?php
-require("../../DatabaseConData.php");
-require("../../DBConnManager.php");
+require_once("../../../Data/ConnData/DBSessionToken.php");
 
-$DBConn = new DBConnManager($ServerName, $DBUserName, $DBPassWord);
+session_start();
 
-$DBQuery = "INSERT INTO VIEW_JOB_OUTCOME(JOB_Exp, JOB_Dam, JOB_ACCESS, JOB_AVAIL) VALUES(".$_POST['Expenses'].", ".$_POST['Damage'].", ".$_POST['Access'].", ".$_POST['Hidden'].")";
+require("../../../DBConnManager.php");
+
+$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
+
+$DBQuery = "INSERT INTO VIEW_JOB_OUTCOME(JOB_Exp, JOB_Dam, JOB_ACCESS, JOB_AVAIL) VALUES(".$_POST['Expenses'].", ".$_POST['Damage'].", ".$_POST['Access'].", 2)";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 
@@ -18,11 +21,11 @@ if(!$DBConn->HasError())
 else
 	printf("Error: " . $DBConn->GetError());
 
-$DBQueryOutID = $DBConn->GetLastQueryInsID();
+$LastQueryOutcomeID = $DBConn->GetLastQueryID();
 
-if($DBQueryOutID)
+if($LastQueryOutcomeID)
 {
-	$DBQuery = "INSERT INTO VIEW_JOB_INCOME(JOB_Price, JOB_PIA, JOB_ACCESS, JOB_AVAIL) VALUES(".$_POST['Price'].", ".$_POST['PIA'].", ".$_POST['Access2'].", ".$_POST['Hidden2'].")";
+	$DBQuery = "INSERT INTO VIEW_JOB_INCOME(JOB_Price, JOB_PIA, JOB_ACCESS, JOB_AVAIL) VALUES(".$_POST['Price'].", ".$_POST['PIA'].", ".$_POST['Access'].", 2)";
 
 	$DBConn->ExecQuery($DBQuery, TRUE);
 
@@ -36,9 +39,11 @@ if($DBQueryOutID)
 	else
 		printf("Error: " . $DBConn->GetError());
 
-	if($DBConn->GetLastQueryInsID())
+	$LastQuery = $DBConn->GetLastQueryID();
+
+	if($LastQuery)
 	{
-		$DBQuery = "INSERT INTO VIEW_JOB_DATA(JOB_INC_ID, JOB_OUT_ID, JOB_ACCESS, JOB_AVAIL) VALUES(".$DBConn->GetLastQueryInsID().", ".$DBQueryOutID.", ".$_POST['Access3'].", ".$_POST['Hidden3'].")";
+		$DBQuery = "INSERT INTO VIEW_JOB_DATA(JOB_INC_ID, JOB_OUT_ID, JOB_Title, JOB_Date, JOB_ACCESS, JOB_AVAIL) VALUES(".$LastQuery.", ".$LastQueryOutcomeID.", \"".$_POST['Name']."\", \"".$_POST['Date']."\" , ".$_POST['Access'].", 2)";
 
 		$DBConn->ExecQuery($DBQuery, TRUE);
 
@@ -52,9 +57,11 @@ if($DBQueryOutID)
 		else
 			printf("Error: " . $DBConn->GetError());
 
-		if($DBConn->GetLastQueryInsID())
+		$LastQuery = $DBConn->GetLastQueryID();
+
+		if($LastQuery)
 		{
-			$DBQuery = "INSERT INTO VIEW_JOB(JOB_DATA_ID, COMP_ID, JOB_Title, JOB_ACCESS, JOB_AVAIL) VALUES(".$DBConn->GetLastQueryInsID().", ".$_POST['Company'].", ".$_POST['Name'].", ".$_POST['Access4']." ,".$_POST['Hidden4'].")";
+			$DBQuery = "INSERT INTO VIEW_JOB(JOB_DATA_ID, COMP_ID, JOB_ACCESS, JOB_AVAIL) VALUES(".$LastQuery.", ".$_POST['Company'].", ".$_POST['Access']." , 2)";
 
 			$DBConn->ExecQuery($DBQuery, TRUE);
 
@@ -78,5 +85,8 @@ else
 	printf("Error 1: Failed to get id from last query");
 
 $DBConn->closeConn();
+
+unset($DBConn);
+unset($DBQuery);
 
 ?>

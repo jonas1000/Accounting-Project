@@ -1,7 +1,10 @@
 <?php
-require("../Data/HeaderData/HeaderData.php");
+require_once("../Data/HeaderData/HeaderData.php");
+require_once("../Data/ConnData/DBSessionToken.php");
+session_start();
 
-require("../Output/Retriever/CountryRetriever.php");
+require_once("../DBConnManager.php");
+require_once("../Output/Retriever/CountryRetriever.php");
 
 printf("<!DOCTYPE HTML>");
 printf("<html>");
@@ -17,12 +20,14 @@ foreach($CountryRows as $CountryRow => $CountryData)
 {
 		printf("<br> <b>ID</b>: " . $CountryData['COU_ID']);
 		printf("<br> <b>Name</b>: " . $CountryData['COU_Title']);
-		printf("<br> <b>Country Date</b>: " . $CountryData['COU_Date']);
-		printf("<br> <b>Tax</b>: " . $CountryData['COU_Tax']);
-		printf("<br> <b>Interest Rate</b>: " . $CountryData['COU_IR']);
 }
+
+printf("<br><a href='../Form/AddForm/AddCountryForm.php'>Add new entry</a>");
+printf("<br><a href='../Index.php'>Back</a>");
 
 printf("</body>");
 printf("</html>");
+
+unset($CountryRows);
 
 ?>

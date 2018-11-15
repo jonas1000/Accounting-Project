@@ -1,6 +1,8 @@
 <?php
 require("../Site/Data/HeaderData/HeaderData.php");
 
+session_start();
+
 printf("<!DOCTYPE html>");
 printf("<html>");
 printf("<head>");
@@ -8,7 +10,7 @@ printf("<meta charset=utf8>");
 printf("</head>");
 printf("</html>");
 
-require("../Site/DBConnData.php");
+require("../Site/Data/ConnData/DBConnData.php");
 require("../Site/DebugLogComMessage/DBErrorMsg.php");
 require("../Site/DebugLogComMessage/DBWarnMsg.php");
 require("../Site/DebugLogComMessage/DBSuccMsg.php");
@@ -112,6 +114,7 @@ $DBQuery="CREATE TABLE IF NOT EXISTS COUNTRY_DATA
 (
 	COUNTRY_DATA_ID INT AUTO_INCREMENT,
 	COUNTRY_DATA_Title varchar(64) NOT NULL COLLATE utf8_unicode_ci,
+	COUNTRY_DATA_Date TIMESTAMP NOT NULL DEFAULT NOW(),
 	COUNTRY_DATA_CDate TIMESTAMP NOT NULL DEFAULT NOW(),
 	ACCESS_LEVEL_ID INT NOT NULL,
 	AVAILABLE_ID INT NOT NULL,
@@ -436,6 +439,7 @@ else
 $DBQuery="CREATE TABLE IF NOT EXISTS JOB_DATA
 (
 	JOB_DATA_ID INT AUTO_INCREMENT,
+	JOB_DATA_Title VARCHAR(64) NOT NULL COLLATE utf8_unicode_ci,
 	JOB_DATA_Date DATE NOT NULL,
 	JOB_DATA_CDate TIMESTAMP NOT NULL DEFAULT NOW(),
 	ACCESS_LEVEL_ID INT NOT NULL,
@@ -465,7 +469,6 @@ else
 $DBQuery="CREATE TABLE IF NOT EXISTS JOB
 (
 	JOB_ID INT AUTO_INCREMENT,
-	JOB_Title VARCHAR(64) NOT NULL COLLATE utf8_unicode_ci,
 	JOB_CDate TIMESTAMP NOT NULL DEFAULT NOW(),
 	ACCESS_LEVEL_ID INT NOT NULL,
 	JOB_DATA_ID INT NOT NULL,
@@ -546,8 +549,21 @@ if(!$DBConn->HasError())
 else
 	printf("<br>ERROR 21 " . $DBTableErrorMsg . $DBConn->GetError());
 
-require("ViewTables.php");
-require("DemoData.php");
+require_once("ViewTables.php");
+require_once("DemoData.php");
+
+if(session_unset())
+	printf("<br>Session destroyed");
+else
+	printf("<br>Failed to destroy sessions");
+
+if(session_destroy())
+	printf("<br>Closed session");
+else
+	printf("<br>Failed to close session");
 
 $DBConn->closeConn();
+
+unset($DBQuery);
+unset($DBConn);
 ?>

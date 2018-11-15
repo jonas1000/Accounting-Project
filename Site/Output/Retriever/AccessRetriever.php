@@ -1,12 +1,9 @@
 <?php
-require("../DBConnData.php");
-require("../DBConnManager.php");
-
-function EmployeePositionRetriever()
+function AccessFormRetriever()
 {
 	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
 
-	$DBQuery = "SELECT * FROM VIEW_EMPLOYEE_POSITION WHERE EMP_AVAIL = 2";
+	$DBQuery = "SELECT ACCESS_ID, ACCESS_title FROM VIEW_ACCESS WHERE VIEW_ACCESS.ACCESS_Level > 1;";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 
@@ -22,7 +19,10 @@ function EmployeePositionRetriever()
 	else
 		printf("Error: " . $DBConn->GetError());
 
-	$DBConn->closeConn();
+	$DBConn->CloseConn();
+
+	unset($DBConn);
+	unset($DBQuery);
 
 	return $Result;
 }

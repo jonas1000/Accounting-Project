@@ -1,7 +1,7 @@
 <?php
-session_start();
-
 $_SESSION['Debug'] = TRUE;
+
+$_SESSION['Access_ID'] = 1;
 
 //The encoding the connect to the database will use.
 $_SESSION['ConnEncoding'] = "utf8";

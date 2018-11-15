@@ -10,6 +10,7 @@ class DBConnManager
 	private $bHasError = 0;
 	private $bHasWarning = 0;
 	private $Result = 0;
+	private $LastID = 0;
 
 	public function __construct($InServerName = "localhost", $InDBUserName = "root", $InDBPassWord = "", $InEncoding = "utf8")
 	{
@@ -31,19 +32,21 @@ class DBConnManager
 		else
 			$ConnEncoding = $InEncoding;
 
-		$this->ExecQuery("USE " . $_SESSION['DBName'], FALSE);
+		$this->DBConnMan->select_db($_SESSION['DBName']);
+
 	}
 
 	public function __destruct()
 	{
-		$this->DBConnMan = null;
-		$this->DBError = null;
-		$this->DBWarning = null;
-		$this->DBSuccess = null;
-		$this->bHasFailure = null;
-		$this->bHasWarning = null;
-		$this->ConnEncoding = null;
-		$this->Result = null;
+		unset($this->DBConnMan);
+		unset($this->DBError);
+		unset($this->DBWarning);
+		unset($this->DBSuccess);
+		unset($this->bHasFailure);
+		unset($this->bHasWarning);
+		unset($this->ConnEncoding);
+		unset($this->Result);
+		unset($this->LastID);
 	}
 
 	public function ExecQuery($InQuery = null, $InbIsTransaction = FALSE)
@@ -79,6 +82,7 @@ class DBConnManager
 		if($this->Result)
 		{
 			$this->SetSuccess("Succesfully executed query");
+			$this->LastID = $this->DBConnMan->insert_id;
 		}
 		else
 		{
@@ -126,9 +130,9 @@ class DBConnManager
 		return $this->DBSuccess;
 	}
 
-	public function GetLastQueryInsID()
+	public function GetLastQueryID()
 	{
-		return $this->insert_id;
+		return $this->LastID;
 	}
 
 	public function GetEncoding()

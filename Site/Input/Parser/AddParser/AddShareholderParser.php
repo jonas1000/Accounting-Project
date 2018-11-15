@@ -1,6 +1,7 @@
 <?php
-require("../../DatabaseConData.php");
-require("../../DBConnManager.php");
+require_once("../../Data/ConnData/DBSessionToken.php");
+
+require("../../Data/ConnData/DBConnManager.php");
 
 $DBConn = new DBConnManager($ServerName, $DBUserName, $DBPassWord);
 
@@ -19,5 +20,8 @@ else
 	printf("Error: " . $DBConn->GetError());
 
 $DBConn->closeConn();
+
+unset($DBConn);
+unset($DBQuery);
 
 ?>

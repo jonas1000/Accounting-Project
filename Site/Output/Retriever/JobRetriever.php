@@ -1,7 +1,4 @@
 <?php
-require("../DBConnData.php");
-require("../DBConnManager.php");
-
 function JobGeneralRetriever()
 {
 	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
@@ -23,6 +20,9 @@ function JobGeneralRetriever()
 		printf("Error: " . $DBConn->GetError());
 
 	$DBConn->closeConn();
+
+	unset($DBConn);
+	unset($DBQuery);
 
 	return $Result;
 }

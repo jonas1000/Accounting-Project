@@ -1,7 +1,10 @@
 <?php
-require("../Data/HeaderData/HeaderData.php");
+require_once("../Data/HeaderData/HeaderData.php");
+require_once("../Data/ConnData/DBSessionToken.php");
+session_start();
 
-require("../Output/Retriever/ShareholderRetriever.php");
+require_once("../DBConnManager.php");
+require_once("../Output/Retriever/ShareholderRetriever.php");
 
 printf("<!DOCTYPE HTML>");
 printf("<html>");
@@ -23,7 +26,12 @@ foreach($ShareRows as $ShareRow => $ShareData)
 		printf("<br> <b>Title</b>: " . $ShareData['EMP_Title']);
 }
 
+printf("<br><a href='../Form/AddForm/AddShareholderForm.php'>Add new entry</a>");
+printf("<br><a href='../Index.php'>Back</a>");
+
 printf("</body>");
 printf("</html>");
+
+unset($ShareRows);
 
 ?>

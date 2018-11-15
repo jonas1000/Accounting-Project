@@ -260,14 +260,15 @@ else
 
 /*--------<INSERT DATA TO TABLE JOB_DATA>--------*/
 $DBQuery="INSERT INTO JOB_DATA
-(JOB_DATA_Date,
+(JOB_DATA_Title,
+JOB_DATA_Date,
 JOB_INCOME_ID,
 JOB_OUTCOME_ID,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
 VALUES
-(\"1970-1-1\",1,1,2,2),
-(\"1970-1-1\",2,2,2,2);";
+(\"Video Editing\",\"1970-1-1\",1,1,2,2),
+(\"Recording Studio\",\"1970-1-1\",2,2,2,2);";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 
@@ -278,14 +279,13 @@ else
 
 /*--------<INSERT DATA TO TABLE JOB>--------*/
 $DBQuery="INSERT INTO JOB
-(JOB_Title,
-JOB_DATA_ID,
+(JOB_DATA_ID,
 COMPANY_ID,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
 VALUES
-(\"Video Editing\",1,1,2,2),
-(\"Recording Studio\",2,1,2,2);";
+(1,1,2,2),
+(2,1,2,2);";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 
