@@ -1,3 +1,81 @@
+@media screen and (max-width: 640px)
+{
+	.MenuWindow
+	{
+		width:auto;
+		height:720px;
+		float:left;
+		clear:both;
+		position:fixed;
+		z-index:1;
+	}
+}
+
+@media screen and (min-width: 1280px)
+{
+	.MenuWindow
+	{
+		width:auto;
+		height:1080px;
+		float:left;
+		clear:both;
+		position:fixed;
+		z-index:1;
+	}
+}
+
+@media screen and (min-width: 2560px)
+{
+	.MenuWindow
+	{
+		width:auto;
+		height:1800px;
+		float:left;
+		clear:both;
+		position:fixed;
+		z-index:1;
+	}
+}
+
+@media screen and (min-width: 3840px)
+{
+	.MenuWindow
+	{
+		width:auto;
+		height:2160px;
+		float:left;
+		clear:both;
+		position:fixed;
+		z-index:1;
+	}
+}
+
+@media screen and (min-width: 4096px)
+{
+	.MenuWindow
+	{
+		width:auto;
+		height:2880px;
+		float:left;
+		clear:both;
+		position:fixed;
+		z-index:1;
+	}
+}
+
+@media screen and (min-width: 7680px)
+{
+
+	.MenuWindow
+	{
+		width:auto;
+		height:4320px;
+		float:left;
+		clear:both;
+		position:fixed;
+		z-index:1;
+	}
+}
 
 .MainMenu
 {
@@ -10,6 +88,7 @@
 	padding:0%;
 	float:left;
 	clear:left;
+	display:none;
 }
 
 .MainMenu div
@@ -37,4 +116,14 @@
 .MainMenu p
 {
 	text-align:center;
+}
+
+.MenuButton
+{
+	background-color:rgba(100,100,0,1);
+	width:30px;
+	height:30px;
+	margin:25% 0%;
+	float:left;
+	clear:right;
 }

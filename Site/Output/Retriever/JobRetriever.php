@@ -3,7 +3,9 @@ function JobGeneralRetriever()
 {
 	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
 
-	$DBQuery = "SELECT * FROM VIEW_JOB_GENERAL WHERE JOB_AVAIL = 2;";
+	$DBQuery = "SELECT *
+	FROM VIEW_JOB_GENERAL
+	WHERE JOB_AVAIL = 2;";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 

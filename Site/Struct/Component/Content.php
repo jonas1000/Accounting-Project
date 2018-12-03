@@ -13,27 +13,27 @@ if(isset($_GET["MenuIndex"]))
 		}
 		case 1:
 		{
-			require_once("../Module/Overview/CountryOverview.php");
+			require_once("Struct/Module/Overview/CountryOverview.php");
 			break;
 		}
 		case 2:
 		{
-			require_once("../Module/Overview/EmployeeOverview.php");
+			require_once("Struct/Module/Overview/EmployeeOverview.php");
 			break;
 		}
 		case 3:
 		{
-			require_once("../Module/Overview/EmployeePositionOverview.php");
+			require_once("Struct/Module/Overview/EmployeePositionOverview.php");
 			break;
 		}
 		case 4:
 		{
-			require_once("../Module/Overview/JobOverview.php");
+			require_once("Struct/Module/Overview/JobOverview.php");
 			break;
 		}
 		case 5:
 		{
-			require_once("../Module/Overview/ShareholderOverview.php");
+			require_once("Struct/Module/Overview/ShareholderOverview.php");
 			break;
 		}
 		default:

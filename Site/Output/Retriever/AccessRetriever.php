@@ -3,7 +3,9 @@ function AccessFormRetriever()
 {
 	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
 
-	$DBQuery = "SELECT ACCESS_ID, ACCESS_title FROM VIEW_ACCESS WHERE VIEW_ACCESS.ACCESS_Level > 1;";
+	$DBQuery = "SELECT ACCESS_ID, ACCESS_title
+	FROM VIEW_ACCESS
+	WHERE VIEW_ACCESS.ACCESS_Level > 1;";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 

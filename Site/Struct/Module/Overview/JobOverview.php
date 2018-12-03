@@ -1,39 +1,89 @@
 <?php
-require_once("../Data/HeaderData/HeaderData.php");
-require_once("../Data/ConnData/DBSessionToken.php");
-session_start();
+require_once("Data/HeaderData/HeaderData.php");
+require_once("Data/ConnData/DBSessionToken.php");
 
-require_once("../DBConnManager.php");
-require_once("../Output/Retriever/JobRetriever.php");
-
-printf("<!DOCTYPE HTML>");
-printf("<html>");
-printf("<head>");
-printf("<meta charset=utf8>");
-printf("<title>Job Overview</title>");
-printf("</head>");
-printf("<body>");
+require_once("DBConnManager.php");
+require_once("Output/Retriever/JobRetriever.php");
 
 $JobRows = JobGeneralRetriever();
 
+
 foreach($JobRows as $JobRow => $JobData)
 {
-		printf("<br> <b>ID</b>: " . $JobData['JOB_ID']);
-		printf("<br> <b>Company</b>: " . $JobData['COMP_Title']);
-		printf("<br> <b>Company Date</b>: " . $JobData['COMP_Date']);
-		printf("<br> <b>Job Name</b>: " . $JobData['JOB_Title']);
-		printf("<br> <b>Job Date</b>: " . $JobData['JOB_Date']);
-		printf("<br> <b>Price</b>: " . $JobData['JOB_Price']);
-		printf("<br> <b>Payment in advance</b>: " . $JobData['JOB_PIA']);
-		printf("<br> <b>Expences</b>: " . $JobData['JOB_Exp']);
-		printf("<br> <b>Damage</b>: " . $JobData['JOB_Dam'] . "<br>");
+		printf("<div class='DataBlock'>");
+		printf("<div>");
+		printf("<div>");
+
+		printf("<div>");
+		printf("<h4>".$JobData['JOB_Title']."</h4>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<b><h4>Company:</h4></b>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<p>".$JobData['COMP_Title']."</p>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<b><h4>Company Date:</h4></b>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<p>".$JobData['COMP_Date']."</p>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<b><h4>Job Date:</h4></b>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<p>".$JobData['JOB_Date']."</p>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<b><h4>Price:</h4></b>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<p>".$JobData['JOB_Price']."</p>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<b><h4>Payment in advance:</h4></b>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<p>".$JobData['JOB_PIA']."</p>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<b><h4>Expences:</h4></b>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<p>".$JobData['JOB_Exp']."</p>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<b><h4>Damage:</h4></b>");
+		printf("</div>");
+
+		printf("<div>");
+		printf("<p>".$JobData['JOB_Dam']."</p>");
+		printf("</div>");
+
+		printf("<input type='hidden' value=".$JobData['JOB_ID'].">");
+		printf("<input type='submit' value='Delete' formaction='DeleteEntry.php'>");
+		printf("<input type='submit' value='Edit' formaction='EditEntry.php'");
+
+		printf("</div>");
+		printf("</div>");
+		printf("</div>");
 }
 
-printf("<br><a href='../Form/AddForm/AddJobForm.php'>Add new entry</a>");
-printf("<br><a href='../Index.php'>Back</a>");
-
-printf("</body>");
-printf("</html>");
+printf("<a href='Form/AddForm/AddJobForm.php'><div class='Button-Left'>Add</div></a>");
 
 unset($JobRows);
 

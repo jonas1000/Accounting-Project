@@ -3,7 +3,9 @@ function EmployeeGeneralRetriever()
 {
 	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
 
-	$DBQuery = "SELECT * FROM VIEW_EMPLOYEE_GENERAL WHERE EMP_AVAIL = 2;";
+	$DBQuery = "SELECT *
+	FROM VIEW_EMPLOYEE_GENERAL
+	WHERE EMP_AVAIL = 2;";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 
@@ -29,7 +31,9 @@ function EmployeePositionRetriever()
 {
 	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
 
-	$DBQuery = "SELECT * FROM VIEW_EMPLOYEE_POSITION WHERE EMP_AVAIL = 2";
+	$DBQuery = "SELECT *
+	FROM VIEW_EMPLOYEE_POSITION
+	WHERE EMP_AVAIL = 2";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 
@@ -55,7 +59,9 @@ function EmployeeFormRetriever()
 {
 	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
 
-	$DBQuery = "SELECT EMP_ID, EMP_Title FROM VIEW_EMPLOYEE_POSITION WHERE VIEW_EMPLOYEE_POSITION.EMP_AVAIL = 2;";
+	$DBQuery = "SELECT EMP_ID, EMP_Title
+	FROM VIEW_EMPLOYEE_POSITION
+	WHERE VIEW_EMPLOYEE_POSITION.EMP_AVAIL = 2;";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 

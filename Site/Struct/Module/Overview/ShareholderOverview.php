@@ -1,10 +1,9 @@
 <?php
-require_once("../Data/HeaderData/HeaderData.php");
-require_once("../Data/ConnData/DBSessionToken.php");
-session_start();
+require_once("Data/HeaderData/HeaderData.php");
+require_once("Data/ConnData/DBSessionToken.php");
 
-require_once("../DBConnManager.php");
-require_once("../Output/Retriever/ShareholderRetriever.php");
+require_once("DBConnManager.php");
+require_once("Output/Retriever/ShareholderRetriever.php");
 
 printf("<!DOCTYPE HTML>");
 printf("<html>");

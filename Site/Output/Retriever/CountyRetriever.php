@@ -3,7 +3,9 @@ function CountyGeneralRetriever()
 {
 	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
 
-	$DBQuery = "SELECT * FROM VIEW_COUNTY_GENERAL WHERE COU_AVAIL = 2";
+	$DBQuery = "SELECT *
+	FROM VIEW_COUNTY_GENERAL
+	WHERE COU_AVAIL = 2";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 
@@ -29,7 +31,9 @@ function CountyFormRetriever()
 {
 	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
 
-	$DBQuery = "SELECT COU_ID, COU_Title FROM VIEW_COUNTY_GENERAL WHERE COU_AVAIL = 2";
+	$DBQuery = "SELECT COU_ID, COU_Title
+	FROM VIEW_COUNTY_GENERAL
+	WHERE COU_AVAIL = 2";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 

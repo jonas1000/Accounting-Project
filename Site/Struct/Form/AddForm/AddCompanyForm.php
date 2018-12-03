@@ -1,8 +1,6 @@
 <?php
-require_once("../../Data/HeaderData/HeaderData.php");
-require_once("../../Data/ConnData/DBSessionToken.php");
-
-session_start();
+require_once("Data/HeaderData/HeaderData.php");
+require_once("Data/ConnData/DBSessionToken.php");
 
 //-------------<FUNCTIONS>-------------//
 function DisplayAccessSelectRow()
@@ -61,23 +59,14 @@ switch(isset($_SESSION['Access_ID']))
 {
 	case TRUE:
 	{
-		require_once("../../DBConnManager.php");
-		require_once("../../Output/Retriever/AccessRetriever.php");
-		require_once("../../Output/Retriever/CountryRetriever.php");
-		require_once("../../Output/Retriever/CountyRetriever.php");
-		require_once("../../Element/Form.php");
-		require_once("../../Element/Input.php");
+		require_once("DBConnManager.php");
+		require_once("Output/Retriever/AccessRetriever.php");
+		require_once("Output/Retriever/CountryRetriever.php");
+		require_once("Output/Retriever/CountyRetriever.php");
+		require_once("Element/Form.php");
+		require_once("Element/Input.php");
 
-		printf("<!DOCTYPE html>");
-		printf("<html>");
-
-		printf("<head>");
-		printf("<meta charset=utf8>");
-		printf("<title>Home</title>");
-		printf("</head>");
-
-		printf("<body>");
-
+		printf("<div class='Form'>");
 		printf("<form action='../../Input/Parser/AddParser/AddCompanyParser.php' method='POST'>");
 
 		printf("<p>Name</p><input name='Name' type='text' placeholder='Studio Name'>");
@@ -93,12 +82,9 @@ switch(isset($_SESSION['Access_ID']))
 		printf("<input type='submit' value='Save'>");
 
 		printf("</form>");
+		printf("</div>");
 
-		printf("<br><a href='../../'>Back</a>");
-
-		printf("</body>");
-
-		printf("</html>");
+		printf("<br><a href='.?MenuIndex=0'><div class='Button-Left'>Back</div></a>");
 
 		break;
 	}

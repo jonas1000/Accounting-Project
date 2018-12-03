@@ -10,6 +10,7 @@ printf("<html lang='en'>");
 
 printf("<head>");
 printf("<meta charset=utf8>");
+printf("<link rel='icon' href='../images/FaviconPlaceholder.png' type='image/png'>");
 printf("<title>Home</title>");
 printf("<link rel='stylesheet' href='../css/Device/Desktop/DesktopMediaRule.css'>");
 printf("<link rel='stylesheet' href='../css/Body.css'>");
@@ -20,7 +21,10 @@ printf("<link rel='stylesheet' href='../css/Footer.css'>");
 printf("<link rel='stylesheet' href='../css/DataBlock.css'");
 printf("</head>");
 
-printf("<body>");
+printf("<body onload='Main()'>");
+
+printf("<script src='../js/Main.js'></script>");
+printf("<script src='../js/MenuDisplay.js'></script>");
 
 printf("<div class=Wrapper>");
 require_once("Struct/Component/Header.php");
