@@ -1,22 +1,18 @@
 <?php
-require_once("../../Data/HeaderData/HeaderData.php");
-require_once("../../Data/ConnData/DBSessionToken.php");
+require_once("Data/HeaderData/HeaderData.php");
+require_once("Data/ConnData/DBSessionToken.php");
 
-session_start();
+require_once("DBConnManager.php");
 
-require_once("../../DBConnManager.php");
+require_once("Struct/Element/Function/Select/DBSelectRowRender.php");
 
-printf("<!DOCTYPE html>");
-printf("<html>");
+printf("<form method='POST'>");
 
-printf("<head>");
-printf("<meta charset=utf8>");
-printf("<title>Home</title>");
-printf("</head>");
+RenderAccessSelectRow();
+RenderEmployeeSelectRow();
 
-printf("<body>");
+printf("<input type='submit' value='Save'>");
+printf("</form>");
 
-printf("</body>");
-
-printf("</html>");
+printf("<a href='.?MenuIndex=".$_GET['MenuIndex']."'><div class='Button-Left'><p>Cancel</p></div></a>");
 ?>

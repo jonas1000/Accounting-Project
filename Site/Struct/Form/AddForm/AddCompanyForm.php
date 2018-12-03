@@ -2,61 +2,14 @@
 require_once("Data/HeaderData/HeaderData.php");
 require_once("Data/ConnData/DBSessionToken.php");
 
-//-------------<FUNCTIONS>-------------//
-function DisplayAccessSelectRow()
-{
-	$AccessRows = AccessFormRetriever();
-
-	printf("<p>Access Level</p><select name='Access'>");
-
-	foreach($AccessRows as $AccessRow => $AccessData)
-	{
-
-		printf("<option value='". $AccessData['ACCESS_ID'] ."'>". $AccessData['ACCESS_Title'] ."</option>");
-
-	}
-	printf("</select><br>");
-
-	unset($AccessRows);
-}
-
-function DisplayCountrySelectRow()
-{
-	$CountryRows = CountryFormRetriever();
-
-	printf("<p>Country</p><select name='Country'>");
-
-	foreach($CountryRows as $CountryRow => $CountryData)
-	{
-
-		printf("<option value='". $CountryData['COU_ID'] ."'>". $CountryData['COU_Title'] ."</option>");
-
-	}
-	printf("</select><br>");
-
-	unset($CountryRows);
-}
-
-function DisplayCountySelectRow()
-{
-	$CountyRows = CountyFormRetriever();
-
-	printf("<p>County</p><select name='Country'>");
-
-	foreach($CountyRows as $CountyRow => $CountyData)
-	{
-
-		printf("<option value='". $CountyData['COU_ID'] ."'>". $CountyData['COU_Title'] ."</option>");
-
-	}
-	printf("</select><br>");
-
-	unset($CountyRows);
-}
+require_once("Struct/Element/Function/Select/DBSelectRowRender.php");
 
 //-------------<PHP-HTML>-------------//
+
+//check if session is initialized properly
 switch(isset($_SESSION['Access_ID']))
 {
+	//if $_SESSION['Access_ID'] is set
 	case TRUE:
 	{
 		require_once("DBConnManager.php");
@@ -73,25 +26,30 @@ switch(isset($_SESSION['Access_ID']))
 
 		printf("<p>creation date</p><input name='Date' type='date'>");
 
-		DisplayAccessSelectRow();
+		//get rows and render <select> element with data
+		RenderAccessSelectRow();
 
-		DisplayCountySelectRow();
+		RenderCountySelectRow();
 
-		DisplayCountrySelectRow();
+		RenderCountrySelectRow();
 
 		printf("<input type='submit' value='Save'>");
 
 		printf("</form>");
 		printf("</div>");
 
-		printf("<br><a href='.?MenuIndex=0'><div class='Button-Left'>Back</div></a>");
+		printf("<br><a href='.?MenuIndex=0'><div class='Button-Left'><p>Cancel</p></div></a>");
 
 		break;
 	}
+
+	//if $_SESSION['Access_ID'] is NOT set
 	case FALSE:
 	{
 		header("Location:../../");
 	}
+
+	//on undefined case, execute the default
 	default:
 		printf("<br>Unknown error detected");
 }

@@ -5,7 +5,8 @@ function JobGeneralRetriever()
 
 	$DBQuery = "SELECT *
 	FROM VIEW_JOB_GENERAL
-	WHERE JOB_AVAIL = 2;";
+	WHERE JOB_AVAIL = 2
+	AND VIEW_JOB_GENERAL.JOB_ACCESS > ".($_SESSION['Access_ID'] - 1).";";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 

@@ -5,7 +5,8 @@ function CountryGeneralRetriever()
 
 	$DBQuery = "SELECT *
 	FROM VIEW_COUNTRY_GENERAL
-	WHERE COU_AVAIL = 2";
+	WHERE COU_AVAIL = 2
+	AND VIEW_COUNTRY_GENERAL.COU_ACCESS > ".($_SESSION['Access_ID'] - 1).";";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 
@@ -33,7 +34,8 @@ function CountryFormRetriever()
 
 	$DBQuery = "SELECT COU_ID, COU_Title
 	FROM VIEW_COUNTRY_GENERAL
-	WHERE COU_AVAIL = 2";
+	WHERE COU_AVAIL = 2
+	AND VIEW_COUNTRY_GENERAL.COU_ACCESS > ".($_SESSION['Access_ID'] - 1).";";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 

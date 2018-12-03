@@ -5,7 +5,8 @@ function ShareholderGeneralRetriever()
 
 	$DBQuery = "SELECT *
 	FROM VIEW_SHAREHOLDER_GENERAL
-	WHERE SHARE_AVAIL = 2;";
+	WHERE SHARE_AVAIL = 2
+	AND VIEW_SHAREHOLDER_GENERAL.SHARE_ACCESS > ".($_SESSION['Access_ID'] - 1).";";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 

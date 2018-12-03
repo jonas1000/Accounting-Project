@@ -5,7 +5,8 @@ function CountyGeneralRetriever()
 
 	$DBQuery = "SELECT *
 	FROM VIEW_COUNTY_GENERAL
-	WHERE COU_AVAIL = 2";
+	WHERE COU_AVAIL = 2
+	AND VIEW_COUNTY_GENERAL.COU_ACCESS > ".($_SESSION['Access_ID'] - 1).";";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 
@@ -33,7 +34,8 @@ function CountyFormRetriever()
 
 	$DBQuery = "SELECT COU_ID, COU_Title
 	FROM VIEW_COUNTY_GENERAL
-	WHERE COU_AVAIL = 2";
+	WHERE COU_AVAIL = 2
+	AND VIEW_COUNTY_GENERAL.COU_ACCESS > ".($_SESSION['Access_ID'] - 1).";";
 
 	$DBConn->ExecQuery($DBQuery, FALSE);
 

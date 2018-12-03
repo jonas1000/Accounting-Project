@@ -1,60 +1,15 @@
 <?php
-require_once("../../Data/HeaderData/HeaderData.php");
-require_once("../../Data/ConnData/DBSessionToken.php");
+require_once("Data/HeaderData/HeaderData.php");
+require_once("Data/ConnData/DBSessionToken.php");
 
-session_start();
+require_once("DBConnManager.php");
 
-require_once("../../Output/Retriever/CompanyRetriever.php");
-require_once("../../Output/Retriever/AccessRetriever.php");
+require_once("Struct/Element/Function/Select/DBSelectRowRender.php");
 
-//-------------<FUNCTIONS>-------------//
-function DisplayAccessSelectRow()
-{
-	$AccessRows = AccessFormRetriever();
-
-	printf("<p>Access Level</p><select name='Access'>");
-
-	foreach($AccessRows as $AccessRow => $AccessData)
-	{
-
-		printf("<option value='". $AccessData['ACCESS_ID'] ."'>". $AccessData['ACCESS_Title'] ."</option>");
-
-	}
-	printf("</select><br>");
-
-	unset($AccessRows);
-}
-
-function DisplayCompanySelectRow()
-{
-	$CompRows = CompanyFormRetriever();
-
-	printf("<p>Company</p><select name='Company'>");
-
-	foreach($CompRows as $CompRow => $CompData)
-	{
-
-		printf("<option value='". $CompData['COMP_ID'] ."'>". $CompData['COMP_Title'] ."</option>");
-
-	}
-	printf("</select><br>");
-
-	unset($AccessRows);
-}
+require_once("Output/Retriever/CompanyRetriever.php");
+require_once("Output/Retriever/AccessRetriever.php");
 
 //-------------<PHP-HTML>-------------//
-require_once("../../DBConnManager.php");
-
-printf("<!DOCTYPE html>");
-printf("<html>");
-
-printf("<head>");
-printf("<meta charset=utf8>");
-printf("<title>Home</title>");
-printf("</head>");
-
-printf("<body>");
-
 printf("<form action='../../Input/Parser/AddParser/AddJobParser.php' method='POST'>");
 
 printf("<p>Name</p><input name='Name' type='text' placeholder='Job name' required>");
@@ -69,15 +24,13 @@ printf("<p>Damage</p><input name='Damage' type='number' placeholder='Job Damage 
 
 printf("<p>Date</p><input name='Date' type='Date' required>");
 
-DisplayCompanySelectRow();
+RenderCompanySelectRow();
 
-DisplayAccessSelectRow();
+RenderAccessSelectRow();
 
-printf("<input type='submit' value='submit'>");
+printf("<input type='submit' value='Save'>");
 
 printf("</form>");
 
-printf("</body>");
-
-printf("</html>");
+printf("<a href='.?MenuIndex=".$_GET['MenuIndex']."'><div class='Button-Left'><p>Cancel</p></div></a>");
 ?>
