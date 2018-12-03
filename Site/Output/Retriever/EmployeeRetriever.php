@@ -11,8 +11,6 @@ function EmployeeGeneralRetriever()
 
 	if(!$DBConn->HasError())
 	{
-		printf("query executed");
-
 		if($DBConn->HasWarning())
 			printf("warning detected: " . $DBConn->GetWarning());
 	}
@@ -39,8 +37,6 @@ function EmployeePositionRetriever()
 
 	if(!$DBConn->HasError())
 	{
-		printf("query executed");
-
 		if($DBConn->HasWarning())
 			printf("warning detected: " . $DBConn->GetWarning());
 	}
@@ -67,8 +63,6 @@ function EmployeeFormRetriever()
 
 	if(!$DBConn->HasError())
 	{
-		printf("query executed");
-
 		if($DBConn->HasWarning())
 			printf("warning detected: " . $DBConn->GetWarning());
 	}

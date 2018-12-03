@@ -1,9 +1,9 @@
 
 .Footer
 {
-	background-color:rgba(251, 245, 109, 1);
+	background-color:rgba(255, 245, 140, 1);
 	width:100%;
-	height:200px;
+	height:auto;
 	float:left;
 	clear:both;
 }
@@ -11,8 +11,8 @@
 .Footer div
 {
 	width:100%;
-	height:200px;
-	border-top-width:0.125em;
+	height:auto;
+	border-top-width:0.1875em;
 	border-top-style:solid;
 	border-top-color:rgba(0,0,0,1);
 	float:left;

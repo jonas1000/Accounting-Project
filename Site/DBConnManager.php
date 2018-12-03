@@ -81,7 +81,6 @@ class DBConnManager
 
 		if($this->Result)
 		{
-			$this->SetSuccess("Succesfully executed query");
 			$this->LastID = $this->DBConnMan->insert_id;
 		}
 		else

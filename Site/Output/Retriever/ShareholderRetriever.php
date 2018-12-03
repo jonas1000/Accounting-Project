@@ -11,8 +11,6 @@ function ShareholderGeneralRetriever()
 
 	if(!$DBConn->HasError())
 	{
-		printf("Result array received");
-
 		if($DBConn->HasWarning())
 			printf("warning detected: " . $DBConn->GetWarning());
 	}

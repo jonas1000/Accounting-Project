@@ -1,9 +1,9 @@
 
 .Header
 {
-	background-color:rgba(251, 250, 249, 1);
+	background-color:rgba(255, 255, 255, 1);
 	width:100%;
-	height:200px;
+	height:auto;
 	margin:0%;
 	padding:0%;
 	float:Left;
@@ -13,8 +13,8 @@
 .Header div
 {
 	width:100%;
-	height:200px;
-	border-bottom-width:0.125em;
+	height:auto;
+	border-bottom-width:0.1875em;
 	border-bottom-style:solid;
 	border-bottom-color:rgba(0,0,0,1);
 	margin:0%;

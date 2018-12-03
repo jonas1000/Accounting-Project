@@ -1,0 +1,17 @@
+
+.Form
+{
+	background-color: rgba(245, 245, 245, 1);
+	width:75%;
+	height:auto;
+	margin:0%;
+	padding:0%;
+}
+
+.Form div
+{
+	width:100%;
+	height:auto;
+	margin:0%;
+	padding:5%;
+}

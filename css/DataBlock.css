@@ -1,0 +1,81 @@
+
+.DataBlock
+{
+	background-color:rgba(255,255,255,1);
+	width:25%;
+	min-width:20em;
+	height:auto;
+	float:left;
+	padding:1em;
+	margin:1em;
+}
+
+.DataBlock div div
+{
+	width:100%;
+	height:auto;
+	float:left;
+	clear:both;
+}
+
+.DataBlock div div input
+{
+	color:rgba(255,255,255,1);
+	text-shadow:none;
+	font-size:100%;
+	width:6em;
+	min-Width:4em;
+	border-style:none;
+	text-align:center;
+	cursor:pointer;
+	margin:1em 0em 0.5em 0em;
+	padding:1em;
+}
+
+.DataBlock div div input[type="submit"]
+{
+	background-color:rgba(255,0,0,1);
+	float:left;
+}
+
+.DataBlock div div input[type="submit"]:last-child
+{
+	background-color:rgba(215, 205, 100, 1);
+	float:right;
+	transition:transform 0.25s, background-color 0.25s, text-shadow 0.25s;
+}
+
+.DataBlock div div input[type="submit"]:last-child:hover
+{
+	background-color:rgba(235, 225, 120, 1);
+	text-shadow:0px 0px 4px rgba(255,255,255,1);
+	transform:scale(1.1);
+}
+
+.DataBlock div div div
+{
+	width:50%;
+	clear:left;
+	padding:0.25em 0em;
+}
+
+.DataBlock div div div:first-child
+{
+		background-image:linear-gradient(to right, rgba(255,255,255,1), rgba(120, 140, 255, 1), rgba(120, 140, 255, 1), rgba(255,255,255,1));
+		color:rgba(255,255,255,1);
+		width:100%;
+		height:auto;
+		text-align:center;
+		float:left;
+		clear:both;
+		margin:0em 0em 1em 0em;
+		padding:0.5em 0em;
+}
+
+.DataBlock div div div:nth-child(2n+3)
+{
+	width:50%;
+	text-align:right;
+	float:right;
+	clear:right;
+}

@@ -11,8 +11,6 @@ function AccessFormRetriever()
 
 	if(!$DBConn->HasError())
 	{
-		printf("query executed");
-
 		if($DBConn->HasWarning())
 			printf("warning detected: " . $DBConn->GetWarning());
 	}

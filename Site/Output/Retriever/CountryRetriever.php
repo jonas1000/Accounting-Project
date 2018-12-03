@@ -11,8 +11,6 @@ function CountryGeneralRetriever()
 
 	if(!$DBConn->HasError())
 	{
-		printf("query executed");
-
 		if($DBConn->HasWarning())
 			printf("warning detected: " . $DBConn->GetWarning());
 	}
@@ -39,8 +37,6 @@ function CountryFormRetriever()
 
 	if(!$DBConn->HasError())
 	{
-		printf("query executed");
-
 		if($DBConn->HasWarning())
 			printf("warning detected: " . $DBConn->GetWarning());
 	}
