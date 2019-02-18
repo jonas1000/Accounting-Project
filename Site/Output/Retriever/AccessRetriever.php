@@ -1,30 +1,39 @@
 <?php
-function AccessFormRetriever()
+function AccessFormRetriever(CDBConnManager &$InDBConn, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
 {
-	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
-
-	$DBQuery = "SELECT ACCESS_ID, ACCESS_title
-	FROM VIEW_ACCESS
-	WHERE VIEW_ACCESS.ACCESS_Level > 1;";
-
-	$DBConn->ExecQuery($DBQuery, FALSE);
-
-	$Result = $DBConn->GetResult();
-
-	if(!$DBConn->HasError())
+	if(ME_MultyCheckEmptyType($InDBConn, $IniAccessIndex, $IniIsAvailIndex))
 	{
-		if($DBConn->HasWarning())
-			printf("warning detected: " . $DBConn->GetWarning());
+		if(($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		{
+			$sDBQuery = "SELECT
+			ACCESS_ID,
+			ACCESS_TITLE,
+			ACCESS_LEVEL
+			FROM
+			".$InDBConn->GetPrefix()."VIEW_ACCESS
+			WHERE
+			".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_AVAIL = " . $IniIsAvailIndex . "
+			AND
+			".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_LEVEL > ".($IniAccessIndex - 1)."
+			ORDER BY
+			".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_LEVEL ASC;";
+
+			$InDBConn->ExecQuery($sDBQuery, FALSE);
+
+			if(!$InDBConn->HasError())
+			{
+				if($InDBConn->HasWarning())
+					throw new Exception($InDBConn->GetWarning());
+			}
+			else
+				throw new Exception($InDBConn->GetError());
+
+			unset($sDBQuery);
+		}
+		else
+			throw new Exception("Input parameters do not meet requirements range");
 	}
 	else
-		printf("Error: " . $DBConn->GetError());
-
-	$DBConn->CloseConn();
-
-	unset($DBConn);
-	unset($DBQuery);
-
-	return $Result;
+		throw new Exception("Input parameters are empty");
 }
-
 ?>

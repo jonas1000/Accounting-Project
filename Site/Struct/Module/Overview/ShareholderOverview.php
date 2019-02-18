@@ -1,101 +1,136 @@
 <?php
-require_once("Data/HeaderData/HeaderData.php");
-require_once("Data/ConnData/DBSessionToken.php");
+require_once("../MedaLib/Class/Manager/DBConnManager.php");
+require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataEmptyType.php");
+require_once("../MedaLib/Class/Log/LogSystem.php");
+require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFilter.php");
+require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
 
-require_once("DBConnManager.php");
-require_once("Output/Retriever/ShareholderRetriever.php");
+$DBConn = new CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
-//-------------<PHP-HTML>-------------//
-
-switch(!isset($_GET['bIsForm']))
+//-------------<FUNCTION>-------------//
+function HTMLShareholderOverview(CDBConnManager &$InDBConn)
 {
-	case TRUE:
+	ShareholderGeneralRetriever($InDBConn, $_SESSION['AccessID'], $_ENV['Available']['Show']);
+
+	foreach($InDBConn->GetResult() as $ShareRow => $ShareData)
 	{
-		$ShareRows = ShareholderGeneralRetriever();
+			printf("<div class='DataBlock'>");
 
-		foreach($ShareRows as $ShareRow => $ShareData)
-		{
-				printf("<div class='DataBlock'>");
-				printf("<div>");
-				printf("<div>");
+			printf("<form method='POST'>");
+			printf("<div>");
 
-				printf("<form method='POST'>");
+			//Title
+			printf("<div>");
+			printf("<h5>".$ShareData['EMP_DATA_NAME']." ".$ShareData['EMP_DATA_SURNAME']."</h5>");
+			printf("</div>");
 
-				printf("<div>");
-		 		printf("<h3>".$ShareData['EMP_Name']."</h3>");
-				printf("</div>");
+			//Data Row
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Salary</p></b>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<b><h4>Salary:</h4></b>");
-				printf("</div>");
+			printf("<div>");
+			printf("<p>".$ShareData['EMP_DATA_SALARY']."</p>");
+			printf("</div>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<p>".$ShareData['EMP_Salary']."</p>");
-				printf("</div>");
+			//Data Row
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Birth Date</p></b>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<b><h4>Birth Date:</h4></b>");
-				printf("</div>");
+			printf("<div>");
+			printf("<p>".$ShareData['EMP_DATA_BDAY']."</p>");
+			printf("</div>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<p>".$ShareData['EMP_BDay']."</p>");
-				printf("</div>");
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Email</p></b>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<b><h4>Email:</h4></b>");
-				printf("</div>");
+			printf("<div>");
+			printf("<p>".$ShareData['EMP_DATA_EMAIL']."</p>");
+			printf("</div>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<p>".$ShareData['EMP_Email']."</p>");
-				printf("</div>");
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Title</p></b>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<b><h4>Title:</h4></b>");
-				printf("</div>");
+			printf("<div>");
+			printf("<p>".$ShareData['EMP_POS_TITLE']."</p>");
+			printf("</div>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<p>".$ShareData['EMP_Title']."</p>");
-				printf("</div>");
+			printf("</div>");
 
-				printf("<input type='hidden' value='".$ShareData['SHARE_ID']."' name='ID'>");
-				printf("<input type='submit' value='Delete' formaction='DeleteEntry.php'>");
-				printf("<input type='submit' value='Edit' formaction='EditEntry.php'>");
+			printf("<div>");
+			printf("<input type='hidden' name='ShareIndex' value='".$ShareData['SHARE_ID']."'>");
+			printf("<input type='submit' value='Delete' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=2'>");
+			printf("<input type='submit' value='Edit' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=1'>");
+			printf("</div>");
+			printf("</form>");
 
-				printf("</form>");
-
-				printf("</div>");
-				printf("</div>");
-				printf("</div>");
-		}
-
-		printf("<a href='.?MenuIndex=".$_GET['MenuIndex']."&bIsForm=1'><div class='Button-Left'><p>Add</p></div></a>");
-
-		unset($ShareRows);
-		break;
+			printf("</div>");
 	}
 
-	case FALSE:
-	{
-		switch($_GET['bIsForm'])
-		{
-			case TRUE:
-			{
-				require_once("Struct/Form/AddForm/AddShareholderForm.php");
-				break;
-			}
-
-			default:
-			{
-				header("Location:Index.php");
-			}
-		}
-		break;
-	}
-
-	default:
-	{
-		header("Location:Index.php");
-	}
+	printf("<a href='.?MenuIndex=".$_GET['MenuIndex']."&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>");
 }
 
+//-------------<PHP-HTML>-------------//
+if(!isset($_GET['Module']))
+{
+	require_once("Output/Retriever/ShareholderRetriever.php");
+
+	ProQueryFunctionCallback($DBConn, "HTMLShareholderOverview", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
+}
+else
+	switch($_GET['Module'])
+	{
+		case 0:
+		{
+			if(isset($_GET['AddPro']))
+			{
+				require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
+				require_once("Input/Parser/AddParser/ShareholderAddParser.php");
+				require_once("Process/ProAdd/ProAddShareholder.php");
+
+				ProQueryFunctionCallback($DBConn, "ProAddShareholder", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			}
+			else
+			{
+				require_once("Struct/Module/Form/AddForm/ShareholderAddForm.php");
+
+				ProQueryFunctionCallback($DBConn, "HTMLShareholderAddForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
+			}
+			break;
+		}
+		case 1:
+		{
+			require_once("Struct/Module/Form/EditForm/ShareholderEditForm.php");
+			
+			ProQueryFunctionCallback($DBConn, "HTMLShareholderEditForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			break;
+		}
+		case 2:
+		{
+			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
+			require_once("Input/Parser/VisibilityParser/ShareholderVisParser.php");
+			require_once("Process/ProDel/ProDelShareholder.php");
+
+			ProQueryFunctionCallback($DBConn, "ProDelShareholder", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			break;
+		}
+		default:
+		{
+			header("Location:.");
+			break;
+		}
+	}
+
+unset($DBConn);
 ?>

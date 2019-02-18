@@ -7,9 +7,10 @@
 	padding:0%;
 	float:Left;
 	clear:both;
+	z-index:-1;
 }
 
-.Header div
+.Header > div
 {
 	width:100%;
 	height:auto;
@@ -19,5 +20,124 @@
 	margin:0%;
 	padding:0%;
 	float:left;
+	clear:none;
+}
+
+.HeaderTitle
+{
+	width:75%;
+	height:auto;
+	text-align:center;
+	float:left;
 	clear:both;
+}
+
+.Login
+{
+	background-color:rgba(90, 98, 102, 1);
+	color:rgba(255,255,255,1);
+	width:25%;
+	margin:0%;
+	padding:0%;
+	float:right;
+	clear:right;
+}
+
+.Login div
+{
+	width:96%;
+	margin:1% 1%;
+	padding:1%;
+	float:left;
+	clear:both;
+}
+
+.Login div div
+{
+	background-color:rgba(120, 140, 255, 1);
+}
+
+.Login div:nth-child(2) > input
+{
+	background-color:rgba(120, 140, 255, 1);
+	color:inherit;
+	float:right;
+}
+
+.Login div > div:first-child
+{
+	background-color:rgba(255,255,255,0);
+	width:98%;
+	margin:0% 0% 3% 0%;
+	text-align:center;
+	clear:both;
+}
+
+.Login div div > input
+{
+	width:100%;
+	float:left;
+	clear:both;
+}
+
+.Login div div > div:nth-child(1)
+{
+	background-color:rgba(255,255,255,0);
+	width:45%;
+	height:auto;
+	padding:0%;
+	margin:0%;
+	text-align:left;
+	float:left;
+	clear:left;
+}
+
+.Login div div > div:nth-child(2)
+{
+	background-color:rgba(255,255,255,0);
+	width:45%;
+	height:auto;
+	padding:0%;
+	text-align:center;
+	float:right;
+	clear:right;
+}
+
+.Login div div div:nth-child(2) > input
+{
+	background-color:rgba(255, 255, 255, 1);
+	color:rgba(0,0,0,1);
+	height:100%;
+	padding:0%;
+	float:right;
+	clear:both;
+}
+
+.LogedIn
+{
+	background-color:rgba(90, 98, 102, 1);
+	width:25%;
+	color:rgba(255,255,255,1);
+	float:right;
+	clear:right;
+}
+
+.LogedIn div
+{
+	width:100%;
+	margin:0% 0% 5% 0%;
+	float:left;
+	clear:both;
+}
+
+.LogedIn div > div
+{
+	text-align:center;
+	margin:0%;
+}
+
+.LogedIn div > div:first-child
+{
+	background-color:rgba(120, 140, 255, 1);
+	margin:0% 0% 5% 0%;
 }

@@ -1,107 +1,149 @@
 <?php
-require_once("Data/HeaderData/HeaderData.php");
-require_once("Data/ConnData/DBSessionToken.php");
+require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataEmptyType.php");
+require_once("../MedaLib/Class/Manager/DBConnManager.php");
+require_once("../MedaLib/Class/Log/LogSystem.php");
+require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFilter.php");
+require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
 
-require_once("DBConnManager.php");
-require_once("Output/Retriever/CompanyRetriever.php");
+$DBConn = new CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
-//-------------<PHP-HTML>-------------//
-switch(!isset($_GET['bIsForm']))
+//-------------<FUNCTION>-------------//
+function HTMLCompanyOverview(CDBConnManager &$InDBConn) : void
 {
-	//if $_GET['FormIndex'] does NOT exists, load data
-	case TRUE:
+	require_once("Output/Retriever/CompanyRetriever.php");
+
+	CompanyOverviewRetriever($InDBConn, $_SESSION['AccessID'], $_ENV['Available']['Show']);
+
+	foreach($InDBConn->GetResult() as $CompRow => $CompData)
 	{
-		$CompRows = CompanyGeneralRetriever();
+			printf("<div class='DataBlock'>");
 
-		foreach($CompRows as $CompRow => $CompData)
-		{
-				printf("<div class='DataBlock'>");
-				printf("<div>");
-				printf("<div>");
+			printf("<form method='POST'>");
+			//Data div block
+			printf("<div>");
 
-				printf("<form method='POST'>");
+			printf("<div>");
+			printf("<h5>".$CompData['COMP_DATA_TITLE']."</h5>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<h3> " . $CompData['COMP_Title'] . "</h3>");
-				printf("</div>");
+			//Data Row
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Creation Date</p></b>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<b><h4>Company Date:</h4></b>");
-				printf("</div>");
+			printf("<div>");
+			printf("<p>".$CompData['COMP_DATA_DATE']."</p>");
+			printf("</div>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<p> " . $CompData['COMP_Date'] . "</p>");
-				printf("</div>");
+			//Data Row
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Country</p></b>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<b><h4>Country:</h4></b>");
-				printf("</div>");
+			printf("<div>");
+			printf("<p>".$CompData['COUN_DATA_TITLE']."</p>");
+			printf("</div>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<p> " . $CompData['COU_Title'] . "</p>");
-				printf("</div>");
+			//Data Row
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>County</p></b>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<b><h4>Tax:</h4></b>");
-				printf("</div>");
+			printf("<div>");
+			printf("<p>".$CompData['COU_DATA_TITLE']."</p>");
+			printf("</div>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<p> " . $CompData['COU_Tax'] . "</p>");
-				printf("</div>");
+			//Data Row
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Tax</p></b>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<b><h4>Interest Rate:</h4></b>");
-				printf("</div>");
+			printf("<div>");
+			printf("<p>".$CompData['COU_DATA_TAX']."</p>");
+			printf("</div>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<p> " . $CompData['COU_IR'] . "</p>");
-				printf("</div>");
+			//Data Row
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Interest Rate</p></b>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<b><h4>Country Date:</h4></b>");
-				printf("</div>");
+			printf("<div>");
+			printf("<p>".$CompData['COU_DATA_IR']."</p>");
+			printf("</div>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<p> " . $CompData['COU_Date'] . "</p>");
-				printf("</div>");
+			printf("</div>");
 
-				printf("<input type='hidden' name='EditIndex' value=".$CompData['COMP_ID'].">");
-				printf("<input type='submit' value='Delete' formaction='DelEntry.php'>");
-				printf("<input type='submit' value='Edit' formaction='EditEntry.php'>");
-				printf("</form>");
+			//Input Block
+			printf("<div>");
+			printf("<input type='hidden' name='CompIndex' value=".$CompData['COMP_ID'].">");
+			printf("<input type='submit' value='Delete' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=2'>");
+			printf("<input type='submit' value='Edit' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=1'>");
+			printf("</div>");
+			printf("</form>");
 
-				printf("</div>");
-				printf("</div>");
-				printf("</div>");
-		}
-		printf("<a href='.?MenuIndex=".$_GET['MenuIndex']."&bIsForm=1'><div class='Button-Left'><p>Add</p></div></a>");
-
-		unset($CompRows);
-		break;
+			printf("</div>");
 	}
-
-	//if $_GET['FormIndex'] exists then load the add form
-	case FALSE:
-	{
-		switch($_GET['bIsForm'])
-		{
-			case TRUE:
-			{
-				require_once("Struct/Form/AddForm/AddCompanyForm.php");
-				break;
-			}
-			default:
-			{
-				header("Location:Index.php");
-			}
-		}
-		break;
-	}
-
-	default:
-	{
-		header("Location:Index.php");
-	}
+	printf("<a href='.?MenuIndex=".$_GET['MenuIndex']."&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>");
 }
 
+//-------------<PHP-HTML>-------------//
+if(!isset($_GET['Module']))
+	ProQueryFunctionCallback($DBConn, "HTMLCompanyOverview", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
+else
+	switch($_GET['Module'])
+	{
+		case 0:
+		{
+			if(isset($_GET['AddPro']))
+			{
+				require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
+				require_once("Input/Parser/AddParser/CompanyAddParser.php");
+				require_once("Process/ProAdd/ProAddCompany.php");
+
+				ProQueryFunctionCallback($DBConn, "ProAddCompany", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			}
+			else
+			{
+				require_once("Struct/Module/Form/AddForm/CompanyAddForm.php");
+
+				ProQueryFunctionCallback($DBConn, "HTMLCompanyAddForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
+			}
+			break;
+		}
+		case 1:
+		{	
+			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
+			require_once("Input/Parser/EditParser/CompanyEditParser.php");
+			require_once("Struct/Module/Form/EditForm/CompanyEditForm.php");
+
+			ProQueryFunctionCallback($DBConn, "HTMLCompanyEditForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			break;
+		}
+		case 2:
+		{
+			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
+			require_once("Input/Parser/VisibilityParser/CompanyVisParser.php");
+			require_once("Process/ProDel/ProDelCompany.php");
+			
+			ProQueryFunctionCallback($DBConn, "ProDelCompany", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			break;
+		}
+		default:
+		{
+			header("Location:.");
+			break;
+		}
+	}
+
+unset($DBConn);
 ?>

@@ -1,9 +1,10 @@
-@media screen and (max-width: 640px)
+@media screen and (min-width: 640px)
 {
 	.Wrapper
 	{
 		width:100%;
 		height:720px;
+		clear:both;
 	}
 }
 
@@ -13,6 +14,8 @@
 	{
 		width:100%;
 		height:1080px;
+		float:left;
+		clear:both;
 	}
 }
 
@@ -22,6 +25,8 @@
 	{
 		width:100%;
 		height:1800px;
+		float:left;
+		clear:both;
 	}
 }
 
@@ -31,6 +36,8 @@
 	{
 		width:100%;
 		height:2160px;
+		float:left;
+		clear:both;
 	}
 }
 
@@ -40,6 +47,8 @@
 	{
 		width:100%;
 		height:2880px;
+		float:left;
+		clear:both;
 	}
 }
 
@@ -49,5 +58,7 @@
 	{
 		width:100%;
 		height:4320px;
+		float:left;
+		clear:both;
 	}
 }

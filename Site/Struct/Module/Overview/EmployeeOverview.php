@@ -1,102 +1,169 @@
 <?php
-require_once("Data/HeaderData/HeaderData.php");
-require_once("Data/ConnData/DBSessionToken.php");
+require_once("../MedaLib/Class/Manager/DBConnManager.php");
+require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataEmptyType.php");
+require_once("../MedaLib/Class/Log/LogSystem.php");
+require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFilter.php");
+require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
 
-require_once("DBConnManager.php");
-require_once("Output/Retriever/EmployeeRetriever.php");
+$DBConn = new CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
-//-------------<PHP-HTML>-------------//
-switch(!isset($_GET['bIsForm']))
+function HTMLEmployeeOverview(CDBConnManager &$InDBConn) : void
 {
-	//if $_GET['FormIndex'] is set
-	case TRUE:
+	require_once("Output/Retriever/EmployeeRetriever.php");
+
+	EmployeeOverviewRetriever($InDBConn, $_SESSION['AccessID'], $_ENV['Available']['Show']);
+
+	foreach($InDBConn->GetResult() as $EmployeeRow => $EmployeeData)
 	{
-		$EmployeeRows = EmployeeGeneralRetriever();
+			printf("<div class='DataBlock'>");
 
-		foreach($EmployeeRows as $EmployeeRow => $EmployeeData)
-		{
-				printf("<div class='DataBlock'>");
-				printf("<div>");
-				printf("<div>");
+			printf("<form method='POST'>");
+			printf("<div>");
 
-				printf("<form method='POST'>");
+			//Title
+			printf("<div>");
+			printf("<h5>".$EmployeeData['EMP_DATA_NAME']." ".$EmployeeData['EMP_DATA_SURNAME']."</h5>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<h3>".$EmployeeData['EMP_Name']."</h3>");
-				printf("</div>");
+			//Data Row
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Email</p></b>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<h4><b>Email:</b></h4>");
-				printf("</div>");
+			printf("<div>");
+			printf("<p>".$EmployeeData['EMP_DATA_EMAIL']."</p>");
+			printf("</div>");
+			printf("</div>");
 
-				printf("<div>");
-				printf("<p>".$EmployeeData['EMP_Email']."</p>");
-				printf("</div>");
-
-				printf("<div>");
-				printf("<b><h4>Salary</h4></b>");
-				printf("</div>");
-
-				printf("<div>");
-		 		printf("<p>".$EmployeeData['EMP_Sal']."<p>");
-				printf("</div>");
-
-				printf("<div>");
-				printf("<b><h4>Title:</h4></b>");
-				printf("</div>");
-
-				printf("<div>");
-		 		printf("<p>".$EmployeeData['EMP_Title']."<p>");
-				printf("</div>");
-
-				printf("<div>");
-				printf("<b><h4>Birth Day:</h4></b>");
-				printf("</div>");
-
-				printf("<div>");
-		 		printf("<p>".$EmployeeData['EMP_BDay']."<p>");
-				printf("</div>");
-
-				printf("<input type='hidden' name='EditIndex' value=".$EmployeeData['EMP_ID'].">");
-				printf("<input type='submit' value='Delete' formaction='DeleteEntry.php'>");
-				printf("<input type='submit' value='Edit' formaction='EditEntry.php'>");
-
-				printf("</form>");
-
-				printf("</div>");
-				printf("</div>");
-				printf("</div>");
-		}
-
-		printf("<a href=.?MenuIndex=".$_GET['MenuIndex']."&bIsForm=1><div class='Button-Left'><p>Add</p></div></a>");
-
-		unset($EmployeeRows);
-		break;
-	}
-
-	//if $_GET['FormIndex'] is NOT set
-	case FALSE:
-	{
-		switch($_GET['bIsForm'])
-		{
-			case TRUE:
+			if(($_SESSION['AccessID'] - 1) < $_ENV['AccessLevel']['CEO'])
 			{
-				require_once("Struct/Form/AddForm/AddEmployeeForm.php");
-				break;
+				//Data Row
+				printf("<div>");
+				printf("<div>");
+				printf("<b><p>Salary</p></b>");
+				printf("</div>");
+
+				printf("<div>");
+				printf("<p>".$EmployeeData['EMP_DATA_SAL']."<p>");
+				printf("</div>");
+				printf("</div>");
 			}
 
-			default:
-			{
-				header("Location:Index.php");
-			}
-		}
-		break;
+			//Data Row
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Title</p></b>");
+			printf("</div>");
+
+			printf("<div>");
+			printf("<p>".$EmployeeData['EMP_POS_TITLE']."<p>");
+			printf("</div>");
+			printf("</div>");
+
+			//Data Row
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Birth Day</p></b>");
+			printf("</div>");
+
+			printf("<div>");
+			printf("<p>".$EmployeeData['EMP_DATA_BDAY']."<p>");
+			printf("</div>");
+			printf("</div>");
+
+			//Data Row
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Phone Number</p></b>");
+			printf("</div>");
+
+			printf("<div>");
+			printf("<p>".$EmployeeData['EMP_DATA_PN']."<p>");
+			printf("</div>");
+			printf("</div>");
+
+			//Data Row
+			printf("<div>");
+			printf("<div>");
+			printf("<b><p>Stable Number</p></b>");
+			printf("</div>");
+
+			printf("<div>");
+			printf("<p>".$EmployeeData['EMP_DATA_SN']."<p>");
+			printf("</div>");
+			printf("</div>");
+
+			printf("</div>");
+
+			printf("<div>");
+			printf("<input type='hidden' name='EmpIndex' value=".$EmployeeData['EMP_ID'].">");
+			printf("<input type='submit' value='Delete' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=2' >");
+			printf("<input type='submit' value='Edit' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=1'>");
+			printf("</div>");
+
+			printf("</form>");
+
+			printf("</div>");
 	}
 
-	default:
-	{
-		header("Location:Index.php");
-	}
+	printf("<a href='.?MenuIndex=".$_GET['MenuIndex']."&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>");
 }
 
+//-------------<PHP-HTML>-------------//
+if(!isset($_GET['Module']))
+	ProQueryFunctionCallback($DBConn, "HTMLEmployeeOverview", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
+else
+	switch($_GET['Module'])
+	{
+		case 0:
+		{
+			if(isset($_GET['AddPro']))
+			{
+				require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
+				require_once("Input/Parser/AddParser/EmployeeAddParser.php");
+				require_once("Process/ProAdd/ProAddEmployee.php");
+
+				ProQueryFunctionCallback($DBConn, "ProAddEmployee", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			}
+			else
+			{
+				require_once("Struct/Module/Form/AddForm/EmployeeAddForm.php");
+
+				ProQueryFunctionCallback($DBConn, "HTMLEmployeeAddForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
+			}
+			break;
+		}
+		case 1:
+		{
+			if(isset($_GET['EditPro']))
+			{
+				ProQueryFunctionCallback($DBConn, "ProEditEmployee", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			}
+			else
+			{
+				require_once("Struct/Module/Form/EditForm/EmployeeEditForm.php");
+
+				ProQueryFunctionCallback($DBConn, "HTMLEmployeeEditForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			}
+
+			break;
+		}
+		case 2:
+		{
+			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
+			require_once("Input/Parser/VisibilityParser/EmployeeVisParser.php");
+			require_once("Process/ProDel/ProDelEmployee.php");
+
+			ProQueryFunctionCallback($DBConn, "ProDelEmployee", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			break;
+		}
+		default:
+		{
+			header("Location:.");
+			break;
+		}
+	}
+
+unset($DBConn);
 ?>

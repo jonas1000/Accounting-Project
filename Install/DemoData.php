@@ -1,45 +1,8 @@
 <?php
-require("../Site/Data/HeaderData/HeaderData.php");
-
-require("../Site/DebugLogComMessage/DBErrorMsg.php");
-require("../Site/DebugLogComMessage/DBSuccMsg.php");
-
-/*----Data inserted in tables*/
-
-/*--------<INSERT DATA TO TABLE AVAILABLE>--------*/
-$DBQuery="INSERT INTO AVAILABLE
-(AVAILABLE_Deleted)
-VALUES
-(TRUE),
-(FALSE);";
-
-$DBConn->ExecQuery($DBQuery, TRUE);
-
-if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
-else
-	printf("<br>ERROR 1 " . $DBInsErrorMsg . $DBConn->GetError());
-
-/*--------<INSERT DATA TO TABLE ACCESS_LEVEL>--------*/
-$DBQuery="INSERT INTO ACCESS_LEVEL
-(ACCESS_LEVEL_Title,
-ACCESS_LEVEL_Clearance,
-AVAILABLE_ID)
-VALUES
-(\"Admin\",1,2),
-(\"CEO\",2,2),
-(\"Employee\",3,2),
-(\"Guest\",4,2);";
-
-$DBConn->ExecQuery($DBQuery, TRUE);
-
-if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
-else
-	printf("<br>ERROR 2 " . $DBInsErrorMsg . $DBConn->GetError());
+printf("<br><h1>DEMO DATA</h1><br>");
 
 /*--------<INSERT DATA TO TABLE COUNTRY_DATA>--------*/
-$DBQuery="INSERT INTO COUNTRY_DATA
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."COUNTRY_DATA
 (COUNTRY_DATA_Title,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
@@ -49,12 +12,12 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> COUNTRY_DATA");
 else
-	printf("<br>ERROR 3 " . $DBInsErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 1 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE COUNTRY>--------*/
-$DBQuery="INSERT INTO COUNTRY
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."COUNTRY
 (COUNTRY_DATA_ID,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
@@ -64,12 +27,12 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> COUNTRY");
 else
-	printf("<br>ERROR 4 " . $DBInsErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 2 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE COUNTY_DATA>--------*/
-$DBQuery="INSERT INTO COUNTY_DATA
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."COUNTY_DATA
 (COUNTY_DATA_Title,
 COUNTY_DATA_Tax,
 COUNTY_DATA_InterestRate,
@@ -82,12 +45,12 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> COUNTY_DATA");
 else
-	printf("<br>ERROR 5 " . $DBInsErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 3 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE COUNTY>--------*/
-$DBQuery="INSERT INTO COUNTY
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."COUNTY
 (COUNTRY_ID,
 COUNTY_DATA_ID,
 ACCESS_LEVEL_ID,
@@ -98,44 +61,44 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> COUNTY");
 else
-	printf("<br>ERROR 6 " . $DBInsErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 4 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE COMPANY_DATA>--------*/
-$DBQuery="INSERT INTO COMPANY_DATA
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."COMPANY_DATA
 (COMPANY_DATA_Title,
 COMPANY_DATA_Date,
+ACCESS_LEVEL_ID,
+AVAILABLE_ID)
+VALUES
+(\"Demo Studio\",\"1995-1-1\",2,2);";
+
+$DBConn->ExecQuery($DBQuery, TRUE);
+
+if(!$DBConn->HasError())
+	printf("<br>" . $DBInsSuccMsg . " -> COMPANY_DATA");
+else
+	printf("<br>ERROR 5 " . $DBInsErrorMsg . $DBConn->GetError());
+
+/*--------<INSERT DATA TO TABLE COMPANY>--------*/
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."COMPANY
+(COMPANY_DATA_ID,
 COUNTY_ID,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
 VALUES
-(\"Demo Studio\",\"1995-1-1\",1,2,2);";
+(1,1,2,2);";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> COMPANY");
 else
-	printf("<br>ERROR 7 " . $DBInsErrorMsg . $DBConn->GetError());
-
-/*--------<INSERT DATA TO TABLE COMPANY>--------*/
-$DBQuery="INSERT INTO COMPANY
-(COMPANY_DATA_ID,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(1,2,2);";
-
-$DBConn->ExecQuery($DBQuery, TRUE);
-
-if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
-else
-	printf("<br>ERROR 8 " . $DBInsErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 6 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE EMPLOYEE_POSITION>--------*/
-$DBQuery="INSERT INTO EMPLOYEE_POSITION
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."EMPLOYEE_POSITION
 (EMPLOYEE_POSITION_Title,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
@@ -164,52 +127,55 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> EMPLOYEE_POSITION");
 else
-	printf("<br>ERROR 9 " . $DBInsErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 7 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE EMPLOYEE_DATA>--------*/
-$DBQuery="INSERT INTO EMPLOYEE_DATA
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."EMPLOYEE_DATA
 (EMPLOYEE_DATA_Salary,
 EMPLOYEE_DATA_BDay,
 EMPLOYEE_DATA_Name,
+EMPLOYEE_DATA_Surname,
 EMPLOYEE_DATA_Email,
 EMPLOYEE_DATA_PassWord,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
 VALUES
-(0,\"1970-1-1\",\"Μενέλαος Μπρούνζης\",\"Men@email.com\",\"" . password_hash("MenPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",3,2),
-(0,\"1970-1-1\",\"Μιχαήλ Καλογιάννης\",\"Mix@email.com\",\"" . password_hash("MixPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",2,2),
-(0,\"1970-1-1\",\"Καληγούλα Κακογιάννης\",\"kal@email.com\",\"" . password_hash("calPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",1,2);";
+(0,\"1970-1-1\",\"Server\",\"Admin\",\"Adm@email.com\",\"" . password_hash("AdminPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",1,2),
+(0,\"1970-1-1\",\"Μενέλαος\",\"Μπρούνζης\",\"Men@email.com\",\"" . password_hash("MenPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",2,2),
+(0,\"1970-1-1\",\"Μιχαήλ\",\"Καλογιάννης\",\"Mix@email.com\",\"" . password_hash("MixPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",3,2),
+(0,\"1970-1-1\",\"Καληγούλα\",\"Κακογιάννης\",\"kal@email.com\",\"" . password_hash("calPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",3,2);";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> EMPLOYEE_DATA");
 else
-	printf("<br>ERROR 10 " . $DBInsErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 8 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE EMPLOYEE>--------*/
-$DBQuery="INSERT INTO EMPLOYEE
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."EMPLOYEE
 (EMPLOYEE_POSITION_ID,
 EMPLOYEE_DATA_ID,
 COMPANY_ID,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
 VALUES
-(7,1,1,2,2),
-(1,2,1,2,2),
-(20,3,1,2,2);";
+(8,1,1,1,2),
+(7,2,1,2,2),
+(1,3,1,3,2),
+(20,4,1,3,2);";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> EMPLOYEE");
 else
-	printf("<br>ERROR 11 " . $DBInsErrorMsg . $DBConn->GetError());
+	printf("<br>ERROR 9 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE SHAREHOLDER>--------*/
-$DBQuery="INSERT INTO SHAREHOLDER
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."SHAREHOLDER
 (EMPLOYEE_ID,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
@@ -220,12 +186,54 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> SHAREHOLDER");
+else
+	printf("<br>ERROR 10 " . $DBInsErrorMsg . $DBConn->GetError());
+
+/*--------<INSERT DATA TO TABLE CUSTOMER_DATA>--------*/
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."CUSTOMER_DATA
+(
+	CUSTOMER_DATA_Name,
+	CUSTOMER_DATA_Surname,
+	CUSTOMER_DATA_VAT,
+	CUSTOMER_DATA_PN,
+	CUSTOMER_DATA_SN,
+	CUSTOMER_DATA_Email,
+	CUSTOMER_DATA_ADDR,
+	AVAILABLE_ID,
+	ACCESS_LEVEL_ID
+)
+VALUES
+(\"John\",\"Marchal\",\"000000000\",\"6767676768\",\"2271023333\",\"JohnM@Email.com\",\"ST. Luther Street 32\", 2, 2),
+(\"Maria\",\"Minerva\",\"000000001\",\"6767676767\",\"2271023333\",\"MariaM@Email.com\",\"ST. Luther Street 33\", 2, 2);";
+
+$DBConn->ExecQuery($DBQuery);
+
+if(!$DBConn->HasError())
+	printf("<br>" . $DBInsSuccMsg . " -> CUSTOMER_DATA");
+else
+	printf("<br>ERROR 11 " . $DBInsErrorMsg . $DBConn->GetError());
+
+/*--------<INSERT DATA TO TABLE CUSTOMER>--------*/
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."CUSTOMER
+(
+	CUSTOMER_DATA_ID,
+	AVAILABLE_ID,
+	ACCESS_LEVEL_ID
+)
+VALUES
+(1,2,2),
+(2,2,2);";
+
+$DBConn->ExecQuery($DBQuery, TRUE);
+
+if(!$DBConn->HasError())
+	printf("<br>" . $DBInsSuccMsg . " -> CUSTOMER");
 else
 	printf("<br>ERROR 12 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE JOB_INCOME>--------*/
-$DBQuery="INSERT INTO JOB_INCOME
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."JOB_INCOME
 (JOB_INCOME_Price,
 JOB_INCOME_PIA,
 ACCESS_LEVEL_ID,
@@ -237,86 +245,87 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> JOB_INCOME");
 else
 	printf("<br>ERROR 13 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE JOB_OUTCOME>--------*/
-$DBQuery="INSERT INTO JOB_OUTCOME
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."JOB_OUTCOME
 (JOB_OUTCOME_Expenses,
 JOB_OUTCOME_Damage,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
 VALUES
-(500,1200,2,2),
-(1000,700,2,2);";
+(-500,-1200,2,2),
+(-1000,-700,2,2);";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> JOB_OUTCOME");
 else
 	printf("<br>ERROR 14 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE JOB_DATA>--------*/
-$DBQuery="INSERT INTO JOB_DATA
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."JOB_DATA
 (JOB_DATA_Title,
 JOB_DATA_Date,
+ACCESS_LEVEL_ID,
+AVAILABLE_ID)
+VALUES
+(\"Video Editing\",\"1970-1-1\",2,2),
+(\"Recording Studio\",\"1970-1-1\",2,2);";
+
+$DBConn->ExecQuery($DBQuery, TRUE);
+
+if(!$DBConn->HasError())
+	printf("<br>" . $DBInsSuccMsg . " -> JOB_DATA");
+else
+	printf("<br>ERROR 15 " . $DBInsErrorMsg . $DBConn->GetError());
+
+/*--------<INSERT DATA TO TABLE JOB>--------*/
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."JOB
+(JOB_DATA_ID,
+COMPANY_ID,
 JOB_INCOME_ID,
 JOB_OUTCOME_ID,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
 VALUES
-(\"Video Editing\",\"1970-1-1\",1,1,2,2),
-(\"Recording Studio\",\"1970-1-1\",2,2,2,2);";
+(1,1,1,1,2,2),
+(2,1,2,2,2,2);";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
-else
-	printf("<br>ERROR 15 " . $DBInsErrorMsg . $DBConn->GetError());
-
-/*--------<INSERT DATA TO TABLE JOB>--------*/
-$DBQuery="INSERT INTO JOB
-(JOB_DATA_ID,
-COMPANY_ID,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(1,1,2,2),
-(2,1,2,2);";
-
-$DBConn->ExecQuery($DBQuery, TRUE);
-
-if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> JOB");
 else
 	printf("<br>ERROR 16 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE JOB_ASSIGMENT>--------*/
-$DBQuery="INSERT INTO JOB_ASSIGMENT
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."JOB_ASSIGMENT
 (EMPLOYEE_ID,
 COUNTY_ID,
 JOB_ID,
+CUSTOMER_ID,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
 VALUES
-(1,1,1,2,2),
-(2,1,2,2,2);";
+(1,1,1,1,2,2),
+(2,1,2,2,2,2);";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> JOB_ASSIGMENT");
 else
 	printf("<br>ERROR 17 " . $DBInsErrorMsg . $DBConn->GetError());
 
 /*--------<INSERT DATA TO TABLE JOB_INCOME_TIME>--------*/
-$DBQuery="INSERT INTO JOB_INCOME_TIME
+$DBQuery="INSERT INTO ".$DBConn->GetPrefix()."JOB_INCOME_TIME
 (JOB_INCOME_TIME_PIT,
 JOB_INCOME_TIME_Date,
-JOB_INCOME_ID,
+JOB_ID,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
 VALUES
@@ -328,7 +337,7 @@ VALUES
 $DBConn->ExecQuery($DBQuery, TRUE);
 
 if(!$DBConn->HasError())
-	printf("<br>" . $DBInsSuccMsg);
+	printf("<br>" . $DBInsSuccMsg . " -> JOB_INCOME_TIME");
 else
 	printf("<br>ERROR 18 " . $DBInsErrorMsg . $DBConn->GetError());
 

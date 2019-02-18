@@ -1,60 +1,86 @@
 <?php
-function CountyGeneralRetriever()
+function CountyGeneralRetriever(CDBConnManager &$InDBConn, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
 {
-	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
-
-	$DBQuery = "SELECT *
-	FROM VIEW_COUNTY_GENERAL
-	WHERE COU_AVAIL = 2
-	AND VIEW_COUNTY_GENERAL.COU_ACCESS > ".($_SESSION['Access_ID'] - 1).";";
-
-	$DBConn->ExecQuery($DBQuery, FALSE);
-
-	$Result = $DBConn->GetResult();
-
-	if(!$DBConn->HasError())
+	if(ME_MultyCheckEmptyType($InDBConn, $IniAccessIndex, $IniIsAvailIndex))
 	{
-		if($DBConn->HasWarning())
-			printf("warning detected: " . $DBConn->GetWarning());
+		if(($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		{
+			$sDBQuery = NULL;
+
+			$sDBQuery = "SELECT
+			COU_ID,
+			COU_ACCESS,
+			COU_AVAIL,
+			COU_DATA_ACCESS,
+			COU_DATA_AVAIL,
+			COU_DATA_TITLE,
+			COU_DATA_TAX,
+			COU_DATA_IR,
+			COU_DATA_DATE
+			FROM
+			".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL
+			WHERE
+			".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL.COU_AVAIL = " . $IniIsAvailIndex . "
+			AND
+			".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL.COU_DATA_AVAIL = " . $IniIsAvailIndex . "
+			AND
+			".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL.COU_ACCESS > ".($IniAccessIndex - 1).";";
+
+			$InDBConn->ExecQuery($sDBQuery, FALSE);
+
+			if(!$InDBConn->HasError())
+			{
+				if($InDBConn->HasWarning())
+					throw new Exception($InDBConn->GetWarning());
+			}
+			else
+				throw new Exception($InDBConn->GetError());
+
+			unset($sDBQuery);
+		}
+		else
+			throw new Exception("Input parameters do not meet requirements range");
 	}
 	else
-		printf("Error: " . $DBConn->GetError());
-
-	$DBConn->closeConn();
-
-	unset($DBConn);
-	unset($DBQuery);
-
-	return $Result;
+		throw new Exception("Input parameters are empty");
 }
 
-function CountyFormRetriever()
+function CountyFormRetriever(CDBConnManager &$InDBConn, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
 {
-	$DBConn = new DBConnManager($_SESSION['ServerName'], $_SESSION['DBUserName'], $_SESSION['DBPassWord']);
-
-	$DBQuery = "SELECT COU_ID, COU_Title
-	FROM VIEW_COUNTY_GENERAL
-	WHERE COU_AVAIL = 2
-	AND VIEW_COUNTY_GENERAL.COU_ACCESS > ".($_SESSION['Access_ID'] - 1).";";
-
-	$DBConn->ExecQuery($DBQuery, FALSE);
-
-	$Result = $DBConn->GetResult();
-
-	if(!$DBConn->HasError())
+	if(ME_MultyCheckEmptyType($InDBConn, $IniAccessIndex, $IniIsAvailIndex))
 	{
-		if($DBConn->HasWarning())
-			printf("warning detected: " . $DBConn->GetWarning());
+		if(($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		{
+			$sDBQuery = NULL;
+
+			$sDBQuery = "SELECT
+			COU_ID,
+			COU_DATA_TITLE
+			FROM
+			".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL
+			WHERE
+			".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL.COU_AVAIL = " . $IniIsAvailIndex . "
+			AND
+			".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL.COU_DATA_AVAIL = " . $IniIsAvailIndex . "
+			AND
+			".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL.COU_ACCESS > ".($IniAccessIndex - 1).";";
+
+			$InDBConn->ExecQuery($sDBQuery, FALSE);
+
+			if(!$InDBConn->HasError())
+			{
+				if($InDBConn->HasWarning())
+					throw new Exception($InDBConn->GetWarning());
+			}
+			else
+				throw new Exception($InDBConn->GetError());
+
+			unset($sDBQuery);
+		}
+		else
+			throw new Exception("Input parameters do not meet requirements range");
 	}
 	else
-		printf("Error: " . $DBConn->GetError());
-
-	$DBConn->closeConn();
-
-	unset($DBConn);
-	unset($DBQuery);
-
-	return $Result;
+		throw new Exception("Input parameters are empty");
 }
-
 ?>

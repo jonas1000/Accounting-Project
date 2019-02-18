@@ -1,0 +1,11 @@
+File: F:\Xampp\htdocs\Projects\Meda 0.1.9.8\Site\Struct\Module\Overview\JobOverview.php, Line: 21, Message: Call to undefined function JobPitRetriever(), Date: 18-2-2019 18:59:38
+File: F:\Xampp\htdocs\Projects\Meda 0.1.9.8\MedaLib\Function\Filter\SecurityFilter\SecurityFilter.php, Line: 49, Message: Function callback: ProDelJobPit is uncallable, Date: 18-2-2019 19:21:5
+File: F:\Xampp\htdocs\Projects\Meda 0.1.9.8\Site\Process\ProAdd\ProAddJobPIT.php, Line: 8, Message: In Process, Date: 18-2-2019 19:23:47
+File: F:\Xampp\htdocs\Projects\Meda 0.1.9.8\MedaLib\Function\Filter\SecurityFilter\SecurityFilter.php, Line: 40, Message: Function: HTMLJobPitTransOverview access error, User Access Level: 1, requested access to content: 3, Access Method: POST, Server Request: GET, User IP: ::1
+, Date: 18-2-2019 19:26:5
+File: F:\Xampp\htdocs\Projects\Meda 0.1.9.8\MedaLib\Function\Filter\SecurityFilter\SecurityFilter.php, Line: 40, Message: Function: HTMLJobPitTransOverview access error, User Access Level: 1, requested access to content: 3, Access Method: POST, Server Request: GET, User IP: ::1
+, Date: 18-2-2019 19:30:40
+File: F:\Xampp\htdocs\Projects\Meda 0.1.9.8\MedaLib\Function\Filter\SecurityFilter\SecurityFilter.php, Line: 49, Message: Function callback: ProDelJobPit is uncallable, Date: 18-2-2019 19:30:51
+File: F:\Xampp\htdocs\Projects\Meda 0.1.9.8\Site\Process\ProAdd\ProAddJob.php, Line: 35, Message: Call to undefined function JobOutcomeAddParser(), Date: 18-2-2019 19:34:59
+File: F:\Xampp\htdocs\Projects\Meda 0.1.9.8\MedaLib\Function\Filter\SecurityFilter\SecurityFilter.php, Line: 49, Message: Function callback: ProDelJobParser is uncallable, Date: 18-2-2019 19:36:58
+File: F:\Xampp\htdocs\Projects\Meda 0.1.9.8\Site\Struct\Module\Overview\ShareholderOverview.php, Line: 16, Message: Call to undefined function ShareholderGeneralRetriever(), Date: 18-2-2019 19:41:16
