@@ -1,4 +1,7 @@
 <?php
+//-------------<FUNCTION>-------------//
+//Take an array and check every key value is Tainted
+//Return false the first key it finds is not Tainted
 function ME_MultyCheckTaintedType(string ...$InsaVar) : bool
 {
   $iArrayLenght = count($InsaVar);

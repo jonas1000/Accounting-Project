@@ -1,7 +1,7 @@
 <?php
 if(!isset($_SESSION['AppVersion'], $_SESSION['Debug'], $_SESSION['AccessID'], $_SESSION['ConnEncoding'], $_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword']))
 {
-	$_SESSION['AppVersion'] = "0.2.0.0";
+	$_SESSION['AppVersion'] = "0.2.1.9";
 	$_SESSION['Debug'] = TRUE;
 
 	if($_SESSION['Debug'])

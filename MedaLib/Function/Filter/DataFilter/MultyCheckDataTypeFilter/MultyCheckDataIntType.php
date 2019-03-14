@@ -1,4 +1,7 @@
 <?php
+//-------------<FUNCTION>-------------//
+//Take an array and check every key value is Integer
+//Return false the first key it finds is not Integer
 function ME_MultyCheckIntType(...$InaVar) : bool
 {
   $iArrayLenght = count($InaVar);

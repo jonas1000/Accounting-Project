@@ -1,40 +1,37 @@
 <?php
-function ShareholderAddParser(CDBConnManager &$InDBConn, int &$IniEmployeeIndex, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
+function ShareholderAddParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeeIndex, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $IniEmployeeIndex, $IniAccessIndex, $IniIsAvailIndex))
+	if(($IniEmployeeIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		if(($IniEmployeeIndex > 0) && ($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		$sDBQuery = "";
+
+		$sDBQuery = "INSERT INTO
+		".$InDBConn->GetPrefix()."VIEW_SHAREHOLDER
+		(
+		EMP_ID,
+		SHARE_ACCESS,
+		SHARE_AVAIL
+		)
+		VALUES
+		(
+		".$IniEmployeeIndex.",
+		".$IniContentAccessLevelIndex.",
+		".$IniIsAvailIndex."
+		);";
+
+		$InDBConn->ExecQuery($sDBQuery, TRUE);
+
+		if(!$InDBConn->HasError())
 		{
-			$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_SHAREHOLDER
-			(
-			EMP_ID,
-			SHARE_ACCESS,
-			SHARE_AVAIL
-			)
-			VALUES
-			(
-			".$IniEmployeeIndex.",
-			".$IniAccessIndex.",
-			".$IniIsAvailIndex."
-			);";
-
-			$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-			if(!$InDBConn->HasError())
-			{
-				if($InDBConn->HasWarning())
-					throw new Exception($InDBConn->GetWarning());
-			}
-			else
-				throw new Exception($InDBConn->GetError());
-
-			unset($sDBQuery);
+			if($InDBConn->HasWarning())
+				throw new Exception($InDBConn->GetWarning());
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			throw new Exception($InDBConn->GetError());
+
+		unset($sDBQuery);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		throw new Exception("Input parameters do not meet requirements range");
 }
 ?>

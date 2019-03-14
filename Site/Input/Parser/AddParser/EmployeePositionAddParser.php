@@ -1,11 +1,13 @@
 <?php
-function EmployeePositionAddParser(CDBConnManager &$InDBConn, string &$InsName, int $IniAccessIndex, int $IniIsAvailIndex) : void
+function EmployeePositionAddParser(ME_CDBConnManager &$InDBConn, string &$InsName, int $IniContentAccessLevelIndex, int $IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $InsName, $IniAccessIndex, $IniIsAvailIndex))
+	if(!empty($InsName))
 	{
-		if(($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 		{
-			$DBQuery = "INSERT INTO
+			$sDBQuery = "";
+			
+			$$sDBQuery = "INSERT INTO
 			".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION
 			(
 			EMP_POS_TITLE,
@@ -15,11 +17,11 @@ function EmployeePositionAddParser(CDBConnManager &$InDBConn, string &$InsName, 
 			VALUES
 			(
 			\"".$InsName."\",
-			".$IniAccessIndex.",
+			".$IniContentAccessLevelIndex.",
 			".$IniIsAvailIndex."
 			);";
 
-			$InDBConn->ExecQuery($DBQuery, TRUE);
+			$InDBConn->ExecQuery($$sDBQuery, TRUE);
 
 			if(!$InDBConn->HasError())
 			{
@@ -29,7 +31,7 @@ function EmployeePositionAddParser(CDBConnManager &$InDBConn, string &$InsName, 
 			else
 				throw new Exception($InDBConn->GetError());
 
-			unset($DBQuery);
+			unset($$sDBQuery);
 		}
 		else
 			throw new Exception("Input parameters do not meet requirements range");

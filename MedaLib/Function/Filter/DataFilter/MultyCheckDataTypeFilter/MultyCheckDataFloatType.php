@@ -1,4 +1,7 @@
 <?php
+//-------------<FUNCTION>-------------//
+//Take an array and check every key value is Float
+//Return false the first key it finds is not Float
 function ME_MultyCheckFloatType(...$InaVar) : bool
 {
   $iArrayLenght = count($InaVar);

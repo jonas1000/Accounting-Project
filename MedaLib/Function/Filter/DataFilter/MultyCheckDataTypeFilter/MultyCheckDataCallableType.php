@@ -1,4 +1,7 @@
 <?php
+//-------------<FUNCTION>-------------//
+//Take an array and check every key value is Callable
+//Return false the first key it finds is not Callable
 function ME_MultyCheckCallableType(...$InaVar) : bool
 {
   $iArrayLenght = count($InaVar);

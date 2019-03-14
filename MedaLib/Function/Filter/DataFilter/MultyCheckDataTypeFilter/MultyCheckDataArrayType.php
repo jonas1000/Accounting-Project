@@ -1,4 +1,7 @@
 <?php
+//-------------<FUNCTION>-------------//
+//Take an array and check every key value is an array
+//Return false the first key it finds is not an array
 function ME_MultyCheckArrayType(...$InaVar) : bool
 {
   $iArrayLenght = count($InaVar);

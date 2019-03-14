@@ -1,28 +1,35 @@
 <?php
-function ProDelCounty(CDBConnManager &$InDBConn) : void
+//-------------<FUNCTION>-------------//
+function ProDelCounty(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
 {
 	if(isset($_POST['CouIndex']))
 	{
-		if(ME_MultyCheckEmptyType($InDBConn, $_POST['CouIndex']))
+		if(ME_MultyCheckEmptyType($_POST['CouIndex'], $IniUserAccessLevelIndex))
 		{
-			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
-			require_once("Input/Parser/VisibilityParser/CountyVisParser.php");
+			if(is_numeric($_POST['CouIndex']))
+			{
+				//variables consindered to be holding ID's
+				$iCountyIndex = (int) $_POST['CouIndex'];
 
-			$sCouIndex = $_POST['CouIndex'];
+				unset($_POST['CouIndex']);
 
-			ME_SecDataFilter($sCouIndex);
+				//database cannot accept Primary or foreighn keys below 1
+				//If duplicate the database will throw a exception
+				if($iCountyIndex > 0)
+					CountyVisParser($InDBConn, $iCountyIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Hide']);
+				else
+					throw new Exception("Some POST data do not meet the requirement range");
 
-			$iCouIndex = (int) $sCouIndex;
-
-			unset($sCouIndex);
-
-			CountyVisParser($InDBConn, $iCouIndex, $_ENV['Available']['Hide']);
-
-			unset($iCouIndex);
-			unset($_POST['CouIndex']);
-
-			header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['County']);
+				unset($iCountyIndex);
+				header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['County']);
+			}
+			else 
+                throw new Exception("Some POST data are not considered numeric type");
 		}
+		else
+			throw new Exception("Some POST data are empty, Those POST cannot be empty");
 	}
+	else
+		throw new Exception("Missing POST data to complete transaction");
 }
 ?>

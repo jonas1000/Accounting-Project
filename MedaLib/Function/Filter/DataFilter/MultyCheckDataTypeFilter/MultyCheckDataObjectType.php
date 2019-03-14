@@ -1,4 +1,7 @@
 <?php
+//-------------<FUNCTION>-------------//
+//Take an array and check every key value is a Object
+//Return false the first key it finds is not a Object
 function ME_MultyCheckObjectType(...$InaVar) : bool
 {
   $iArrayLenght = count($InaVar);

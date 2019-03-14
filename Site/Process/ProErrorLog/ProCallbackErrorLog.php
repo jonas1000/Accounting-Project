@@ -21,7 +21,7 @@ function ProFunctionCallback(string $InFunctionCallback, int $IniUserAccessLevel
 	}
 }
 
-function ProQueryFunctionCallback(object &$InDBConn, string $InFunctionCallback, int $IniUserAccessLevel, int $IniContentAccessLevel, string $InsRequestMethod, string $InsErrorLogPath = ".", string $InsAccessErrorPath = "Index.php?MenuIndex=-1")
+function ProQueryFunctionCallback(ME_CDBConnManager &$InDBConn, string $InFunctionCallback, int $IniUserAccessLevel, int $IniContentAccessLevel, string $InsRequestMethod, string $InsErrorLogPath = ".", string $InsAccessErrorPath = "Index.php?MenuIndex=-1")
 {
 	try
 	{

@@ -1,27 +1,33 @@
 <?php
-function ProDelCompany(CDBConnManager &$InDBConn) : void
+//-------------<FUNCTION>-------------//
+function ProDelCompany(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
 {
 	if(isset($_POST['CompIndex']))
 	{
-		if(ME_MultyCheckEmptyType($InDBConn, $_POST['CompIndex']))
+		if(ME_MultyCheckEmptyType($_POST['CompIndex'], $IniUserAccessLevelIndex))
 		{
-			$sCompIndex = $_POST['CompIndex'];
+			if(is_numeric($_POST['CompIndex']))
+			{
+				//variables consindered to be holding ID's
+				$iCompanyIndex = (int) $_POST['CompIndex'];
 
-			ME_SecDataFilter($sCompIndex);
+				unset($_POST['CompIndex']);
 
-			$iCompIndex = (int) $sCompIndex;
+				//database cannot accept Primary or foreighn keys below 1
+				//If duplicate the database will throw a exception
+				if($iCompanyIndex > 0)
+					CompanyVisParser($InDBConn, $iCompanyIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Hide']);
+				else
+					throw new Exception("Some POST data do not meet the requirement range");
 
-			unset($sCompIndex);
-
-			CompanyVisParser($InDBConn, $iCompIndex, $_ENV['Available']['Hide']);
-
-			unset($iCompIndex);
-			unset($_POST['CompIndex']);
-
-			header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Company']);
+				unset($iCompanyIndex);
+				header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Company']);
+			}
+			else 
+                throw new Exception("Some POST data are not considered numeric type");
 		}
 		else
-			throw new Exception("Some POST data are NULL, Those POST cannot be NULL");
+			throw new Exception("Some POST data are empty, Those POST cannot be empty");
 	}
 	else
 		throw new Exception("Missing POST data to complete transaction");

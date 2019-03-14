@@ -1,25 +1,35 @@
 <?php
-function ProDelEmployee(CDBConnManager &$InDBConn) : void
+//-------------<FUNCTION>-------------//
+function ProDelEmployee(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
 {
 	if(isset($_POST['EmpIndex']))
 	{
-		if(ME_MultyCheckEmptyType($InDBConn, $_POST['EmpIndex']))
+		if(ME_MultyCheckEmptyType($_POST['EmpIndex'], $IniUserAccessLevelIndex))
 		{
-			$sEmpIndex = $_POST['EmpIndex'];
+			if(is_numeric($_POST['EmpIndex']))
+			{
+				//variables consindered to be holding ID's
+				$iEmployeeIndex = (int) $_POST['EmpIndex'];
 
-			ME_SecDataFilter($sEmpIndex);
+				unset($_POST['EmpIndex']);
 
-			$iEmpIndex = (int) $sEmpIndex;
+				//database cannot accept Primary or foreighn keys below 1
+				//If duplicate the database will throw a exception
+				if($iEmployeeIndex > 0)
+					EmployeeVisParser($InDBConn, $iEmployeeIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Hide']);
+				else
+					throw new Exception("Some POST data do not meet the requirement range");
 
-			unset($sEmpIndex);
-
-			EmployeeVisParser($InDBConn, $iEmpIndex, $_ENV['Available']['Hide']);
-
-			unset($iEmpIndex);
-			unset($_POST['EmpIndex']);
-
-			header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Employee']);
+				unset($iEmployeeIndex);
+				header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Employee']);
+			}
+			else 
+                throw new Exception("Some POST data are not considered numeric type");
 		}
+		else
+			throw new Exception("Some POST data are empty, Those POST cannot be empty");
 	}
+	else
+		throw new Exception("Missing POST data to complete transaction");
 }
 ?>

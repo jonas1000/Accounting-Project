@@ -22,7 +22,7 @@ function ME_SecFilterFunctionCallback(string $InFunctionCallback, int $IniUserAc
 		throw new Exception("No Function Callback detected");
 }
 
-function ME_SecFilterQueryFunctionCallback(object &$InDBConn, string $InFunctionCallback, int $IniUserAccessLevel, int $IniContentAccessLevel, string $InsRequestMethod = "GET") : void
+function ME_SecFilterQueryFunctionCallback(ME_CDBConnManager &$InDBConn, string $InFunctionCallback, int $IniUserAccessLevel, int $IniContentAccessLevel, string $InsRequestMethod = "GET") : void
 {
 	if(!empty($InFunctionCallback))
 	{
@@ -32,15 +32,15 @@ function ME_SecFilterQueryFunctionCallback(object &$InDBConn, string $InFunction
 			{
 				if(!empty($InDBConn))
 				{
-					if(($InDBConn instanceof CDBConnManager))
+					if(($InDBConn instanceof ME_CDBConnManager))
 					{
 						if((($IniUserAccessLevel - 1) < $IniContentAccessLevel) && ($_SERVER['REQUEST_METHOD'] == $InsRequestMethod))
-							$InFunctionCallback($InDBConn);
+							$InFunctionCallback($InDBConn, $IniUserAccessLevel);
 						else
 							throw new Exception("Function: " . $InFunctionCallback . " access error, User Access Level: " . $IniUserAccessLevel . ", requested access to content: " . $IniContentAccessLevel . ", Access Method: " . $InsRequestMethod . ", Server Request: " . $_SERVER['REQUEST_METHOD'] . ", User IP: " . $_SERVER["REMOTE_ADDR"] . "\n");
 					}
 					else
-						throw new Exception("Object Type is not an instance of CDBConnManager");
+						throw new Exception("Object Type is not an instance of ME_CDBConnManager");
 				}
 				else
 					throw new Exception("Object of database connection type cannot be NULL");

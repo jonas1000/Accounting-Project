@@ -1,25 +1,35 @@
 <?php
-function ProDelJobPIT(CDBConnManager &$InDBConn) : void
+//-------------<FUNCTION>-------------//
+function ProDelJobPIT(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
 {
 	if(isset($_POST['JobIndex']))
 	{
-		if(ME_MultyCheckEmptyType($InDBConn, $_POST['JobIndex']))
+		if(ME_MultyCheckEmptyType($_POST['JobIndex'], $IniUserAccessLevelIndex))
 		{
-			$sJobPitIndex = $_POST['JobIndex'];
+			if(is_numeric($_POST['JobIndex']))
+			{
+				//variables consindered to be holding ID's
+				$iJobPITIndex = (int) $_POST['JobIndex'];
 
-			ME_SecDataFilter($sJobPitIndex);
+				unset($_POST['JobIndex']);
 
-			$iJobPitIndex = (int) $sJobPitIndex;
+				//database cannot accept Primary or foreighn keys below 1
+				//If duplicate the database will throw a exception
+				if($iJobPITIndex > 0)
+					JobPITVisParser($InDBConn, $iJobPITIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Hide']);
+				else
+					throw new Exception("Some POST data do not meet the requirement range");
 
-			unset($sJobIndex);
-
-			JobPITVisParser($InDBConn, $iJobPitIndex, $_ENV['Available']['Hide']);
-
-			unset($iJobPitIndex);
-			unset($_POST['JobIndex']);
-
-			header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Job']."&bIsSubOver=1");
+				unset($iJobPITIndex);
+				header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Job']."&bIsSubOver=1");
+			}
+			else 
+                throw new Exception("Some POST data are not considered numeric type");
 		}
+		else
+			throw new Exception("Some POST data are empty, Those POST cannot be empty");
 	}
+	else
+		throw new Exception("Missing POST data to complete transaction");
 }
 ?>

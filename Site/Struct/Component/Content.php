@@ -68,5 +68,4 @@ else
 	require_once("Struct/Module/Home.php");
 
 printf("</div>");
-
 ?>

@@ -1,5 +1,5 @@
 <?php
 
-printf("<h1>Home</h1>");
+print("<h1>Home</h1>");
 
 ?>

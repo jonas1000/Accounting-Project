@@ -1,86 +1,110 @@
 <?php 
-
-function HTMLCompanyEditForm(CDBConnManager &$InDBConn) : void
+function HTMLCompanyEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
 {
-    require_once("Output/Retriever/AccessRetriever.php");
-    require_once("Output/Retriever/CountyRetriever.php");
-    require_once("Output/Retriever/CompanyRetriever.php");
-    require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
-    require_once("Struct/Element/Function/Select/SelectCountyRowRender.php");
-
-    CompanyGeneralRetriever($InDBConn, $_SESSION['AccessID'], $_ENV['Available']['Show']);
-
-    foreach($InDBConn->GetResult() as $CompRow => $CompData)
+    if(isset($_POST['CompIndex']))
     {
-        //-------------<PHP-HTML>-------------//
-        printf("<div class='Form'>");
+        if(!empty($_POST['CompIndex']))
+        {
+            $iCompanyIndex = (int) $_POST['CompIndex'];
 
-        printf("<form method='POST'>");
+            unset($_POST['CompIndex']);
 
-        printf("<div>");
+            if($iCompanyIndex > 0)
+            {
+                CompanyGeneralSpecificRetriever($InDBConn, $iCompanyIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
 
-        //Title
-        printf("<div id='FormTitle'>");
-        printf("<h3>Edit Company</h3>");
-        printf("<br><h4>".$CompData['COMP_DATA_TITLE']."</h4>");
-        printf("</div>");
+                $aCompanyData = $InDBConn->GetResultArray(MYSQLI_ASSOC);
+                $iCompanyNumRows = $InDBConn->GetResultNumRows();
 
-        //Input Row
-        printf("<div>");
-        printf("<div>");
-        printf("<h5>Name</h5>");
-        printf("</div>");
+                if(!empty($aCompanyData) && $iCompanyNumRows > 0 && $iCompanyNumRows < 2)
+                {
+                    $iCountyIndex = (int) $aCompanyData['COU_ID'];
+                    $iCompanyAccessIndex = (int) $aCompanyData['COMP_ACCESS'];
 
-        printf("<div>");
-        printf("<input name='Name' type='text' placeholder='Company Name' value='".$CompData['COMP_DATA_TITLE']."' required>");
-        printf("</div>");
-        printf("</div>");
+                    //-------------<PHP-HTML>-------------//
+                    print("<div class='Form'>");
 
-        //Input Row
-        printf("<div>");
-        printf("<div>");
-        printf("<h5>creation date</h5>");
-        printf("</div>");
+                    print("<form method='POST'>");
 
-        printf("<div>");
-        printf("<input name='Date' type='date' value='".$CompData['COMP_DATA_DATE']."' required>");
-        printf("</div>");
-        printf("</div>");
+                    print("<div>");
 
-        //get rows and render <select> element with data
-        printf("<div>");
-        printf("<div>");
-        printf("<h5>County</h5>");
-        printf("</div>");
+                    //Title
+                    print("<div id='FormTitle'>");
+                    print("<h3>Edit Company</h3>");
+                    printf("<br><h4>%s</h4>", $aCompanyData['COMP_DATA_TITLE']);
+                    print("</div>");
 
-        printf("<div>");
-        RenderCountySelectRowCheck($InDBConn, $_SESSION['AccessID'], $_ENV['Available']['Show'], $CompData['COU_ID']);
-        printf("</div>");
-        printf("</div>");
+                    //Input Row
+                    print("<div>");
+                    print("<div>");
+                    print("<h5>Name</h5>");
+                    print("</div>");
 
-        //get rows and render <select> element with data
-        printf("<div>");
-        printf("<div>");
-        printf("<h5>Access Type</h5>");
-        printf("</div>");
+                    print("<div>");
+                    printf("<input name='Name' type='text' placeholder='Company Name' value='%s' required>", $aCompanyData['COMP_DATA_TITLE']);
+                    print("</div>");
+                    print("</div>");
 
-        printf("<div>");
-        RenderAccessSelectRow($InDBConn, $_SESSION['AccessID'], $_ENV['Available']['Show']);
-        printf("</div>");
-        printf("</div>");
+                    //Input Row
+                    print("<div>");
+                    print("<div>");
+                    print("<h5>creation date</h5>");
+                    print("</div>");
 
-        printf("</div>");
+                    print("<div>");
+                    printf("<input name='Date' type='date' value='%s' required>", $aCompanyData['COMP_DATA_DATE']);
+                    print("</div>");
+                    print("</div>");
 
-        //Input Buttons
-        printf("<div>");
-        printf("<a href='.?MenuIndex=" . $_ENV['MenuIndex']['Company'] . "'><div><p>Cancel</p></div></a>");
-        printf("<input type='submit' value='Save' formaction='.?MenuIndex=" . $_GET['MenuIndex'] . "&Module=" . $_GET['Module'] . "&AddPro'>");
-        printf("</div>");
+                    //get rows and render <select> element with data
+                    print("<div>");
+                    print("<div>");
+                    print("<h5>County</h5>");
+                    print("</div>");
 
-        printf("</form>");
+                    print("<div>");
+                    RenderCountySelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iCountyIndex);
+                    print("</div>");
+                    print("</div>");
 
-        printf("</div>");
-    }
+                    //get rows and render <select> element with data
+                    print("<div>");
+                    print("<div>");
+                    print("<h5>Access Type</h5>");
+                    print("</div>");
+
+                    print("<div>");
+                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iCompanyAccessIndex);
+                    print("</div>");
+                    print("</div>");
+
+                    print("</div>");
+
+                    //Input Buttons
+                    print("<div>");
+                    printf("<input type='hidden' name='CompIndex' value='%s' required>", $aCompanyData['COMP_ID']);
+                    printf("<a href='.?MenuIndex=%s'><div><p>Cancel</p></div></a>", $_ENV['MenuIndex']['Company']);
+                    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%s&Module=%s&ProEdit'>", $_GET['MenuIndex'], $_GET['Module']);
+                    print("</div>");
+
+                    print("</form>");
+
+                    print("</div>");
+
+                    unset($iCountyIndex, $iCompanyAccessIndex);
+                }
+                else
+                    throw new Exception("Query did not return any row");
+
+                unset($iCompanyIndex, $aCompanyData, $iCompanyNumRows);
+            }
+            else
+                throw new Exception("POST data could not be converted to required format");
+        }
+        else
+			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+	}
+	else
+        throw new Exception("Some POST data are not initialized");
 }
-
 ?>

@@ -1,10 +1,12 @@
 <?php
-function JobPITAddParser(CDBConnManager &$InDBConn, int &$IniJobIndex, float &$InfPit, string &$InsDate, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
+function JobPITAddParser(ME_CDBConnManager &$InDBConn, int &$IniJobIndex, float &$InfPIT, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $IniJobIndex, $InsDate, $IniAccessIndex, $IniIsAvailIndex))
+	if(!empty($InsDate))
 	{
-		if(($IniJobIndex > 0) && ($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		if(($IniJobIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 		{
+			$sDBQuery = "";
+
 			$sDBQuery="INSERT INTO
 			".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_TIME
 			(
@@ -17,9 +19,9 @@ function JobPITAddParser(CDBConnManager &$InDBConn, int &$IniJobIndex, float &$I
 			VALUES
 			(
 				".$IniJobIndex.",
-				".(empty($InfPit) ? 0 : $InfPit).",
+				".$InfPIT.",
 				\"".$InsDate."\",
-				".$IniAccessIndex.",
+				".$IniContentAccessLevelIndex.",
 				".$IniIsAvailIndex."
 			);";
 

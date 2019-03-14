@@ -1,4 +1,7 @@
 <?php
+//-------------<FUNCTION>-------------//
+//Take an array and check every key value is Numeric
+//Return false the first key it finds is not Numeric
 function ME_MultyCheckNumericType(...$InaVar) : bool
 {
   $iArrayLenght = count($InaVar);

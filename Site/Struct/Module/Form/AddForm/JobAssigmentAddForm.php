@@ -1,104 +1,104 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLJobAssigmentAddForm(CDBConnManager &$InDBConn) : void
+function HTMLJobAssigmentAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
 {
   require_once("Struct/Element/Function/Select/DBSelectRender.php");
 
   //-------------<PHP-HTML>-------------//
-  printf("<div class='Form'>");
-  printf("<form method='POST'>");
-  printf("<div>");
+  print("<div class='Form'>");
+  print("<form method='POST'>");
+  print("<div>");
 
   //Title
-  printf("<div id='FormTitle'>");
-  printf("<h3>New Job Assigment</h3>");
-  printf("</div>");
+  print("<div id='FormTitle'>");
+  print("<h3>New Job Assigment</h3>");
+  print("</div>");
 
   //Input Row
-  printf("<div>");
-  printf("<div>");
-  printf("<h5>Name</h5>");
-  printf("</div>");
+  print("<div>");
+  print("<div>");
+  print("<h5>Name</h5>");
+  print("</div>");
 
-  printf("<div>");
-  printf("<input name='Name' type='text' placeholder='Job name' required>");
-  printf("</div>");
-  printf("</div>");
-
-  //Input Row
-  printf("<div>");
-  printf("<div>");
-  printf("<h5>Price</h5>");
-  printf("</div>");
-
-  printf("<div>");
-  printf("<input name='Price' type='number' placeholder='Job price' required>");
-  printf("</div>");
-  printf("</div>");
+  print("<div>");
+  print("<input name='Name' type='text' placeholder='Job name' required>");
+  print("</div>");
+  print("</div>");
 
   //Input Row
-  printf("<div>");
-  printf("<div>");
-  printf("<h5>Payment in advance</h5>");
-  printf("</div>");
+  print("<div>");
+  print("<div>");
+  print("<h5>Price</h5>");
+  print("</div>");
 
-  printf("<div>");
-  printf("<input name='PIA' type='number' placeholder='Job Payment in advance'>");
-  printf("</div>");
-  printf("</div>");
-
-  //Input Row
-  printf("<div>");
-  printf("<div>");
-  printf("<h5>Expenses</h5>");
-  printf("</div>");
-
-  printf("<div>");
-  printf("<input name='Expenses' type='number' placeholder='Job expensess'>");
-  printf("</div>");
-  printf("</div>");
+  print("<div>");
+  print("<input name='Price' type='number' placeholder='Job price' required>");
+  print("</div>");
+  print("</div>");
 
   //Input Row
-  printf("<div>");
-  printf("<div>");
-  printf("<h5>Damage</h5>");
-  printf("</div>");
+  print("<div>");
+  print("<div>");
+  print("<h5>Payment in advance</h5>");
+  print("</div>");
 
-  printf("<div>");
-  printf("<input name='Damage' type='number' placeholder='Job Damage expensess'>");
-  printf("</div>");
-  printf("</div>");
+  print("<div>");
+  print("<input name='PIA' type='number' placeholder='Job Payment in advance'>");
+  print("</div>");
+  print("</div>");
+
+  //Input Row
+  print("<div>");
+  print("<div>");
+  print("<h5>Expenses</h5>");
+  print("</div>");
+
+  print("<div>");
+  print("<input name='Expenses' type='number' placeholder='Job expensess'>");
+  print("</div>");
+  print("</div>");
+
+  //Input Row
+  print("<div>");
+  print("<div>");
+  print("<h5>Damage</h5>");
+  print("</div>");
+
+  print("<div>");
+  print("<input name='Damage' type='number' placeholder='Job Damage expensess'>");
+  print("</div>");
+  print("</div>");
 
   //get rows and render <select> element with data
-  printf("<div>");
-  printf("<div>");
-  printf("<h5>Company</h5>");
-  printf("</div>");
+  print("<div>");
+  print("<div>");
+  print("<h5>Company</h5>");
+  print("</div>");
 
-  printf("<div>");
+  print("<div>");
   RenderCompanySelectRow();
-  printf("</div>");
-  printf("</div>");
+  print("</div>");
+  print("</div>");
 
   //get rows and render <select> element with data
-  printf("<div>");
-  printf("<div>");
-  printf("<h5>Access</h5>");
-  printf("</div>");
+  print("<div>");
+  print("<div>");
+  print("<h5>Access</h5>");
+  print("</div>");
 
-  printf("<div>");
+  print("<div>");
   RenderAccessSelectRow();
-  printf("</div>");
-  printf("</div>");
+  print("</div>");
+  print("</div>");
 
-  printf("</div>");
+  print("</div>");
 
-  printf("<div>");
+  print("<div>");
   printf("<a href='.?MenuIndex=".$_ENV['MenuIndex']['JobAssigment']."'><div class='Button-Left'><h5>Cancel</h5></div></a>");
-  printf("<input type='submit' value='Save' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=".$_GET['Module']."&AddPro'>");
-  printf("</div>");
+  printf("<input type='submit' value='Save' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=".$_GET['Module']."&ProAdd'>");
+  print("</div>");
 
-  printf("</form>");
-  printf("</div>");
+  print("</form>");
+  print("</div>");
 }
 ?>

@@ -1,39 +1,52 @@
 <?php
-function ProAddCompany(CDBConnManager &$InDBConn)
+//-------------<FUNCTION>-------------//
+function ProAddCompany(ME_CDBConnManager &$InDBConn)
 {
+	//Check if POST data exists, if not then throw a exception
 	if(isset($_POST['Name'], $_POST['Date'], $_POST['Access'], $_POST['County']))
 	{
-		if(ME_MultyCheckEmptyType($InDBConn, $_POST['Name'], $_POST['Date'], $_POST['Access'], $_POST['County']))
+		//Check if POST data are NOT empty, if false then throw a exception
+		if(ME_MultyCheckEmptyType($_POST['Name'], $_POST['Date'], $_POST['Access'], $_POST['County']))
 		{
-			$sName = $_POST['Name'];
-			$sDate = $_POST['Date'];
-			$sAccess = $_POST['Access'];
-			$sCounty = $_POST['County'];
+			//Check if POST data are numeric, if false then throw a exception
+			if(ME_MultyCheckNumericType($_POST['Access'], $_POST['County']))
+			{
+				//take strings as is
+				$sName = $_POST['Name'];
+				$sDate = $_POST['Date'];
 
-			ME_SecDataFilter($sName);
-			ME_SecDataFilter($sDate);
-			ME_SecDataFilter($sAccess);
-			ME_SecDataFilter($sCounty);
+				//variables consindered to be holding ID's
+				$iContentAccessIndex = (int) $_POST['Access'];
+				$iCountyIndex = (int) $_POST['County'];
 
-			$iAccessIndex = (int) $sAccess;
-			$iCountyIndex = (int) $sCounty;
+				unset($_POST['Name'], $_POST['Date'], $_POST['Access'], $_POST['County']);
 
-			unset($sAccess, $sCounty);
+				//format the string to be compatible with HTML and avoid SQL injection
+				ME_SecDataFilter($sName);
+				ME_SecDataFilter($sDate);
 
-			CompanyDataAddParser($InDBConn, $sName, $sDate, $iAccessIndex, $_ENV['Available']['Show']);
+				//database cannot accept Primary or foreighn keys below 1
+				//If duplicate the database will throw a exception
+				if(($iContentAccessIndex > 0) && ($iCountyIndex > 0))
+				{
+					CompanyDataAddParser($InDBConn, $sName, $sDate, $iContentAccessIndex, $_ENV['Available']['Show']);
 
-			if($InDBConn->GetLastQueryID())
-				CompanyAddParser($InDBConn, $iCountyIndex, $iAccessIndex, $_ENV['Available']['Show']);
-			else
-				throw new Exception("Coulnd't get last query id");
-
-			unset($sName, $sDate, $iAccessIndex, $iCountyIndex);
-			unset($_POST['Name'], $_POST['Date'], $_POST['Access'], $_POST['County']);
-
-			header("Location:Index.php?MenuIndex=".$_ENV['MenuIndex']['Company']);
+					if($InDBConn->GetLastQueryID())
+						CompanyAddParser($InDBConn, $iCountyIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
+					else
+						throw new Exception("Coulnd't get last query id");
+				}
+				else
+					throw new Exception("Some POST data do not meet the requirement range");
+					
+				unset($sName, $sDate, $iContentAccessIndex, $iCountyIndex);
+				header("Location:Index.php?MenuIndex=".$_ENV['MenuIndex']['Company']);
+			}
+			else 
+                throw new Exception("Some POST data are not considered numeric type");
 		}
 		else
-			throw new Exception("Some POST data are NULL, Those POST cannot be NULL");
+			throw new Exception("Some POST data are empty, Those POST cannot be empty");
 	}
 	else
 		throw new Exception("Some POST data are not initialized");

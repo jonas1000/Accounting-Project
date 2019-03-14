@@ -1,4 +1,7 @@
 <?php
+//-------------<FUNCTION>-------------//
+//Take an array and check every key value is Finite
+//Return false the first key it finds is not Finite
 function ME_MultyCheckFiniteType(float ...$InfaVar) : bool
 {
   $iArrayLenght = count($InfaVar);

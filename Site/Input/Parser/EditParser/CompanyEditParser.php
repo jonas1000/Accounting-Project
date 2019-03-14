@@ -1,64 +1,71 @@
 <?php
-function CompanyEditParser(CDBConnManager &$InDBConn, int &$IniCompIndex, int &$IniCouIndex, int &$IniAccessIndex) : void
+function CompanyEditParser(ME_CDBConnManager &$InDBConn, int &$IniCompanyIndex, int &$IniCountyIndex, int &$IniContentAccessLevelIndex, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-    if(ME_MultyCheckEmptyType($InDBConn, $IniAccessIndex))
+    if(($IniCompanyIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
     {
-        if(($IniCompIndex > 0) && ($IniAccessIndex > 0))
+        $sDBQuery = "";
+        $sPrefix = $InDBConn->GetPrefix();
+
+        $sDBQuery = "UPDATE 
+        ".$sPrefix. "VIEW_COMPANY
+        SET
+        ".$sPrefix."VIEW_COMPANY.COU_ID = ".$IniCountyIndex.",
+        ".$sPrefix."VIEW_COMPANY.COMP_ACCESS = ".$IniContentAccessLevelIndex."
+        WHERE
+        (".$sPrefix."VIEW_COMPANY.COMP_ID = ".$IniCompanyIndex."
+        AND
+        ".$sPrefix."VIEW_COMPANY.COMP_ACCESS > ".($IniUserAccessLevelIndex - 1)."
+        AND
+        ".$sPrefix."VIEW_COMPANY.COMP_AVAIL = ".$IniIsAvailIndex.");";
+
+        $InDBConn->ExecQuery($sDBQuery, TRUE);
+
+        if(!$InDBConn->HasError()) 
         {
-            $sDBQuery = NULL;
-
-            $sDBQuery = "UPDATE ".$InDBConn->GetPrefix(). "VIEW_COMPANY
-            SET
-            ".$InDBConn->GetPrefix() . "VIEW_COMPANY.COU_ID = ".$IniCouIndex.",
-            ".$InDBConn->GetPrefix()."VIEW_COMPANY.COMP_ACCESS = ".$IniAccessIndex."
-            WHERE
-            (".$InDBConn->GetPrefix()."VIEW_COMPANY.COMP_ID = ".$IniCompIndex.");";
-
-            $InDBConn->ExecQuery($sDBQuery, TRUE);
-
-            if (!$InDBConn->HasError()) 
-            {
-                if ($InDBConn->HasWarning())
-                    throw new Exception("warning detected: " . $InDBConn->GetWarning());
-            } 
-            else
-                throw new Exception("Error: " . $InDBConn->GetError());
-
-            unset($sDBQuery);
+            if($InDBConn->HasWarning())
+                throw new Exception($InDBConn->GetWarning());
         } 
         else
-            throw new Exception("Input parameters do not meet requirements range");
+            throw new Exception($InDBConn->GetError());
+
+        unset($sDBQuery, $sPrefix);
     } 
     else
-        throw new Exception("Input parameters are empty");
+        throw new Exception("Input parameters do not meet requirements range");
 } 
 
-function CompanyDataEditParser(CDBConnManager &$InDBConn, int &$IniCompDataIndex, string &$InsName, string &$InsDate, int &$IniAccessIndex) : void
+function CompanyDataEditParser(ME_CDBConnManager &$InDBConn, int &$IniCompanyDataIndex, string &$InsName, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-    if (ME_MultyCheckEmptyType($InDBConn, $IniCompDataIndex, $InsName, $InsDate, $IniAccessIndex)) 
+    if(ME_MultyCheckEmptyType($InsName, $InsDate))
     {
-        if (($IniCompDataIndex > 0) && ($IniAccessIndex > 0)) 
+        if(($IniCompanyDataIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
         {
-            $sDBQuery = NULL;
+            $sDBQuery = "";
+            $sPrefix = $InDBConn->GetPrefix();
 
-            $sDBQuery = "UPDATE ".$InDBConn->GetPrefix()."VIEW_COMPANY_DATA
+            $sDBQuery = "UPDATE 
+            ".$sPrefix."VIEW_COMPANY_DATA
             SET
-            ".$InDBConn->GetPrefix()."VIEW_COMPANY_DATA.COMP_DATA_TITLE = \"".$InsName."\",
-            ".$InDBConn->GetPrefix()."VIEW_COMPANY_DATA.COMP_DATA_DATE = \"".$InsDate."\"
+            ".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_TITLE = \"".$InsName."\",
+            ".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_DATE = \"".$InsDate."\"
             WHERE
-            (".$InDBConn->GetPrefix()."VIEW_COMPANY_DATA.COMP_DATA_ID = ".$InDBConn->GetLastQueryID().");";
+            (".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_ID = ".$IniCompanyDataIndex."
+            AND
+            ".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_ID > ".($IniUserAccessLevelIndex - 1)."
+            AND
+            ".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_AVAIL = ".$IniIsAvailIndex.");";
 
             $InDBConn->ExecQuery($sDBQuery, true);
 
-            if (!$InDBConn->HasError()) 
+            if(!$InDBConn->HasError()) 
             {
-                if ($InDBConn->HasWarning())
-                    throw new Exception("warning detected: " . $InDBConn->GetWarning());
+                if($InDBConn->HasWarning())
+                    throw new Exception($InDBConn->GetWarning());
             } 
             else
-                throw new Exception("Error: " . $InDBConn->GetError());
+                throw new Exception($InDBConn->GetError());
 
-            unset($sDBQuery);
+            unset($sDBQuery, $sPrefix);
         }
         else
             throw new Exception("Input parameters do not meet requirements range");

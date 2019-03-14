@@ -1,51 +1,50 @@
 <?php
 //-------------<FUNCTION>-------------//
-function CompanyAddParser(CDBConnManager &$InDBConn, int &$IniCountyIndex, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
+function CompanyAddParser(ME_CDBConnManager &$InDBConn, int &$IniCountyIndex, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $IniCountyIndex, $IniAccessIndex, $IniIsAvailIndex))
+	if(($IniCountyIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		if(($IniCountyIndex > 0) && ($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		$sDBQuery = "";
+
+		$sDBQuery = "INSERT INTO
+		".$InDBConn->GetPrefix()."VIEW_COMPANY
+		(
+		COMP_DATA_ID,
+		COU_ID,
+		COMP_ACCESS,
+		COMP_AVAIL
+		)
+		VALUES
+		(".$InDBConn->GetLastQueryID().",
+		".$IniCountyIndex.",
+		".$IniContentAccessLevelIndex.",
+		".$IniIsAvailIndex."
+		);";
+
+		$InDBConn->ExecQuery($sDBQuery, TRUE);
+
+		if(!$InDBConn->HasError())
 		{
-			$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_COMPANY
-			(
-			COMP_DATA_ID,
-			COU_ID,
-			COMP_ACCESS,
-			COMP_AVAIL
-			)
-			VALUES
-			(".$InDBConn->GetLastQueryID().",
-			".$IniCountyIndex.",
-			".$IniAccessIndex.",
-			".$IniIsAvailIndex."
-			);";
-
-			$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-			if(!$InDBConn->HasError())
-			{
-				if($InDBConn->HasWarning())
-					throw new Exception("warning detected: " . $InDBConn->GetWarning());
-			}
-			else
-				throw new Exception("Error: " . $InDBConn->GetError());
-
-			unset($sDBQuery);
+			if($InDBConn->HasWarning())
+				throw new Exception("warning detected: " . $InDBConn->GetWarning());
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			throw new Exception("Error: " . $InDBConn->GetError());
+
+		unset($sDBQuery);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function CompanyDataAddParser(CDBConnManager &$InDBConn, string &$InsName, string &$InsDate, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
+function CompanyDataAddParser(ME_CDBConnManager &$InDBConn, string &$InsName, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $InsName, $InsDate, $IniAccessIndex, $IniIsAvailIndex))
+	if(ME_MultyCheckEmptyType($InsName, $InsDate))
 	{
-		if(($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 		{
+			$sDBQuery = "";
+
 			$sDBQuery = "INSERT INTO
 			".$InDBConn->GetPrefix()."VIEW_COMPANY_DATA
 			(
@@ -58,7 +57,7 @@ function CompanyDataAddParser(CDBConnManager &$InDBConn, string &$InsName, strin
 			(
 			\"".$InsName."\",
 			\"".$InsDate."\",
-			".$IniAccessIndex.",
+			".$IniContentAccessLevelIndex.",
 			".$IniIsAvailIndex."
 			);";
 

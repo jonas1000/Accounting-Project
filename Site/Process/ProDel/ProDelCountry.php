@@ -1,28 +1,35 @@
 <?php
-function ProDelCountry(CDBConnManager &$InDBConn) : void
+//-------------<FUNCTION>-------------//
+function ProDelCountry(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
 {
 	if(isset($_POST['CounIndex']))
 	{
-		if(ME_MultyCheckEmptyType($InDBConn, $_POST['CounIndex']))
+		if(ME_MultyCheckEmptyType($_POST['CounIndex'], $IniUserAccessLevelIndex))
 		{
-			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
-			require_once("Input/Parser/VisibilityParser/CountryVisParser.php");
-			
-			$sCounIndex = $_POST['CounIndex'];
+			if(is_numeric($_POST['CounIndex']))
+			{
+				//variables consindered to be holding ID's
+				$iCountryIndex = (int) $_POST['CounIndex'];
 
-			ME_SecDataFilter($sCounIndex);
+				unset($_POST['CounIndex']);
 
-			$iCounIndex = (int) $sCounIndex;
+				//database cannot accept Primary or foreighn keys below 1
+				//If duplicate the database will throw a exception
+				if($iCountryIndex > 0)
+					CountryVisParser($InDBConn, $iCountryIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Hide']);
+				else
+					throw new Exception("Some POST data do not meet the requirement range");
 
-			unset($sCounIndex);
-
-			CountryVisParser($InDBConn, $iCounIndex, $_ENV['Available']['Hide']);
-
-			unset($iCounIndex);
-			unset($_POST['CounIndex']);
-
-			header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Country']);
+				unset($iCountryIndex);
+				header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Country']);
+			}
+			else 
+                throw new Exception("Some POST data are not considered numeric type");
 		}
+		else
+			throw new Exception("Some POST data are empty, Those POST cannot be empty");
 	}
+	else
+		throw new Exception("Missing POST data to complete transaction");
 }
 ?>

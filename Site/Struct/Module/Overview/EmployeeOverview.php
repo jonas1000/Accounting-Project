@@ -5,109 +5,109 @@ require_once("../MedaLib/Class/Log/LogSystem.php");
 require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFilter.php");
 require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
 
-$DBConn = new CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
+$DBConn = new ME_CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
-function HTMLEmployeeOverview(CDBConnManager &$InDBConn) : void
+function HTMLEmployeeOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
 {
 	require_once("Output/Retriever/EmployeeRetriever.php");
 
-	EmployeeOverviewRetriever($InDBConn, $_SESSION['AccessID'], $_ENV['Available']['Show']);
+	EmployeeOverviewRetriever($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
 
 	foreach($InDBConn->GetResult() as $EmployeeRow => $EmployeeData)
 	{
-			printf("<div class='DataBlock'>");
+			print("<div class='DataBlock'>");
 
-			printf("<form method='POST'>");
-			printf("<div>");
+			print("<form method='POST'>");
+			print("<div>");
 
 			//Title
-			printf("<div>");
-			printf("<h5>".$EmployeeData['EMP_DATA_NAME']." ".$EmployeeData['EMP_DATA_SURNAME']."</h5>");
-			printf("</div>");
+			print("<div>");
+			printf("<h5>%s %s</h5>", $EmployeeData['EMP_DATA_NAME'], $EmployeeData['EMP_DATA_SURNAME']);
+			print("</div>");
 
 			//Data Row
-			printf("<div>");
-			printf("<div>");
-			printf("<b><p>Email</p></b>");
-			printf("</div>");
+			print("<div>");
+			print("<div>");
+			print("<b><p>Email</p></b>");
+			print("</div>");
 
-			printf("<div>");
-			printf("<p>".$EmployeeData['EMP_DATA_EMAIL']."</p>");
-			printf("</div>");
-			printf("</div>");
+			print("<div>");
+			printf("<p>%s</p>", $EmployeeData['EMP_DATA_EMAIL']);
+			print("</div>");
+			print("</div>");
 
 			if(($_SESSION['AccessID'] - 1) < $_ENV['AccessLevel']['CEO'])
 			{
 				//Data Row
-				printf("<div>");
-				printf("<div>");
-				printf("<b><p>Salary</p></b>");
-				printf("</div>");
+				print("<div>");
+				print("<div>");
+				print("<b><p>Salary</p></b>");
+				print("</div>");
 
-				printf("<div>");
-				printf("<p>".$EmployeeData['EMP_DATA_SAL']."<p>");
-				printf("</div>");
-				printf("</div>");
+				print("<div>");
+				printf("<p>%s<p>", $EmployeeData['EMP_DATA_SALARY']);
+				print("</div>");
+				print("</div>");
 			}
 
 			//Data Row
-			printf("<div>");
-			printf("<div>");
-			printf("<b><p>Title</p></b>");
-			printf("</div>");
+			print("<div>");
+			print("<div>");
+			print("<b><p>Title</p></b>");
+			print("</div>");
 
-			printf("<div>");
-			printf("<p>".$EmployeeData['EMP_POS_TITLE']."<p>");
-			printf("</div>");
-			printf("</div>");
-
-			//Data Row
-			printf("<div>");
-			printf("<div>");
-			printf("<b><p>Birth Day</p></b>");
-			printf("</div>");
-
-			printf("<div>");
-			printf("<p>".$EmployeeData['EMP_DATA_BDAY']."<p>");
-			printf("</div>");
-			printf("</div>");
+			print("<div>");
+			printf("<p>%s<p>", $EmployeeData['EMP_POS_TITLE']);
+			print("</div>");
+			print("</div>");
 
 			//Data Row
-			printf("<div>");
-			printf("<div>");
-			printf("<b><p>Phone Number</p></b>");
-			printf("</div>");
+			print("<div>");
+			print("<div>");
+			print("<b><p>Birth Day</p></b>");
+			print("</div>");
 
-			printf("<div>");
-			printf("<p>".$EmployeeData['EMP_DATA_PN']."<p>");
-			printf("</div>");
-			printf("</div>");
+			print("<div>");
+			printf("<p>%s<p>", $EmployeeData['EMP_DATA_BDAY']);
+			print("</div>");
+			print("</div>");
 
 			//Data Row
-			printf("<div>");
-			printf("<div>");
-			printf("<b><p>Stable Number</p></b>");
-			printf("</div>");
+			print("<div>");
+			print("<div>");
+			print("<b><p>Phone Number</p></b>");
+			print("</div>");
 
-			printf("<div>");
-			printf("<p>".$EmployeeData['EMP_DATA_SN']."<p>");
-			printf("</div>");
-			printf("</div>");
+			print("<div>");
+			printf("<p>%s<p>", $EmployeeData['EMP_DATA_PN']);
+			print("</div>");
+			print("</div>");
 
-			printf("</div>");
+			//Data Row
+			print("<div>");
+			print("<div>");
+			print("<b><p>Stable Number</p></b>");
+			print("</div>");
 
-			printf("<div>");
-			printf("<input type='hidden' name='EmpIndex' value=".$EmployeeData['EMP_ID'].">");
-			printf("<input type='submit' value='Delete' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=2' >");
-			printf("<input type='submit' value='Edit' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=1'>");
-			printf("</div>");
+			print("<div>");
+			printf("<p>%s<p>", $EmployeeData['EMP_DATA_SN']);
+			print("</div>");
+			print("</div>");
 
-			printf("</form>");
+			print("</div>");
 
-			printf("</div>");
+			print("<div>");
+			printf("<input type='hidden' name='EmpIndex' value='%s'>", $EmployeeData['EMP_ID']);
+			printf("<input type='submit' value='Delete' formaction='.?MenuIndex=%s&Module=2'>", $_GET['MenuIndex']);
+			printf("<input type='submit' value='Edit' formaction='.?MenuIndex=%s&Module=1'>", $_GET['MenuIndex']);
+			print("</div>");
+
+			print("</form>");
+
+			print("</div>");
 	}
 
-	printf("<a href='.?MenuIndex=".$_GET['MenuIndex']."&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>");
+	printf("<a href='.?MenuIndex=%s&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>", $_GET['MenuIndex']);
 }
 
 //-------------<PHP-HTML>-------------//
@@ -118,7 +118,7 @@ else
 	{
 		case 0:
 		{
-			if(isset($_GET['AddPro']))
+			if(isset($_GET['ProAdd']))
 			{
 				require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
 				require_once("Input/Parser/AddParser/EmployeeAddParser.php");
@@ -132,16 +132,33 @@ else
 
 				ProQueryFunctionCallback($DBConn, "HTMLEmployeeAddForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
 			}
+			
 			break;
 		}
 		case 1:
 		{
-			if(isset($_GET['EditPro']))
+            require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
+
+			if(isset($_GET['ProEdit']))
 			{
+				require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataNumericType.php");
+				require_once("Input/Parser/EditParser/EmployeeEditParser.php");
+				require_once("Output/Retriever/EmployeeRetriever.php");
+				require_once("Output/SpecificRetriever/EmployeeSpecificRetriever.php");
+				require_once("Process/ProEdit/ProEditEmployee.php");
+
 				ProQueryFunctionCallback($DBConn, "ProEditEmployee", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
 			}
 			else
 			{
+				require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataNumericType.php");
+				require_once("Output/Retriever/CompanyRetriever.php");
+				require_once("Output/Retriever/EmployeeRetriever.php");
+				require_once("Output/Retriever/AccessRetriever.php");
+				require_once("Output/SpecificRetriever/EmployeeSpecificRetriever.php");
+				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
+				require_once("Struct/Element/Function/Select/SelectCompanyRowRender.php");
+				require_once("Struct/Element/Function/Select/SelectEmployeePositionRowRender.php");
 				require_once("Struct/Module/Form/EditForm/EmployeeEditForm.php");
 
 				ProQueryFunctionCallback($DBConn, "HTMLEmployeeEditForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
@@ -156,11 +173,13 @@ else
 			require_once("Process/ProDel/ProDelEmployee.php");
 
 			ProQueryFunctionCallback($DBConn, "ProDelEmployee", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+
 			break;
 		}
 		default:
 		{
 			header("Location:.");
+
 			break;
 		}
 	}
