@@ -6,11 +6,11 @@ function ShareholderAddParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeeInd
 		$sDBQuery = "";
 
 		$sDBQuery = "INSERT INTO
-		".$InDBConn->GetPrefix()."VIEW_SHAREHOLDER
+		".$InDBConn->GetPrefix()."VIEW_SHAREHOLDER_ADD
 		(
 		EMP_ID,
-		SHARE_ACCESS,
-		SHARE_AVAIL
+		SHARE_ACCESS_ID,
+		SHARE_AVAIL_ID
 		)
 		VALUES
 		(

@@ -1,7 +1,7 @@
 <?php
-function AccessFormSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
+function AccessFormSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
 {
-	if(($IniAccessIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1))) 
+	if(($IniAccessIndex > 0) && ($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1))) 
 	{
 		$sDBQuery = "";
 
@@ -14,7 +14,7 @@ function AccessFormSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniUser
 		WHERE
 		(".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_AVAIL = " . $IniIsAvailIndex . "
 		AND
-        ".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_LEVEL > ".($IniUserAccessLevelIndex - 1).")
+        ".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_LEVEL > ".($IniUserAccessLevel - 1).")
         WHERE
         (".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_ID = ".$IniAccessIndex.");";
 
@@ -34,22 +34,21 @@ function AccessFormSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniUser
 		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function AccessSelectFormSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
+function AccessSelectFormSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
 {
-	if(($IniAccessIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1))) 
+	if(($IniAccessIndex > 0) && ($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1))) 
 	{
 		$sDBQuery = "";
 
 		$sDBQuery = "SELECT
 		ACCESS_ID,
-		ACCESS_TITLE,
-		ACCESS_LEVEL
+		ACCESS_TITLE
 		FROM
 		".$InDBConn->GetPrefix()."VIEW_ACCESS
 		WHERE
 		(".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_AVAIL = " . $IniIsAvailIndex . "
 		AND
-        ".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_LEVEL > ".($IniUserAccessLevelIndex - 1).")
+        ".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_LEVEL > ".($IniUserAccessLevel - 1).")
         WHERE
         (".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_ID = ".$IniAccessIndex.");";
 

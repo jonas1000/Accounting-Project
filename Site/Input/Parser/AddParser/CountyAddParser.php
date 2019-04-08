@@ -7,12 +7,12 @@ function CountyAddParser(ME_CDBConnManager &$InDBConn, int &$IniCountryIndex, in
 		$sDBQuery = "";
 
 		$sDBQuery = "INSERT INTO
-		".$InDBConn->GetPrefix()."VIEW_COUNTY
+		".$InDBConn->GetPrefix()."VIEW_COUNTY_ADD
 		(
 		COU_DATA_ID,
 		COUN_ID,
-		COU_ACCESS,
-		COU_AVAIL
+		COU_ACCESS_ID,
+		COU_AVAIL_ID
 		)
 		VALUES
 		(
@@ -38,30 +38,28 @@ function CountyAddParser(ME_CDBConnManager &$InDBConn, int &$IniCountryIndex, in
 		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function CountyDataAddParser(ME_CDBConnManager &$InDBConn, string &$InsTitle, float &$InfTax, float &$InfInterestRate, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CountyDataAddParser(ME_CDBConnManager &$InDBConn, string &$InsTitle, float &$InfTax, float &$InfInterestRate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InsTitle, $InsDate))
+	if(!empty($InsTitle))
 	{
 		if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 		{
 			$sDBQuery = "";
 
 			$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_COUNTY_DATA
+			".$InDBConn->GetPrefix()."VIEW_COUNTY_DATA_ADD
 			(
 			COU_DATA_TITLE,
 			COU_DATA_TAX,
 			COU_DATA_IR,
-			COU_DATA_DATE,
-			COU_DATA_ACCESS,
-			COU_DATA_AVAIL
+			COU_DATA_ACCESS_ID,
+			COU_DATA_AVAIL_ID
 			)
 			VALUES
 			(
 			\"".$InsTitle."\",
-			".(empty($InfTax) || ($InfTax < 0) ? 0 : $InfTax).",
-			".(empty($InfInterestRate) || ($InfInterestRate < 0) ? 0 : $InfInterestRate).",
-			\"".$InsDate."\",
+			".abs($InfTax).",
+			".abs($InfInterestRate).",
 			".$IniContentAccessLevelIndex.",
 			".$IniIsAvailIndex."
 			);";

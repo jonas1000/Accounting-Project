@@ -1,12 +1,7 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLCountyAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLCountyAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
-	require_once("Output/Retriever/AccessRetriever.php");
-	require_once("Output/Retriever/CountryRetriever.php");
-	require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
-	require_once("Struct/Element/Function/Select/SelectCountryRowRender.php");
-
   //-------------<PHP-HTML>-------------//
   print("<div class='Form'>");
 
@@ -21,7 +16,7 @@ function HTMLCountyAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLeve
   //Input Row
   print("<div>");
   print("<div>");
-  print("<h5>Name</h5>");
+  print("<h5>Name*</h5>");
   print("</div>");
 
   print("<div>");
@@ -51,17 +46,6 @@ function HTMLCountyAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLeve
   print("</div>");
   print("</div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Date</h5>");
-  print("</div>");
-
-  print("<div>");
-  print("<input type='Date' placeholder='County modification date' name='Date' required>");
-  print("</div>");
-  print("</div>");
-
   //get rows and render <select> element with data
   print("<div>");
   print("<div>");
@@ -69,7 +53,7 @@ function HTMLCountyAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLeve
   print("</div>");
 
   print("<div>");
-  RenderCountrySelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+  RenderCountrySelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
   print("</div>");
   print("</div>");
 
@@ -80,7 +64,7 @@ function HTMLCountyAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLeve
   print("</div>");
 
   print("<div>");
-  RenderAccessSelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+  RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
   print("</div>");
   print("</div>");
 
@@ -88,7 +72,7 @@ function HTMLCountyAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLeve
 
   print("<div>");
   printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $_GET['MenuIndex'], $_GET['Module']);
-  printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_GET['MenuIndex']['County']);
+  printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_GET['MenuIndex']);
   print("</div>");
 
   print("</form>");

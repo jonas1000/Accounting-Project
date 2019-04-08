@@ -1,24 +1,22 @@
 <?php
-function EmployeePositionEditParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeePositionIndex, string &$InsName, int &$IniContentAccessLevelIndex, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function EmployeePositionEditParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeePositionIndex, string &$InsName, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
 	if(!empty($InsName))
 	{
-		if(($IniEmployeePositionIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		if(($IniEmployeePositionIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 		{
 			$sDBQuery = "";
 			$sPrefix = $InDBConn->GetPrefix();
 			
 			$sDBQuery = "UPDATE
-            ".$sPrefix."VIEW_EMPLOYEE_POSITION
-            SET
-            ".$sPrefix."VIEW_EMPLOYEE_POSITION.EMP_POS_Title = \"".$InsName."\",
-            ".$sPrefix."VIEW_EMPLOYEE_POSITION.EMP_POS_ACCESS = ".$IniContentAccessLevelIndex."
-            WHERE
-			(".$sPrefix."VIEW_EMPLOYEE_POSITION.EMP_POS_ID = ".$IniEmployeePositionIndex."
+			".$sPrefix."VIEW_EMPLOYEE_POSITION_EDIT
+			SET
+			".$sPrefix."VIEW_EMPLOYEE_POSITION_EDIT.EMP_POS_TITLE = \"".$InsName."\",
+			".$sPrefix."VIEW_EMPLOYEE_POSITION_EDIT.EMP_POS_ACCESS_ID = ".$IniContentAccessLevelIndex."
+			WHERE
+			(".$sPrefix."VIEW_EMPLOYEE_POSITION_EDIT.EMP_POS_AVAIL_ID = ".$IniIsAvailIndex.")
 			AND
-			".$sPrefix."VIEW_EMPLOYEE_POSITION.EMP_POS_ACCESS > ".($IniUserAccessLevelIndex - 1)."
-			AND
-			".$sPrefix."VIEW_EMPLOYEE_POSITION.EMP_POS_AVAIL = ".$IniIsAvailIndex.");";
+			(".$sPrefix."VIEW_EMPLOYEE_POSITION_EDIT.EMP_POS_ID = ".$IniEmployeePositionIndex.");";
 
 			$InDBConn->ExecQuery($sDBQuery, TRUE);
 

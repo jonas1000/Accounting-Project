@@ -1,10 +1,10 @@
 <?php
  //Render element <select> with the Company array result from query
-function RenderCompanySelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function RenderCompanySelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-    if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1))) 
+    if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1))) 
     {
-        CompanyFormRetriever($InDBConn, $IniUserAccessLevelIndex, $IniIsAvailIndex);
+        CompanySelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
         print("<select name='Company'>");
 
@@ -15,11 +15,11 @@ function RenderCompanySelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAcces
     }
 }
 
-function RenderCompanySelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex, int &$IniSelected) : void
+function RenderCompanySelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex, int &$IniSelected) : void
 {
-    if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)) && ($IniSelected > 0)) 
+    if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)) && ($IniSelected > 0)) 
     {
-        CompanyFormRetriever($InDBConn, $IniUserAccessLevelIndex, $IniIsAvailIndex);
+        CompanySelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
         print("<select name='Company'>");
 

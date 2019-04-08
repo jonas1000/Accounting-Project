@@ -8,11 +8,11 @@ function EmployeePositionAddParser(ME_CDBConnManager &$InDBConn, string &$InsNam
 			$sDBQuery = "";
 			
 			$$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION
+			".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION_ADD
 			(
 			EMP_POS_TITLE,
-			EMP_POS_ACCESS,
-			EMP_POS_AVAIL
+			EMP_POS_ACCESS_ID,
+			EMP_POS_AVAIL_ID
 			)
 			VALUES
 			(

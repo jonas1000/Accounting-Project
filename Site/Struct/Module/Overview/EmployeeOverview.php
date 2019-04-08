@@ -7,14 +7,16 @@ require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
 
 $DBConn = new ME_CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
-function HTMLEmployeeOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLEmployeeOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
-	require_once("Output/Retriever/EmployeeRetriever.php");
+	$iUserAccessLevel = ($IniUserAccessLevel - 1);
 
-	EmployeeOverviewRetriever($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+	EmployeeOverviewRetriever($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
 	foreach($InDBConn->GetResult() as $EmployeeRow => $EmployeeData)
 	{
+		if(((int) $EmployeeData['EMP_DATA_ACCESS']) > $iUserAccessLevel)
+		{
 			print("<div class='DataBlock'>");
 
 			print("<form method='POST'>");
@@ -36,30 +38,30 @@ function HTMLEmployeeOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
 			print("</div>");
 			print("</div>");
 
-			if(($_SESSION['AccessID'] - 1) < $_ENV['AccessLevel']['CEO'])
+			//Data Row
+			print("<div>");
+			print("<div>");
+			print("<b><p>Salary</p></b>");
+			print("</div>");
+
+			print("<div>");
+			printf("<p>%s<p>", $EmployeeData['EMP_DATA_SALARY']);
+			print("</div>");
+			print("</div>");
+
+			if(((int) $EmployeeData['EMP_POS_ACCESS']) > $iUserAccessLevel)
 			{
 				//Data Row
 				print("<div>");
 				print("<div>");
-				print("<b><p>Salary</p></b>");
+				print("<b><p>Title</p></b>");
 				print("</div>");
 
 				print("<div>");
-				printf("<p>%s<p>", $EmployeeData['EMP_DATA_SALARY']);
+				printf("<p>%s<p>", $EmployeeData['EMP_POS_TITLE']);
 				print("</div>");
 				print("</div>");
 			}
-
-			//Data Row
-			print("<div>");
-			print("<div>");
-			print("<b><p>Title</p></b>");
-			print("</div>");
-
-			print("<div>");
-			printf("<p>%s<p>", $EmployeeData['EMP_POS_TITLE']);
-			print("</div>");
-			print("</div>");
 
 			//Data Row
 			print("<div>");
@@ -105,6 +107,7 @@ function HTMLEmployeeOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
 			print("</form>");
 
 			print("</div>");
+		}
 	}
 
 	printf("<a href='.?MenuIndex=%s&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>", $_GET['MenuIndex']);
@@ -112,7 +115,11 @@ function HTMLEmployeeOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
 
 //-------------<PHP-HTML>-------------//
 if(!isset($_GET['Module']))
+{
+	require_once("Output/Retriever/EmployeeRetriever.php");
+
 	ProQueryFunctionCallback($DBConn, "HTMLEmployeeOverview", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
+}
 else
 	switch($_GET['Module'])
 	{
@@ -121,6 +128,7 @@ else
 			if(isset($_GET['ProAdd']))
 			{
 				require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
+				require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataNumericType.php");
 				require_once("Input/Parser/AddParser/EmployeeAddParser.php");
 				require_once("Process/ProAdd/ProAddEmployee.php");
 
@@ -128,6 +136,12 @@ else
 			}
 			else
 			{
+				require_once("Output/Retriever/CompanyRetriever.php");
+				require_once("Output/Retriever/EmployeeRetriever.php");
+				require_once("Output/Retriever/AccessRetriever.php");
+				require_once("Struct/Element/Function/Select/SelectCompanyRowRender.php");
+				require_once("Struct/Element/Function/Select/SelectEmployeePositionRowRender.php");
+				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
 				require_once("Struct/Module/Form/AddForm/EmployeeAddForm.php");
 
 				ProQueryFunctionCallback($DBConn, "HTMLEmployeeAddForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
@@ -168,8 +182,8 @@ else
 		}
 		case 2:
 		{
-			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
 			require_once("Input/Parser/VisibilityParser/EmployeeVisParser.php");
+			require_once("Output/SpecificRetriever/EmployeeSpecificRetriever.php");
 			require_once("Process/ProDel/ProDelEmployee.php");
 
 			ProQueryFunctionCallback($DBConn, "ProDelEmployee", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");

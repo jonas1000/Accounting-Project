@@ -1,12 +1,7 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLJobAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLJobAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
-	require_once("Output/Retriever/AccessRetriever.php");
-	require_once("Output/Retriever/CompanyRetriever.php");
-	require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
-	require_once("Struct/Element/Function/Select/SelectCompanyRowRender.php");
-
   //-------------<PHP-HTML>-------------//
   print("<div class='Form'>");
   print("<form method='POST'>");
@@ -19,7 +14,7 @@ function HTMLJobAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIn
   //Input Row
   print("<div>");
   print("<div>");
-  print("<h5>Name</h5>");
+  print("<h5>Name*</h5>");
   print("</div>");
 
   print("<div>");
@@ -56,7 +51,7 @@ function HTMLJobAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIn
   print("</div>");
 
   print("<div>");
-  print("<input name='Expenses' type='number' step='0.01' min='0.0' placeholder='Job expensess'>");
+  print("<input name='Expenses' type='number' step='-0.01' min='0.0' placeholder='Job expensess'>");
   print("</div>");
   print("</div>");
 
@@ -67,14 +62,14 @@ function HTMLJobAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIn
   print("</div>");
 
   print("<div>");
-  print("<input name='Damage' type='number' step='0.01' min='0.0' placeholder='Job Damage expensess'>");
+  print("<input name='Damage' type='number' step='-0.01' min='0.0' placeholder='Job Damage expensess'>");
   print("</div>");
   print("</div>");
 
   //Input Row
   print("<div>");
   print("<div>");
-  print("<h5>Date</h5>");
+  print("<h5>Date*</h5>");
   print("</div>");
 
   print("<div>");
@@ -89,7 +84,7 @@ function HTMLJobAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIn
   print("</div>");
 
   print("<div>");
-  RenderCompanySelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+  RenderCompanySelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
   print("</div>");
   print("</div>");
 
@@ -99,7 +94,7 @@ function HTMLJobAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIn
   print("</div>");
 
   print("<div>");
-  RenderAccessSelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+  RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
   print("</div>");
   print("</div>");
 

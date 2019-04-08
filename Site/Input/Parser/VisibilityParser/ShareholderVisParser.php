@@ -1,18 +1,17 @@
 <?php
-function ShareholderVisParser(ME_CDBConnManager &$InDBConn, int &$IniShareIndex, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function ShareholderVisParser(ME_CDBConnManager &$InDBConn, int &$IniShareIndex, int &$IniIsAvailIndex) : void
 {
-	if(($IniShareIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniShareIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
 		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery="UPDATE
-		".$InDBConn->GetPrefix()."VIEW_SHAREHOLDER
+		".$sPrefix."VIEW_SHAREHOLDER_VISIBILITY
 		SET
-		".$InDBConn->GetPrefix()."VIEW_SHAREHOLDER.SHARE_AVAIL = ". $IniIsAvailIndex."
+		".$sPrefix."VIEW_SHAREHOLDER_VISIBILITY.SHARE_AVAIL_ID = ".$IniIsAvailIndex."
 		WHERE
-		(".$InDBConn->GetPrefix()."VIEW_SHAREHOLDER.SHARE_ID = ".$IniShareIndex."
-		AND
-		".$InDBConn->GetPrefix()."VIEW_SHAREHOLDER.SHARE_ACCESS > ".($IniUserAccessLevelIndex - 1).");";
+		(".$sPrefix."VIEW_SHAREHOLDER_VISIBILITY.SHARE_ID = ".$IniShareIndex.");";
 
 		$InDBConn->ExecQuery($sDBQuery, TRUE);
 

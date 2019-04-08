@@ -1,6 +1,6 @@
 <?php
  //-------------<FUNCTION>-------------//
-function HTMLCountryEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLCountryEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
     if(isset($_POST['CounIndex']))
     {
@@ -12,14 +12,14 @@ function HTMLCountryEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
 
             if($iCountryIndex > 0)
             {
-                CountryGeneralSpecificRetriever($InDBConn, $iCountryIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                CountryEditFormSpecificRetriever($InDBConn, $iCountryIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
                 $aCountryData = $InDBConn->GetResultArray(MYSQLI_ASSOC);
                 $iCountryNumRows = $InDBConn->GetResultNumRows();
 
                 if(!empty($aCountryData) && ($iCountryNumRows > 0 && $iCountryNumRows < 2))
                 {
-                    $iCountryAccessIndex = (int) $aCountryData['COUN_DATA_ACCESS'];
+                    $iCountryAccessIndex = (int) $aCountryData['COUN_ACCESS'];
 
                     //-------------<PHP-HTML>-------------//
                     print("<div class='Form'>");
@@ -30,14 +30,14 @@ function HTMLCountryEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
                     //Title
                     print("<div id='FormTitle'>");
                     print("<h3>Edit Country</h3>");
-                    printf("<br><h4>%s</h4>", $aCountryData['COUN_DATA_TITLE']); 
+                    printf("<br><h4>%s</h4>", $aCountryData['COUN_DATA_TITLE']);
                     print("</div>");
 
                     //Input Row
                     print("<div>");
 
                     print("<div>");
-                    print("<h5>Name</h5>");
+                    print("<h5>Name*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -54,7 +54,7 @@ function HTMLCountryEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
                     print("</div>");
 
                     print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iCountryAccessIndex);
+                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCountryAccessIndex);
                     print("</div>");
 
                     print("</div>");

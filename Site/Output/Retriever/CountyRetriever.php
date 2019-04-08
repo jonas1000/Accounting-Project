@@ -1,9 +1,81 @@
 <?php
-function CountyGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CountyRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-	if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		$sDBQuery = NULL;
+		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
+
+		$sDBQuery = "SELECT
+		".$sPrefix."VIEW_COUNTY.COU_ID,
+		".$sPrefix."VIEW_COUNTY.COU_DATA_ID,
+		".$sPrefix."VIEW_COUNTY.COUN_ID,
+		".$sPrefix."VIEW_COUNTY.COU_ACCESS
+		FROM
+		".$sPrefix."VIEW_COUNTY
+		WHERE
+		(".$sPrefix."VIEW_COUNTY.COU_AVAIL = ".$IniIsAvailIndex.")
+		AND
+		(".$sPrefix."VIEW_COUNTY.COU_ACCESS > ".($IniUserAccessLevel - 1).");";
+
+		$InDBConn->ExecQuery($sDBQuery, FALSE);
+
+		if(!$InDBConn->HasError())
+		{
+			if($InDBConn->HasWarning())
+				throw new Exception($InDBConn->GetWarning());
+		}
+		else
+			throw new Exception($InDBConn->GetError());
+
+		unset($sDBQuery, $sPrefix);
+	}
+	else
+		throw new Exception("Input parameters do not meet requirements range");
+}
+
+function CountyDataRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+{
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	{
+		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
+
+		$sDBQuery = "SELECT
+		".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_ID,
+		".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_TITLE,
+		".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_TAX,
+		".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_IR,
+		".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_ACCESS
+		FROM
+		".$sPrefix."VIEW_COUNTY_DATA
+		WHERE
+		(".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_AVAIL = ".$IniIsAvailIndex.")
+		AND
+		(".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_ACCESS > ".($IniUserAccessLevel - 1).");";
+
+		$InDBConn->ExecQuery($sDBQuery, FALSE);
+
+		if(!$InDBConn->HasError())
+		{
+			if($InDBConn->HasWarning())
+				throw new Exception($InDBConn->GetWarning());
+		}
+		else
+			throw new Exception($InDBConn->GetError());
+
+		unset($sDBQuery, $sPrefix);
+	}
+	else
+		throw new Exception("Input parameters do not meet requirements range");
+}
+
+function CountyGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+{
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	{
+		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery = "SELECT
 		COU_ID,
@@ -16,13 +88,13 @@ function CountyGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAcces
 		COU_DATA_IR,
 		COU_DATA_DATE
 		FROM
-		".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL
+		".$sPrefix."VIEW_COUNTY_GENERAL
 		WHERE
-		".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL.COU_AVAIL = " . $IniIsAvailIndex . "
+		".$sPrefix."VIEW_COUNTY_GENERAL.COU_AVAIL = ".$IniIsAvailIndex."
 		AND
-		".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL.COU_DATA_AVAIL = " . $IniIsAvailIndex . "
+		".$sPrefix."VIEW_COUNTY_GENERAL.COU_DATA_AVAIL = ".$IniIsAvailIndex."
 		AND
-		".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL.COU_ACCESS > ".($IniUserAccessLevelIndex - 1).";";
+		".$sPrefix."VIEW_COUNTY_GENERAL.COU_ACCESS > ".($IniUserAccessLevel - 1).";";
 
 		$InDBConn->ExecQuery($sDBQuery, FALSE);
 
@@ -34,29 +106,33 @@ function CountyGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAcces
 		else
 			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery);
+		unset($sDBQuery, $sPrefix);
 	}
 	else
 		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function CountyFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CountyOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-	if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		$sDBQuery = NULL;
+		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery = "SELECT
 		COU_ID,
-		COU_DATA_TITLE
+		COU_DATA_ACCESS,
+		COU_DATA_TITLE,
+		COU_DATA_TAX,
+		COU_DATA_IR
 		FROM
-		".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL
+		".$sPrefix."VIEW_COUNTY_OVERVIEW
 		WHERE
-		".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL.COU_AVAIL = " . $IniIsAvailIndex . "
+		".$sPrefix."VIEW_COUNTY_OVERVIEW.COU_AVAIL = ".$IniIsAvailIndex."
 		AND
-		".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL.COU_DATA_AVAIL = " . $IniIsAvailIndex . "
+		".$sPrefix."VIEW_COUNTY_OVERVIEW.COU_DATA_AVAIL = ".$IniIsAvailIndex."
 		AND
-		".$InDBConn->GetPrefix()."VIEW_COUNTY_GENERAL.COU_ACCESS > ".($IniUserAccessLevelIndex - 1).";";
+		".$sPrefix."VIEW_COUNTY_OVERVIEW.COU_ACCESS > ".($IniUserAccessLevel - 1).";";
 
 		$InDBConn->ExecQuery($sDBQuery, FALSE);
 
@@ -68,7 +144,42 @@ function CountyFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
 		else
 			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery);
+		unset($sDBQuery, $sPrefix);
+	}
+	else
+		throw new Exception("Input parameters do not meet requirements range");
+}
+
+function CountySelectElemRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+{
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	{
+		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
+
+		$sDBQuery = "SELECT
+		COU_ID,
+		COU_DATA_TITLE
+		FROM
+		".$sPrefix."VIEW_COUNTY_GENERAL
+		WHERE
+		".$sPrefix."VIEW_COUNTY_GENERAL.COU_AVAIL = ".$IniIsAvailIndex."
+		AND
+		".$sPrefix."VIEW_COUNTY_GENERAL.COU_DATA_AVAIL = ".$IniIsAvailIndex."
+		AND
+		".$sPrefix."VIEW_COUNTY_GENERAL.COU_ACCESS > ".($IniUserAccessLevel - 1).";";
+
+		$InDBConn->ExecQuery($sDBQuery, FALSE);
+
+		if(!$InDBConn->HasError())
+		{
+			if($InDBConn->HasWarning())
+				throw new Exception($InDBConn->GetWarning());
+		}
+		else
+			throw new Exception($InDBConn->GetError());
+
+		unset($sDBQuery, $sPrefix);
 	}
 	else
 		throw new Exception("Input parameters do not meet requirements range");

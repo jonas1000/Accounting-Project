@@ -6,14 +6,14 @@ function JobAddParser(ME_CDBConnManager &$InDBConn, int &$IniJobOutIndex, int &$
 		$sDBQuery = "";
 		
 		$sDBQuery = "INSERT INTO
-		".$InDBConn->GetPrefix()."VIEW_JOB
+		".$InDBConn->GetPrefix()."VIEW_JOB_ADD
 		(
 		JOB_DATA_ID,
 		JOB_OUT_ID,
 		JOB_INC_ID,
 		COMP_ID,
-		JOB_ACCESS,
-		JOB_AVAIL
+		JOB_ACCESS_ID,
+		JOB_AVAIL_ID
 		)
 		VALUES
 		(
@@ -43,19 +43,19 @@ function JobAddParser(ME_CDBConnManager &$InDBConn, int &$IniJobOutIndex, int &$
 
 function JobDataAddParser(ME_CDBConnManager &$InDBConn, string &$InsName, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InsName, $InsDate))
+	if(!ME_MultyCheckEmptyType($InsName, $InsDate))
 	{
 		if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 		{
 			$sDBQuery = "";
 
 			$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_JOB_DATA
+			".$InDBConn->GetPrefix()."VIEW_JOB_DATA_ADD
 			(
 			JOB_DATA_TITLE,
 			JOB_DATA_DATE,
-			JOB_DATA_ACCESS,
-			JOB_DATA_AVAIL
+			JOB_DATA_ACCESS_ID,
+			JOB_DATA_AVAIL_ID
 			)
 			VALUES
 			(
@@ -89,17 +89,17 @@ function JobIncomeAddParser(ME_CDBConnManager &$InDBConn, float &$InfPrice, floa
 		$sDBQuery = "";
 
 		$sDBQuery = "INSERT INTO
-		".$InDBConn->GetPrefix()."VIEW_JOB_INCOME
+		".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_ADD
 		(
 		JOB_INC_PRICE,
 		JOB_INC_PIA,
-		JOB_INC_ACCESS,
-		JOB_INC_AVAIL
+		JOB_INC_ACCESS_ID,
+		JOB_INC_AVAIL_ID
 		)
 		VALUES
 		(
-		".(empty($InfPrice) ? 0 : abs($InfPrice)).",
-		".(empty($InfPIA) ? 0 : abs($InfPIA)).",
+		".((empty($InfPrice) || !is_numeric($InfPrice)) ? 0 : abs($InfPrice)).",
+		".((empty($InfPIA) || !is_numeric($InfPIA))? 0 : abs($InfPIA)).",
 		".$IniContentAccessLevelIndex.",
 		".$IniIsAvailIndex."
 		);";
@@ -127,17 +127,17 @@ function JobOutcomeAddParser(ME_CDBConnManager &$InDBConn, float &$InfExpenses, 
 		$sDBQuery = "";
 
 		$sDBQuery = "INSERT INTO
-		".$InDBConn->GetPrefix()."VIEW_JOB_OUTCOME
+		".$InDBConn->GetPrefix()."VIEW_JOB_OUTCOME_ADD
 		(
-		JOB_OUT_EXP,
-		JOB_OUT_DAM,
-		JOB_OUT_ACCESS,
-		JOB_OUT_AVAIL
+		JOB_OUT_EXPENSES,
+		JOB_OUT_DAMAGE,
+		JOB_OUT_ACCESS_ID,
+		JOB_OUT_AVAIL_ID
 		)
 		VALUES
 		(
-		".-(abs($InfExpenses).",
-		".-(abs($InfDamage).",
+		".((empty($InfExpenses) || !is_numeric($InfExpenses)) ? 0 : -(abs($InfExpenses))).",
+		".((empty($InfDamage) || !is_numeric($InfDamage)) ? 0 : -(abs($InfDamage))).",
 		".$IniContentAccessLevelIndex.",
 		".$IniIsAvailIndex."
 		);";

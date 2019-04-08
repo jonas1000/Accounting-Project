@@ -36,11 +36,10 @@ $DBQuery="INSERT INTO ".$sPrefix."COUNTY_DATA
 (COUNTY_DATA_Title,
 COUNTY_DATA_Tax,
 COUNTY_DATA_InterestRate,
-COUNTY_DATA_Date,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
 VALUES
-(\"Chios\", 7, 2, \"2018-1-1\", 2, 2);";
+(\"Chios\", 7, 2, 2, 2);";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 
@@ -137,15 +136,16 @@ $DBQuery="INSERT INTO ".$sPrefix."EMPLOYEE_DATA
 EMPLOYEE_DATA_BDay,
 EMPLOYEE_DATA_Name,
 EMPLOYEE_DATA_Surname,
+EMPLOYEE_DATA_PN,
 EMPLOYEE_DATA_Email,
 EMPLOYEE_DATA_PassWord,
 ACCESS_LEVEL_ID,
 AVAILABLE_ID)
 VALUES
-(0,\"1970-1-1\",\"Server\",\"Admin\",\"Adm@email.com\",\"" . password_hash("AdminPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",1,2),
-(0,\"1970-1-1\",\"Μενέλαος\",\"Μπρούνζης\",\"Men@email.com\",\"" . password_hash("MenPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",2,2),
-(0,\"1970-1-1\",\"Μιχαήλ\",\"Καλογιάννης\",\"Mix@email.com\",\"" . password_hash("MixPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",3,2),
-(0,\"1970-1-1\",\"Καληγούλα\",\"Κακογιάννης\",\"kal@email.com\",\"" . password_hash("calPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",3,2);";
+(0,\"1970-1-1\",\"Server\",\"Admin\", 6767676767,\"Adm@email.com\",\"" . password_hash("AdminPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",1,2),
+(0,\"1970-1-1\",\"Μενέλαος\",\"Μπρούνζης\", 6868686868,\"Men@email.com\",\"" . password_hash("MenPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",2,2),
+(0,\"1970-1-1\",\"Μιχαήλ\",\"Καλογιάννης\", 6969696969,\"Mix@email.com\",\"" . password_hash("MixPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",3,2),
+(0,\"1970-1-1\",\"Καληγούλα\",\"Κακογιάννης\", 7070707070,\"kal@email.com\",\"" . password_hash("calPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",3,2);";
 
 $DBConn->ExecQuery($DBQuery, TRUE);
 

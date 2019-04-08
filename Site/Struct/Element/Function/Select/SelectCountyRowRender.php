@@ -1,10 +1,10 @@
 <?php
 //Render element <select> with the County array result from query
-function RenderCountySelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function RenderCountySelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-	if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		CountyFormRetriever($InDBConn, $IniUserAccessLevelIndex, $IniIsAvailIndex);
+		CountySelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
 		print("<select name='County'>");
 
@@ -16,11 +16,11 @@ function RenderCountySelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccess
 }
 
 //Render element <select> with the County array result from query
-function RenderCountySelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex, int $IniSelected = 0) : void
+function RenderCountySelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex, int $IniSelected = 0) : void
 {
-	if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		CountyFormRetriever($InDBConn, $IniUserAccessLevelIndex, $IniIsAvailIndex);
+		CountySelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
 		print("<select name='County'>");
 

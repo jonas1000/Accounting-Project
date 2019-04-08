@@ -6,7 +6,7 @@ function ProAddCompany(ME_CDBConnManager &$InDBConn)
 	if(isset($_POST['Name'], $_POST['Date'], $_POST['Access'], $_POST['County']))
 	{
 		//Check if POST data are NOT empty, if false then throw a exception
-		if(ME_MultyCheckEmptyType($_POST['Name'], $_POST['Date'], $_POST['Access'], $_POST['County']))
+		if(!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Date'], $_POST['Access'], $_POST['County']))
 		{
 			//Check if POST data are numeric, if false then throw a exception
 			if(ME_MultyCheckNumericType($_POST['Access'], $_POST['County']))
@@ -37,18 +37,18 @@ function ProAddCompany(ME_CDBConnManager &$InDBConn)
 						throw new Exception("Coulnd't get last query id");
 				}
 				else
-					throw new Exception("Some POST data do not meet the requirement range");
+					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
 					
 				unset($sName, $sDate, $iContentAccessIndex, $iCountyIndex);
 				header("Location:Index.php?MenuIndex=".$_ENV['MenuIndex']['Company']);
 			}
 			else 
-                throw new Exception("Some POST data are not considered numeric type");
+                throw new Exception("Some POST variables are not considered numeric type");
 		}
 		else
-			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+		throw new Exception("Missing POST variables to complete transaction");
 }
 ?>

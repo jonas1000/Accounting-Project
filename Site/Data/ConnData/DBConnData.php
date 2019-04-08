@@ -1,12 +1,15 @@
 <?php
 if(!isset($_SESSION['AppVersion'], $_SESSION['Debug'], $_SESSION['AccessID'], $_SESSION['ConnEncoding'], $_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword']))
 {
-	$_SESSION['AppVersion'] = "0.2.1.9";
-	$_SESSION['Debug'] = TRUE;
+	$_SESSION['AppVersion'] = "0.2.3.6";
+
+	//WARNING: this variable will be removed in the future
+	//it is only used in the current state of development
+	$_SESSION['Debug'] = FALSE;
 
 	if($_SESSION['Debug'])
 	{
-	  $_SESSION['AccessID'] = $_ENV['AccessLevel']["Admin"];
+	  $_SESSION['AccessID'] = $_ENV['AccessLevel']['Admin'];
 
 	  //The encoding the connect to the database will use.
 	  $_SESSION['ConnEncoding'] = "utf8";

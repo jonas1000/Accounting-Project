@@ -1,22 +1,20 @@
 <?php
-function CompanyEditParser(ME_CDBConnManager &$InDBConn, int &$IniCompanyIndex, int &$IniCountyIndex, int &$IniContentAccessLevelIndex, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CompanyEditParser(ME_CDBConnManager &$InDBConn, int &$IniCompanyIndex, int &$IniCountyIndex, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-    if(($IniCompanyIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+    if(($IniCountyIndex > 0) && ($IniCompanyIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
     {
         $sDBQuery = "";
         $sPrefix = $InDBConn->GetPrefix();
 
         $sDBQuery = "UPDATE 
-        ".$sPrefix. "VIEW_COMPANY
+        ".$sPrefix."VIEW_COMPANY_EDIT
         SET
-        ".$sPrefix."VIEW_COMPANY.COU_ID = ".$IniCountyIndex.",
-        ".$sPrefix."VIEW_COMPANY.COMP_ACCESS = ".$IniContentAccessLevelIndex."
+        ".$sPrefix."VIEW_COMPANY_EDIT.COU_ID = ".$IniCountyIndex.",
+        ".$sPrefix."VIEW_COMPANY_EDIT.COMP_ACCESS_ID = ".$IniContentAccessLevelIndex."
         WHERE
-        (".$sPrefix."VIEW_COMPANY.COMP_ID = ".$IniCompanyIndex."
+        (".$sPrefix."VIEW_COMPANY_EDIT.COMP_AVAIL_ID = ".$IniIsAvailIndex.")
         AND
-        ".$sPrefix."VIEW_COMPANY.COMP_ACCESS > ".($IniUserAccessLevelIndex - 1)."
-        AND
-        ".$sPrefix."VIEW_COMPANY.COMP_AVAIL = ".$IniIsAvailIndex.");";
+        (".$sPrefix."VIEW_COMPANY_EDIT.COMP_ID = ".$IniCompanyIndex.");";
 
         $InDBConn->ExecQuery($sDBQuery, TRUE);
 
@@ -34,26 +32,25 @@ function CompanyEditParser(ME_CDBConnManager &$InDBConn, int &$IniCompanyIndex, 
         throw new Exception("Input parameters do not meet requirements range");
 } 
 
-function CompanyDataEditParser(ME_CDBConnManager &$InDBConn, int &$IniCompanyDataIndex, string &$InsName, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CompanyDataEditParser(ME_CDBConnManager &$InDBConn, int &$IniCompanyDataIndex, string &$InsName, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-    if(ME_MultyCheckEmptyType($InsName, $InsDate))
+    if(!ME_MultyCheckEmptyType($InsName, $InsDate))
     {
-        if(($IniCompanyDataIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+        if(($IniCompanyDataIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
         {
             $sDBQuery = "";
             $sPrefix = $InDBConn->GetPrefix();
 
             $sDBQuery = "UPDATE 
-            ".$sPrefix."VIEW_COMPANY_DATA
+            ".$sPrefix."VIEW_COMPANY_DATA_EDIT
             SET
-            ".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_TITLE = \"".$InsName."\",
-            ".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_DATE = \"".$InsDate."\"
+            ".$sPrefix."VIEW_COMPANY_DATA_EDIT.COMP_DATA_TITLE = \"".$InsName."\",
+            ".$sPrefix."VIEW_COMPANY_DATA_EDIT.COMP_DATA_DATE = \"".$InsDate."\",
+            ".$sPrefix."VIEW_COMPANY_DATA_EDIT.COMP_DATA_ACCESS_ID = ".$IniContentAccessLevelIndex."
             WHERE
-            (".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_ID = ".$IniCompanyDataIndex."
+            (".$sPrefix."VIEW_COMPANY_DATA_EDIT.COMP_DATA_AVAIL_ID = ".$IniIsAvailIndex.")
             AND
-            ".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_ID > ".($IniUserAccessLevelIndex - 1)."
-            AND
-            ".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_AVAIL = ".$IniIsAvailIndex.");";
+            (".$sPrefix."VIEW_COMPANY_DATA_EDIT.COMP_DATA_ID = ".$IniCompanyDataIndex.");";
 
             $InDBConn->ExecQuery($sDBQuery, true);
 

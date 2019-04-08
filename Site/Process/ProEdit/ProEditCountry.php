@@ -1,10 +1,10 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProEditCountry(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex)
+function ProEditCountry(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel)
 {
     if(isset($_POST['CounIndex'], $_POST['Name'], $_POST['Access']))
     {
-        if(ME_MultyCheckEmptyType($_POST['CounIndex'], $_POST['Name'], $_POST['Access'], $IniUserAccessLevelIndex))
+        if(!ME_MultyCheckEmptyType($_POST['CounIndex'], $_POST['Name'], $_POST['Access']))
         {
             if(ME_MultyCheckNumericType($_POST['CounIndex'], $_POST['Access']))
             {
@@ -22,10 +22,10 @@ function ProEditCountry(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIn
 
                 //database cannot accept Primary or foreighn keys below 1
 				//If duplicate the database will throw a exception
-                if(($iContentAccessIndex > 0) && ($iCountryIndex > 0) && ($IniUserAccessLevelIndex > 0))
+                if(($iContentAccessIndex > 0) && ($iCountryIndex > 0) && ($IniUserAccessLevel > 0))
                 {
                     //Get the information of the row to be able to modifie references
-                    CountryGeneralSpecificRetriever($InDBConn, $iCountryIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                    CountrySpecificRetriever($InDBConn, $iCountryIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
                     $aCountryRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
                     $iCountryNumRow = $InDBConn->GetResultNumRows();
@@ -34,31 +34,42 @@ function ProEditCountry(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIn
                     if(!empty($aCountryRow) && ($iCountryNumRow > 0) && ($iCountryNumRow < 2))
                     {
                         $iCountryDataIndex = (int) $aCountryRow['COUN_DATA_ID'];
+                        $iCountryAccessLevel = (int) $aCountryRow['COUN_ACCESS'];
 
-                        CountryEditParser($InDBConn, $iCountryIndex, $iContentAccessIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                        if(($iCountryDataIndex > 0) && ($iCountryAccessLevel > 0))
+                        {
+                            if($iCountryAccessLevel > ($IniUserAccessLevel - 1))
+                            {
+                                CountryEditParser($InDBConn, $iCountryIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
 
-                        CountryDataEditParser($InDBConn,  $iCountryDataIndex, $sName, $iContentAccessIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                                CountryDataEditParser($InDBConn,  $iCountryDataIndex, $sName, $iContentAccessIndex, $_ENV['Available']['Show']);
+                            }
+                            else
+                                throw new Exception("insufficient privilage to access content");
+                        }
+                        else
+							throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
 
-                        unset($iCountryDataIndex);
+                        unset($iCountryDataIndex, $iCountryAccessLevel);
                     }
                     else
-                        throw new Exception("Could not fetch result for Company");
+                        throw new Exception("Could not fetch Table result");
 
                     unset($aCountryRow, $iCountryNumRow);
                 }
                 else
-                    throw new Exception("Some POST data do not meet the requirement range");
+                    throw new Exception("Some variables do not meet the process requirement range, Check your variables");
 
-                unset($sName, $sAccess, $sCountry, $iContentAccessIndex, $iCountryIndex);
+                unset($sName, $sDate, $iContentAccessIndex, $iCountryIndex);
                 header("Location:.?MenuIndex=".$_ENV['MenuIndex']['Country']);
             }
             else 
-                throw new Exception("Some POST data are not considered numeric type");
-        }
-        else
-			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+                throw new Exception("Some POST variables are not considered numeric type");
+		}
+		else
+			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+		throw new Exception("Missing POST variables to complete transaction");
 }
 ?>

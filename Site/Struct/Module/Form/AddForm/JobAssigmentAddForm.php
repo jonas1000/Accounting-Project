@@ -1,6 +1,6 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLJobAssigmentAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLJobAssigmentAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
   require_once("Struct/Element/Function/Select/DBSelectRender.php");
 

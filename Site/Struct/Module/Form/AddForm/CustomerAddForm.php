@@ -1,10 +1,7 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLCustomerAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLCustomerAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
-	require_once("Output/Retriever/AccessRetriever.php");
-	require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
-
   //-------------<PHP-HTML>-------------//
   print("<div class='Form'>");
 
@@ -20,7 +17,7 @@ function HTMLCustomerAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
   print("<div>");
 
   print("<div>");
-  print("<h5>Name</h5>");
+  print("<h5>Name*</h5>");
   print("</div>");
 
   print("<div>");
@@ -33,7 +30,7 @@ function HTMLCustomerAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
   print("<div>");
 
   print("<div>");
-  print("<h5>Surname</h5>");
+  print("<h5>Surname*</h5>");
   print("</div>");
 
   print("<div>");
@@ -46,7 +43,7 @@ function HTMLCustomerAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
   print("<div>");
 
   print("<div>");
-  print("<h5>Phone number</h5>");
+  print("<h5>Phone number*</h5>");
   print("</div>");
 
   print("<div>");
@@ -128,7 +125,7 @@ function HTMLCustomerAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
   print("</div>");
 
   print("<div>");
-  RenderAccessSelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+  RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
   print("</div>");
 
   print("</div>");

@@ -1,22 +1,20 @@
 <?php
-function ShareholderEditParser(ME_CDBConnManager &$InDBConn, int &$IniShareholderIndex, int &$IniEmployeeIndex, int &$IniContentAccessLevelIndex, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function ShareholderEditParser(ME_CDBConnManager &$InDBConn, int &$IniShareholderIndex, int &$IniEmployeeIndex, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(($IniEmployeeIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniEmployeeIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
         $sDBQuery = "";
-        $sDBPrefix = $InDBConn->GetPrefix();
+        $sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery = "UPDATE
-        ".$sDBPrefix."VIEW_SHAREHOLDER
-        SET
-        ".$sDBPrefix."VIEW_SHAREHOLDER.EMP_ID = ".$IniEmployeeIndex.",
-        ".$sDBPrefix."VIEW_SHAREHOLDER.SHARE_ACCESS = ".$IniContentAccessLevelIndex."
-        WHERE
-		(".$sDBPrefix."VIEW_SHAREHOLDER.SHARE_ID = ".$IniShareholderIndex."
+		".$sPrefix."VIEW_SHAREHOLDER_EDIT
+		SET
+		".$sPrefix."VIEW_SHAREHOLDER_EDIT.EMP_ID = ".$IniEmployeeIndex.",
+		".$sPrefix."VIEW_SHAREHOLDER_EDIT.SHARE_ACCESS_ID = ".$IniContentAccessLevelIndex."
+		WHERE
+		(".$sPrefix."VIEW_SHAREHOLDER_EDIT.SHARE_AVAIL_ID = ".$IniIsAvailIndex.")
 		AND
-		".$sDBPrefix."VIEW_SHAREHOLDER.SHARE_ACCESS > ".($IniUserAccessLevelIndex - 1)."
-        AND
-        ".$sDBPrefix."VIEW_SHAREHOLDER.SHARE_AVAIL = ".$IniIsAvailIndex.");";
+		(".$sPrefix."VIEW_SHAREHOLDER_EDIT.SHARE_ID = ".$IniShareholderIndex.");";
 
 		$InDBConn->ExecQuery($sDBQuery, TRUE);
 

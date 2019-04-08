@@ -8,7 +8,6 @@ function ME_SecDataFilter(string &$InsData) : string
     $InsData = trim($InsData);
 
     $InsData = htmlspecialchars($InsData);
-    $InsData = htmlentities($InsData);
   }
 
   return $InsData;

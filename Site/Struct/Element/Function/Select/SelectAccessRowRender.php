@@ -1,11 +1,11 @@
 <?php
 //-------------<FUNCTIONS>-------------//
 //Render element <select> with the Access array result from query
-function RenderAccessSelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function RenderAccessSelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-    if (($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1))) 
+    if (($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1))) 
     {
-        AccessFormRetriever($InDBConn, $IniUserAccessLevelIndex, $IniIsAvailIndex);
+        AccessSelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
         printf("<select name='Access'>");
 
@@ -17,11 +17,11 @@ function RenderAccessSelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccess
 }
 
 //Render element <select> with the Access array result from query
-function RenderAccessSelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex, int &$IniSelected) : void
+function RenderAccessSelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex, int &$IniSelected) : void
 {
-    if (($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)) && ($IniSelected > 0)) 
+    if (($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)) && ($IniSelected > 0)) 
     {
-        AccessFormRetriever($InDBConn, $IniUserAccessLevelIndex, $IniIsAvailIndex);
+        AccessSelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
         printf("<select name='Access'>");
 

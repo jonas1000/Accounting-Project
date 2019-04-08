@@ -1,12 +1,8 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLShareholderAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLShareholderAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
-	require_once("Output/Retriever/AccessRetriever.php");
-	require_once("Output/Retriever/EmployeeRetriever.php");
-	require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
-	require_once("Struct/Element/Function/Select/SelectEmployeeRowRender.php");
-
+  	//-------------<PHP-HTML>-------------//
 	print("<div class='Form'>");
 	print("<form method='POST'>");
 	print("<div>");
@@ -23,7 +19,7 @@ function HTMLShareholderAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAcces
 	print("</div>");
 
 	print("<div>");
-	RenderEmployeeSelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+	RenderEmployeeSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
 	print("</div>");
 	print("</div>");
 
@@ -34,14 +30,14 @@ function HTMLShareholderAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAcces
 	print("</div>");
 
 	print("<div>");
-	RenderAccessSelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+	RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
 	print("</div>");
 	print("</div>");
 
 	print("</div>");
 
 	print("<div>");
-	printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $_GET['MenuInded'], $_GET['Module']);
+	printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $_GET['MenuIndex'], $_GET['Module']);
 	printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_GET['MenuIndex']);
 	print("</div>");
 

@@ -7,14 +7,16 @@ require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
 
 $DBConn = new ME_CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
-function HTMLEmployeePositionOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLEmployeePositionOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
 	require_once("Output/Retriever/EmployeeRetriever.php");
 
-	EmployeePositionRetriever($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+	EmployeePositionOverviewRetriever($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
 	foreach($InDBConn->GetResult() as $EmpPosRow => $EmpPosData)
 	{
+		if(((int) $EmpPosData['EMP_POS_ACCESS'] > ($IniUserAccessLevel - 1)))
+		{
 			print("<div class='DataBlock'>");
 
 			print("<form method='POST'>");
@@ -35,6 +37,7 @@ function HTMLEmployeePositionOverview(ME_CDBConnManager &$InDBConn, int &$IniUse
 			print("</form>");
 
 			print("</div>");
+		}
 	}
 
 	printf("<a href='.?MenuIndex=%s&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>", $_GET['MenuIndex']);
@@ -58,6 +61,8 @@ else
 			}
 			else
 			{
+				require_once("Output/Retriever/AccessRetriever.php");
+				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
 				require_once("Struct/Module/Form/AddForm/EmployeePositionAddForm.php");
 
 				ProQueryFunctionCallback($DBConn, "HTMLEmployeePositionAddForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
@@ -73,7 +78,7 @@ else
 			{
 				require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataNumericType.php");
 				require_once("Input/Parser/EditParser/EmployeePositionEditParser.php");
-				require_once("Output/Retriever/EmployeeRetriever.php");
+				require_once("Output/SpecificRetriever/EmployeeSpecificRetriever.php");
 				require_once("process/ProEdit/ProEditEmployeePosition.php");
 
                 ProQueryFunctionCallback($DBConn, "ProEditEmployeePosition", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
@@ -92,8 +97,8 @@ else
 		}
 		case 2:
 		{
-			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
 			require_once("Input/Parser/VisibilityParser/EmployeePositionVisParser.php");
+			require_once("Output/SpecificRetriever/EmployeeSpecificRetriever.php");
 			require_once("Process/ProDel/ProDelEmployeePosition.php");
 
 			ProQueryFunctionCallback($DBConn, "ProDelEmployeePosition", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");

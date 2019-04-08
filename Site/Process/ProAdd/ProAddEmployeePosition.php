@@ -4,7 +4,7 @@ function ProAddEmployeePosition(ME_CDBConnManager &$InDBConn)
 {
 	if(isset($_POST['Name'], $_POST['Access']))
 	{
-		if(ME_MultyCheckEmptyType($_POST['Name'], $_POST['Access']))
+		if(!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Access']))
 		{
 			if(is_numeric($_POST['Access']))
 			{
@@ -24,18 +24,18 @@ function ProAddEmployeePosition(ME_CDBConnManager &$InDBConn)
 				if($iContentAccessIndex > 0)
 					EmployeePositionAddParser($InDBConn, $sName, $iContentAccessIndex, $_ENV['Available']['Show']);
 				else
-					throw new Exception("Some POST data do not meet the requirement range");
+					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
 					
 				unset($sName, $iContentAccessIndex);
 				header("Location:Index.php?MenuIndex=".$_ENV['MenuIndex']['EmployeePosition']);
 			}
 			else 
-                throw new Exception("Some POST data are not considered numeric type");
+                throw new Exception("Some POST variables are not considered numeric type");
 		}
 		else
-			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+		throw new Exception("Missing POST variables to complete transaction");
 }
 ?>

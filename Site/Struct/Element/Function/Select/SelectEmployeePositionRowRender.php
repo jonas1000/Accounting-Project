@@ -1,10 +1,10 @@
 <?php
 //Render element <select> with the Employee Position array result from query
-function RenderEmployeePosSelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function RenderEmployeePosSelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-	if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		EmployeePosFormRetriever($InDBConn, $IniUserAccessLevelIndex, $IniIsAvailIndex);
+		EmployeePosSelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
 		print("<select name='EmployeePosition'>");
 
@@ -16,11 +16,11 @@ function RenderEmployeePosSelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserA
 }
 
 //Render element <select> with the Employee Position array result from query
-function RenderEmployeePosSelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex, int &$IniSelected) : void
+function RenderEmployeePosSelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex, int &$IniSelected) : void
 {
-	if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		EmployeePosFormRetriever($InDBConn, $IniUserAccessLevelIndex, $IniIsAvailIndex);
+		EmployeePosSelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
 		print("<select name='EmployeePosition'>");
 

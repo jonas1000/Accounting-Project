@@ -7,12 +7,12 @@ function CompanyAddParser(ME_CDBConnManager &$InDBConn, int &$IniCountyIndex, in
 		$sDBQuery = "";
 
 		$sDBQuery = "INSERT INTO
-		".$InDBConn->GetPrefix()."VIEW_COMPANY
+		".$InDBConn->GetPrefix()."VIEW_COMPANY_ADD
 		(
 		COMP_DATA_ID,
 		COU_ID,
-		COMP_ACCESS,
-		COMP_AVAIL
+		COMP_ACCESS_ID,
+		COMP_AVAIL_ID
 		)
 		VALUES
 		(".$InDBConn->GetLastQueryID().",
@@ -39,19 +39,19 @@ function CompanyAddParser(ME_CDBConnManager &$InDBConn, int &$IniCountyIndex, in
 
 function CompanyDataAddParser(ME_CDBConnManager &$InDBConn, string &$InsName, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InsName, $InsDate))
+	if(!ME_MultyCheckEmptyType($InsName, $InsDate))
 	{
 		if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 		{
 			$sDBQuery = "";
 
 			$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_COMPANY_DATA
+			".$InDBConn->GetPrefix()."VIEW_COMPANY_DATA_ADD
 			(
 			COMP_DATA_TITLE,
 			COMP_DATA_DATE,
-			COMP_DATA_ACCESS,
-			COMP_DATA_AVAIL
+			COMP_DATA_ACCESS_ID,
+			COMP_DATA_AVAIL_ID
 			)
 			VALUES
 			(

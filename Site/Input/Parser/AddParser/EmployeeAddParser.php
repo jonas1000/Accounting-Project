@@ -6,13 +6,13 @@ function EmployeeAddParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeePositi
 		$sDBQuery = "";
 		
 		$sDBQuery = "INSERT INTO
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE
+		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_ADD
 		(
 		EMP_DATA_ID,
 		EMP_POS_ID,
 		COMP_ID,
-		EMP_ACCESS,
-		EMP_AVAIL
+		EMP_ACCESS_ID,
+		EMP_AVAIL_ID
 		)
 		VALUES
 		(
@@ -42,7 +42,7 @@ function EmployeeAddParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeePositi
 
 function EmployeeDataAddParser(ME_CDBConnManager &$InDBConn, string &$InsName, string &$InsSurname, string &$InsPassword, string &$InsEmail, float &$InfSalary, string &$InsBDay, string &$InsPhoneNumber, string &$InsStableNumber, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex, int &$IniPasswordCost=10) : void
 {
-	if(ME_MultyCheckEmptyType($InsName, $InsSurname, $InsPassword, $InsEmail, $InsBDay))
+	if(!ME_MultyCheckEmptyType($InsName, $InsSurname, $InsPassword, $InsEmail, $InsBDay))
 	{
 		if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)) && ($IniPasswordCost > 0))
 		{
@@ -50,18 +50,18 @@ function EmployeeDataAddParser(ME_CDBConnManager &$InDBConn, string &$InsName, s
 			
 			//database Query
 			$$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_DATA
+			".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_DATA_ADD
 			(
 			EMP_DATA_NAME,
 			EMP_DATA_SURNAME,
 			EMP_DATA_PASS,
 			EMP_DATA_EMAIL,
-			EMP_DATA_SAL,
+			EMP_DATA_SALARY,
 			EMP_DATA_BDAY,
 			EMP_DATA_PN,
 			EMP_DATA_SN,
-			EMP_DATA_ACCESS,
-			EMP_DATA_AVAIL
+			EMP_DATA_ACCESS_ID,
+			EMP_DATA_AVAIL_ID
 			)
 			VALUES
 			(
@@ -69,7 +69,7 @@ function EmployeeDataAddParser(ME_CDBConnManager &$InDBConn, string &$InsName, s
 			\"".$InsSurname."\",
 			\"".password_hash($InsPassword, PASSWORD_BCRYPT, ["cost" => $IniPasswordCost])."\",
 			\"".$InsEmail."\",
-			".((empty($InfSalary) || ($InfSalary < 0)) ? 0 : $InfSalary).",
+			".$InfSalary.",
 			\"".$InsBDay."\",
 			\"".(empty($InsPhoneNumber) ? "None" : $InsPhoneNumber)."\",
 			\"".(empty($InsStableNumber) ? "None" : $InsStableNumber)."\",

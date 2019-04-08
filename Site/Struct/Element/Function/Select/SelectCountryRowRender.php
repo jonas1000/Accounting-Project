@@ -1,10 +1,10 @@
 <?php
  //Render element <select> with the Country array result from query
-function RenderCountrySelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function RenderCountrySelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-    if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1))) 
+    if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1))) 
     {
-        CountryFormRetriever($InDBConn, $IniUserAccessLevelIndex, $IniIsAvailIndex);
+        CountrySelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
         printf("<select name='Country'>");
 
@@ -16,11 +16,11 @@ function RenderCountrySelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAcces
 }
 
  //Render element <select> with the Country array result from query
-function RenderCountrySelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex, int &$IniSelected) : void
+function RenderCountrySelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex, int &$IniSelected) : void
 {
-    if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)) && ($IniSelected > 0)) 
+    if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)) && ($IniSelected > 0)) 
     {
-        CountryFormRetriever($InDBConn, $IniUserAccessLevelIndex, $IniIsAvailIndex);
+        CountrySelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
         printf("<select name='Country'>");
 

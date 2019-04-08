@@ -1,6 +1,6 @@
 <?php
  //-------------<FUNCTION>-------------//
-function HTMLCustomerEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLCustomerEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
     if(isset($_POST['CustIndex']))
     {
@@ -12,12 +12,12 @@ function HTMLCustomerEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
 
             if($iCustomerIndex > 0)
             {
-                CustomerGeneralSpecificRetriever($InDBConn, $iCustomerIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                CustomerGeneralSpecificRetriever($InDBConn, $iCustomerIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
                 $aCustomerRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
                 $iCustomerNumRows = $InDBConn->GetResultNumRows();
 
-                if(!empty($aCustomerRow) && ($iCustomerNumRows > 0) && ($iCustomerNumRows < 2)) 
+                if(!empty($aCustomerRow) && ($iCustomerNumRows > 0 && $iCustomerNumRows < 2)) 
                 {
                     $iCustomerAccessIndex = $aCustomerRow['CUST_DATA_ACCESS'];
 
@@ -37,7 +37,7 @@ function HTMLCustomerEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     print("<div>");
 
                     print("<div>");
-                    print("<h5>Name</h5>");
+                    print("<h5>Name*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -50,7 +50,7 @@ function HTMLCustomerEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     print("<div>");
 
                     print("<div>");
-                    print("<h5>Surname</h5>");
+                    print("<h5>Surname*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -63,7 +63,7 @@ function HTMLCustomerEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     print("<div>");
 
                     print("<div>");
-                    print("<h5>Phone number</h5>");
+                    print("<h5>Phone number*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -145,7 +145,7 @@ function HTMLCustomerEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     print("</div>");
 
                     print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iCustomerAccessIndex);
+                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCustomerAccessIndex);
                     print("</div>");
 
                     print("</div>");
@@ -153,6 +153,7 @@ function HTMLCustomerEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     print("</div>");
 
                     print("<div>");
+                    printf("<input type='hidden' value='%s' name='CustIndex'>", $aCustomerRow['CUST_ID']);
                     printf("<input type='submit' value='Save' formaction='.?MenuIndex=%s&Module=%s&ProEdit'>", $_GET['MenuIndex'], $_GET['Module']);
                     printf("<a href='.?MenuIndex=%s'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['Customer']);
                     print("</div>");

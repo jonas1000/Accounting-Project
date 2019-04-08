@@ -2,11 +2,11 @@
 //-------------<FUNCTION>-------------//
 function ProAddEmployee(ME_CDBConnManager &$InDBConn)
 {
-	if(isset($_POST['Name'], $_POST['Pass'], $_POST['Email'], $_POST['Salary'], $_POST['BDay'], $_POST['Access'], $_POST['Company'], $_POST['Position']))
+	if(isset($_POST['Name'], $_POST['Surname'], $_POST['Pass'], $_POST['Email'], $_POST['Salary'], $_POST['BDay'], $_POST['PN'], $_POST['SN'], $_POST['Access'], $_POST['Company'], $_POST['EmployeePosition']))
 	{
-	 	if(ME_MultyCheckEmptyType($_POST['Name'], $_POST['Pass'], $_POST['Email'], $_POST['BDay'], $_POST['Access'], $_POST['Company'], $_POST['Position']))
+	 	if(!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Surname'], $_POST['Pass'], $_POST['Email'], $_POST['BDay'], $_POST['PN'], $_POST['Access'], $_POST['Company'], $_POST['EmployeePosition']))
 		{
-			if(ME_MultyCheckNumericType($_POST['Salary'], $_POST['Access'], $_POST['Copmany'], $_POST['Position']))
+			if(ME_MultyCheckNumericType($_POST['Access'], $_POST['Company'], $_POST['EmployeePosition']))
 			{
 				//take strings as is
 				$sName = $_POST['Name'];
@@ -23,9 +23,9 @@ function ProAddEmployee(ME_CDBConnManager &$InDBConn)
 				//variables consindered to be holding ID's
 				$iContentAccessIndex = (int) $_POST['Access'];
 				$iCompanyIndex = (int) $_POST['Company'];
-				$iEmployeePosIndex = (int) $_POST['Position'];
+				$iEmployeePositionIndex = (int) $_POST['EmployeePosition'];
 
-				unset($_POST['Name'], $_POST['Surname'], $_POST['Password'], $_POST['Email'], $_POST['Salary'], $_POST['BDay'], $_POST['PN'], $_POST['SN'], $_POST['Company'], $_POST['Position'], $_POST['Access']);
+				unset($_POST['Name'], $_POST['Surname'], $_POST['Password'], $_POST['Email'], $_POST['Salary'], $_POST['BDay'], $_POST['PN'], $_POST['SN'], $_POST['Company'], $_POST['EmployeePosition'], $_POST['Access']);
 
 				//format the string to be compatible with HTML and avoid SQL injection
 				ME_SecDataFilter($sName);
@@ -39,29 +39,29 @@ function ProAddEmployee(ME_CDBConnManager &$InDBConn)
 				//Limit data to a certain acceptable range
 				//database cannot accept Primary or foreighn keys below 1
 				//If duplicate the database will throw a exception
-				if(($fSalary > -1) && ($iContentAccessIndex > 0) && ($iCompanyIndex > 0) && ($iEmployeePosIndex > 0))
+				if(($fSalary > -1) && ($iContentAccessIndex > 0) && ($iCompanyIndex > 0) && ($iEmployeePositionIndex > 0))
 				{
 					EmployeeDataAddParser($InDBConn, $sName, $sSurname, $sPassword, $sEmail, $fSalary, $sBDay, $sPhoneNumber, $sStableNumber, $iContentAccessIndex, $_ENV['Available']['Show']);
 
 					//check if last id could be aquired
 					if($InDBConn->GetLastQueryID())
-						EmployeeAddParser($InDBConn, $iEmployeePosIndex, $iCompanyIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
+						EmployeeAddParser($InDBConn, $iEmployeePositionIndex, $iCompanyIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
 					else
 						throw new Exception("couldn't get last id of query");
 				}
 				else
-					throw new Exception("Some POST data do not meet the requirement range");
+					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
 					
-				unset($sTitle, $sSurname, $sPassword, $sEmail, $fSalary, $sBDay, $sPhoneNumber, $sStableNumber, $iContentAccessIndex, $iEmployeePosIndex, $iCompanyIndex);
+				unset($sTitle, $sSurname, $sPassword, $sEmail, $fSalary, $sBDay, $sPhoneNumber, $sStableNumber, $iContentAccessIndex, $iEmployeePositionIndex, $iCompanyIndex);
 				header("Location:Index.php?MenuIndex=".$_ENV['MenuIndex']['Employee']);
 			}
 			else 
-                throw new Exception("Some POST data are not considered numeric type");
+                throw new Exception("Some POST variables are not considered numeric type");
 		}
 		else
-			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+		throw new Exception("Missing POST variables to complete transaction");
 }
 ?>

@@ -1,6 +1,6 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLJobPITEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLJobPITEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
     if(isset($_POST['JobPITIndex']))
     {
@@ -12,7 +12,7 @@ function HTMLJobPITEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLev
 
             if($iJobPITIndex > 0)
             {
-                JobPITSpecificRetriever($InDBConn, $iJobPITIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                JobPITSpecificRetriever($InDBConn, $iJobPITIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
                 $aJobPITRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
                 $iJobPITNumRows = $InDBConn->GetResultNumRows();
@@ -38,14 +38,14 @@ function HTMLJobPITEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLev
                     print("</div>");
 
                     print("<div>");
-                    printf("<input type='number' name='PIT' value='%s'>", $aJobPITRow['JOB_PIT']);
+                    printf("<input type='number' name='PIT' value='%s'>", $aJobPITRow['JOB_PIT_PAYMENT']);
                     print("</div>");
                     print("</div>");
 
                     //Input Row
                     print("<div>");
                     print("<div>");
-                    print("<h5>Date</h5>");
+                    print("<h5>Date*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -60,14 +60,14 @@ function HTMLJobPITEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLev
                     print("</div>");
 
                     print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iJobPITAccessIndex);
+                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iJobPITAccessIndex);
                     print("</div>");
                     print("</div>");
 
                     print("</div>");
 
                     print("<div>");
-                    printf("<input type='hidden' name='JobIndex' value='%d'>", $aJobPITRow['JOB_PIT_ID']);
+                    printf("<input type='hidden' name='JobPITIndex' value='%d'>", $aJobPITRow['JOB_PIT_ID']);
                     printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['Job']);
                     printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&SubModule=%d&ProEdit'>", $_GET['MenuIndex'], $_GET['Module'], $_GET['SubModule']);
                     print("</div>");

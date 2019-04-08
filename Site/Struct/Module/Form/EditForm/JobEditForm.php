@@ -1,6 +1,6 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLJobEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIndex) : void
+function HTMLJobEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevel) : void
 {
     if(isset($_POST['JobIndex']))
     {
@@ -12,7 +12,7 @@ function HTMLJobEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIndex
 
             if($iJobIndex > 0)
             {
-                JobGeneralSpecificRetriever($InDBConn, $iJobIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                JobGeneralSpecificRetriever($InDBConn, $iJobIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
                 $aJobRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
                 $iJobNumRows = $InDBConn->GetResultNumRows();
@@ -35,7 +35,7 @@ function HTMLJobEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIndex
                     //Input Row
                     print("<div>");
                     print("<div>");
-                    print("<h5>Name</h5>");
+                    print("<h5>Name*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -72,7 +72,7 @@ function HTMLJobEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIndex
                     print("</div>");
 
                     print("<div>");
-                    printf("<input name='Expenses' type='number' step='0.01' min='0.0' placeholder='Job expensess' value='%s'>", $aJobRow['JOB_OUT_EXP']);
+                    printf("<input name='Expenses' type='number' step='0.01' min='0.0' placeholder='Job expensess' value='%s'>", abs($aJobRow['JOB_OUT_EXPENSES']));
                     print("</div>");
                     print("</div>");
 
@@ -83,14 +83,14 @@ function HTMLJobEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIndex
                     print("</div>");
 
                     print("<div>");
-                    printf("<input name='Damage' type='number' step='0.01' min='0.0' placeholder='Job Damage expensess' value='%s'>", $aJobRow['JOB_OUT_DAM']);
+                    printf("<input name='Damage' type='number' step='0.01' min='0.0' placeholder='Job Damage expensess' value='%s'>", abs($aJobRow['JOB_OUT_DAMAGE']));
                     print("</div>");
                     print("</div>");
 
                     //Input Row
                     print("<div>");
                     print("<div>");
-                    print("<h5>Date</h5>");
+                    print("<h5>Date*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -105,7 +105,7 @@ function HTMLJobEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIndex
                     print("</div>");
 
                     print("<div>");
-                    RenderCompanySelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iCompIndex);
+                    RenderCompanySelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCompIndex);
                     print("</div>");
                     print("</div>");
 
@@ -115,7 +115,7 @@ function HTMLJobEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIndex
                     print("</div>");
 
                     print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iJobAccessIndex);
+                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iJobAccessIndex);
                     print("</div>");
                     print("</div>");
 
@@ -123,7 +123,7 @@ function HTMLJobEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIndex
 
                     print("<div>");
                     printf("<input type='hidden' name='JobIndex' value='%s' required>", $aJobRow['JOB_ID']);
-                    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $_GET['MenuIndex'], $_GET['Module']);
+                    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>", $_GET['MenuIndex'], $_GET['Module']);
                     printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['Job']);
                     print("</div>");
 

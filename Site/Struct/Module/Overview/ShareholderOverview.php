@@ -8,9 +8,9 @@ require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
 $DBConn = new ME_CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
 //-------------<FUNCTION>-------------//
-function HTMLShareholderOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex)
+function HTMLShareholderOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel)
 {
-	ShareholderGeneralRetriever($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+	ShareholderOverviewRetriever($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
 	foreach($InDBConn->GetResult() as $ShareRow => $ShareData)
 	{
@@ -103,6 +103,10 @@ else
 			}
 			else
 			{
+				require_once("Output/Retriever/AccessRetriever.php");
+				require_once("Output/Retriever/EmployeeRetriever.php");
+				require_once("Struct/Element/Function/Select/SelectEmployeeRowRender.php");
+				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
 				require_once("Struct/Module/Form/AddForm/ShareholderAddForm.php");
 
 				ProQueryFunctionCallback($DBConn, "HTMLShareholderAddForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
@@ -115,15 +119,20 @@ else
 
 			if(isset($_GET['ProEdit']))
 			{
+				require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataNumericType.php");
 				require_once("Input/Parser/EditParser/ShareholderEditParser.php");
+				require_once("Output/SpecificRetriever/ShareholderSpecificRetriever.php");
 				require_once("Process/ProEdit/ProEditShareholder.php");
 
 				ProQueryFunctionCallback($DBConn, "ProEditShareholder", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
 			}
 			else
 			{
-				require_once("Output/SpecificRetriever/AccessSpecificRetriever.php");
+				require_once("Output/Retriever/AccessRetriever.php");
+				require_once("Output/Retriever/EmployeeRetriever.php");
 				require_once("Output/SpecificRetriever/ShareholderSpecificRetriever.php");
+				require_once("Struct/Element/Function/Select/SelectEmployeeRowRender.php");
+				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
 				require_once("Struct/Module/Form/EditForm/ShareholderEditForm.php");
 				
 				ProQueryFunctionCallback($DBConn, "HTMLShareholderEditForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
@@ -133,7 +142,6 @@ else
 		}
 		case 2:
 		{
-			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
 			require_once("Input/Parser/VisibilityParser/ShareholderVisParser.php");
 			require_once("Process/ProDel/ProDelShareholder.php");
 

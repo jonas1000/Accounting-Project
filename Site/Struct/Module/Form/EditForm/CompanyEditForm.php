@@ -1,5 +1,5 @@
 <?php 
-function HTMLCompanyEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLCompanyEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
     if(isset($_POST['CompIndex']))
     {
@@ -11,12 +11,12 @@ function HTMLCompanyEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
 
             if($iCompanyIndex > 0)
             {
-                CompanyGeneralSpecificRetriever($InDBConn, $iCompanyIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                CompanyEditFormSpecificRetriever($InDBConn, $iCompanyIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
                 $aCompanyData = $InDBConn->GetResultArray(MYSQLI_ASSOC);
                 $iCompanyNumRows = $InDBConn->GetResultNumRows();
 
-                if(!empty($aCompanyData) && $iCompanyNumRows > 0 && $iCompanyNumRows < 2)
+                if(!empty($aCompanyData) && ($iCompanyNumRows > 0 && $iCompanyNumRows < 2))
                 {
                     $iCountyIndex = (int) $aCompanyData['COU_ID'];
                     $iCompanyAccessIndex = (int) $aCompanyData['COMP_ACCESS'];
@@ -37,7 +37,7 @@ function HTMLCompanyEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
                     //Input Row
                     print("<div>");
                     print("<div>");
-                    print("<h5>Name</h5>");
+                    print("<h5>Name*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -48,7 +48,7 @@ function HTMLCompanyEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
                     //Input Row
                     print("<div>");
                     print("<div>");
-                    print("<h5>creation date</h5>");
+                    print("<h5>creation date*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -63,7 +63,7 @@ function HTMLCompanyEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
                     print("</div>");
 
                     print("<div>");
-                    RenderCountySelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iCountyIndex);
+                    RenderCountySelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCountyIndex);
                     print("</div>");
                     print("</div>");
 
@@ -74,7 +74,7 @@ function HTMLCompanyEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
                     print("</div>");
 
                     print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iCompanyAccessIndex);
+                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCompanyAccessIndex);
                     print("</div>");
                     print("</div>");
 

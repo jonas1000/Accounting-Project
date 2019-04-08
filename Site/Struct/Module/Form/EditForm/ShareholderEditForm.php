@@ -1,6 +1,6 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLShareholderEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLShareholderEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
     if(isset($_POST['ShareIndex']))
     {
@@ -12,7 +12,7 @@ function HTMLShareholderEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAcce
 
             if($iShareholderIndex > 0)
             {
-                ShareholderGeneralSpecificRetriever($InDBConn, $iShareholderIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                ShareholderSpecificRetriever($InDBConn, $iShareholderIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
                 $aShareholderRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
                 $iShareholderNumRows = $InDBConn->GetResultNumRows();
@@ -38,7 +38,7 @@ function HTMLShareholderEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAcce
                     print("</div>");
 
                     print("<div>");
-                    RenderEmployeeSelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iEmployeeIndex);
+                    RenderEmployeeSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iEmployeeIndex);
                     print("</div>");
                     print("</div>");
 
@@ -49,15 +49,15 @@ function HTMLShareholderEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAcce
                     print("</div>");
 
                     print("<div>");
-                    RenderAccessSelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iShareholderAccessIndex);
+                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iShareholderAccessIndex);
                     print("</div>");
                     print("</div>");
 
                     print("</div>");
 
                     print("<div>");
-                    printf("<input type='hidden' value='%s' required>", $aShareholderRow['SHARE_ID']);
-                    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>", $_GET['MenuInded'], $_GET['Module']);
+                    printf("<input type='hidden' value='%s' name='ShareIndex' required>", $aShareholderRow['SHARE_ID']);
+                    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>", $_GET['MenuIndex'], $_GET['Module']);
                     printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_GET['MenuIndex']);
                     print("</div>");
 

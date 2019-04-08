@@ -9,93 +9,108 @@ require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
 $DBConn = new ME_CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
 //-------------<FUNCTION>-------------//
-function HTMLCompanyOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLCompanyOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
     require_once("Output/Retriever/CompanyRetriever.php");
 
-    CompanyOverviewRetriever($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+    $iUserAccessLevelIndex = ($IniUserAccessLevel - 1);
+
+    CompanyOverviewRetriever($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
 	foreach($InDBConn->GetResult() as $CompRow => $CompData) 
 	{
-        print("<div class='DataBlock'>");
+        if(((int) $CompData['COMP_DATA_ACCESS']) > $iUserAccessLevelIndex)
+        {
+            print("<div class='DataBlock'>");
 
-        print("<form method='POST'>");
-        //Data div block
-        print("<div>");
+            print("<form method='POST'>");
+            
+            //Data div block
+            print("<div>");
 
-        print("<div>");
-        printf("<h5>%s</h5>", $CompData['COMP_DATA_TITLE']);
-        print("</div>");
+            print("<div>");
+            printf("<h5>%s</h5>", $CompData['COMP_DATA_TITLE']);
+            print("</div>");
 
-        //Data Row
-        print("<div>");
-        print("<div>");
-        print("<b><p>Creation Date</p></b>");
-        print("</div>");
+            //Data Row
+            print("<div>");
+            print("<div>");
+            print("<b><p>Creation Date</p></b>");
+            print("</div>");
 
-        print("<div>");
-        printf("<p>%s</p>", $CompData['COMP_DATA_DATE']);
-        print("</div>");
-        print("</div>");
+            print("<div>");
+            printf("<p>%s</p>", $CompData['COMP_DATA_DATE']);
+            print("</div>");
+            print("</div>");
 
-        //Data Row
-        print("<div>");
-        print("<div>");
-        print("<b><p>Country</p></b>");
-        print("</div>");
+            if((((int) $CompData['COUN_DATA_ACCESS']) > $iUserAccessLevelIndex))
+            {
+                //Data Row
+                print("<div>");
+                print("<div>");
+                print("<b><p>Country</p></b>");
+                print("</div>");
 
-        print("<div>");
-        printf("<p>%s</p>", $CompData['COUN_DATA_TITLE']);
-        print("</div>");
-        print("</div>");
+                print("<div>");
+                printf("<p>%s</p>", $CompData['COUN_DATA_TITLE']);
+                print("</div>");
+                print("</div>");
+            }
 
-        //Data Row
-        print("<div>");
-        print("<div>");
-        print("<b><p>County</p></b>");
-        print("</div>");
+            if(((int) $CompData['COU_DATA_ACCESS']) > $iUserAccessLevelIndex)
+            {
+                //Data Row
+                print("<div>");
+                print("<div>");
+                print("<b><p>County</p></b>");
+                print("</div>");
 
-        print("<div>");
-        printf("<p>%s</p>", $CompData['COU_DATA_TITLE']);
-        print("</div>");
-        print("</div>");
+                print("<div>");
+                printf("<p>%s</p>", $CompData['COU_DATA_TITLE']);
+                print("</div>");
+                print("</div>");
 
-        //Data Row
-        print("<div>");
-        print("<div>");
-        print("<b><p>Tax</p></b>");
-        print("</div>");
+                //Data Row
+                print("<div>");
+                print("<div>");
+                print("<b><p>Tax</p></b>");
+                print("</div>");
 
-        print("<div>");
-        printf("<p>%s</p>", $CompData['COU_DATA_TAX']);
-        print("</div>");
-        print("</div>");
+                print("<div>");
+                printf("<p>%s</p>", $CompData['COU_DATA_TAX']);
+                print("</div>");
+                print("</div>");
 
-        //Data Row
-        print("<div>");
-        print("<div>");
-        print("<b><p>Interest Rate</p></b>");
-        print("</div>");
+                //Data Row
+                print("<div>");
+                print("<div>");
+                print("<b><p>Interest Rate</p></b>");
+                print("</div>");
 
-        print("<div>");
-        printf("<p>%s</p>", $CompData['COU_DATA_IR']);
-        print("</div>");
-        print("</div>");
+                print("<div>");
+                printf("<p>%s</p>", $CompData['COU_DATA_IR']);
+                print("</div>");
+                print("</div>");
+            }
 
-        print("</div>");
+            print("</div>");
 
-        //Input Block
-        print("<div>");
-        printf("<input type='hidden' name='CompIndex' value='%s'>", $CompData['COMP_ID']);
-        printf("<input type='submit' value='Delete' formaction='.?MenuIndex=%s&Module=2'>", $_GET['MenuIndex']);
-        printf("<input type='submit' value='Edit' formaction='.?MenuIndex=%s&Module=1'>", $_GET['MenuIndex']);
-        print("</div>");
-        print("</form>");
+            //Input Block
+            print("<div>");
+            printf("<input type='hidden' name='CompIndex' value='%s'>", $CompData['COMP_ID']);
+            printf("<input type='submit' value='Delete' formaction='.?MenuIndex=%s&Module=2'>", $_GET['MenuIndex']);
+            printf("<input type='submit' value='Edit' formaction='.?MenuIndex=%s&Module=1'>", $_GET['MenuIndex']);
+            print("</div>");
 
-        print("</div>");
+            print("</form>");
+
+            print("</div>");
+        }
 	}
 	
     printf("<a href='.?MenuIndex=%s&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>", $_GET['MenuIndex']);
+
+    unset($iUserAccessLevelIndex);
 }
 //-------------<PHP-HTML>-------------//
 if (!isset($_GET['Module']))
@@ -116,6 +131,10 @@ else
 				}
 				else 
 				{
+                    require_once("Output/Retriever/AccessRetriever.php");
+                    require_once("Output/Retriever/CountyRetriever.php");
+                    require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
+                    require_once("Struct/Element/Function/Select/SelectCountyRowRender.php");
 					require_once("Struct/Module/Form/AddForm/CompanyAddForm.php");
 
 					ProQueryFunctionCallback($DBConn, "HTMLCompanyAddForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
@@ -150,8 +169,8 @@ else
 			}
 		case 2:
 			{
-				require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
-				require_once("Input/Parser/VisibilityParser/CompanyVisParser.php");
+                require_once("Input/Parser/VisibilityParser/CompanyVisParser.php");
+                require_once("Output/SpecificRetriever/CompanySpecificRetriever.php");
 				require_once("Process/ProDel/ProDelCompany.php");
 
 				ProQueryFunctionCallback($DBConn, "ProDelCompany", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");

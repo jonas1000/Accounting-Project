@@ -8,14 +8,18 @@ require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
 $DBConn = new ME_CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
 //-------------<FUNCTION>-------------//
-function HTMLCustomerOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLCustomerOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
 	require_once("Output/Retriever/CustomerRetriever.php");
 
-	CustomerGeneralRetriever($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+	$iUserAccessLevelIndex = ($IniUserAccessLevel - 1);
+
+	CustomerOverviewRetriever($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
 	foreach($InDBConn->GetResult() as $CustRow => $CustData)
 	{
+		if(((int) $CustData['CUST_DATA_ACCESS']) > $iUserAccessLevelIndex)
+		{
 			print("<div class='DataBlock'>");
 
 			print("<form method='POST'>");
@@ -103,6 +107,7 @@ function HTMLCustomerOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
 			print("</form>");
 
 			print("</div>");
+		}
 	}
 	printf("<a href='.?MenuIndex=%s&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>", $_GET['MenuIndex']);
 }
@@ -119,11 +124,14 @@ else
 			{
 				require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
 				require_once("Input/Parser/AddParser/CustomerAddParser.php");
+				require_once("Process/ProAdd/ProAddCustomer.php");
 
 				ProQueryFunctionCallback($DBConn, "ProAddCustomer", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
 			}
 			else
 			{
+				require_once("Output/Retriever/AccessRetriever.php");
+				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
 				require_once("Struct/Module/Form/AddForm/CustomerAddForm.php");
 
 				ProQueryFunctionCallback($DBConn, "HTMLCustomerAddForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
@@ -137,15 +145,17 @@ else
 
 			if(isset($_GET['ProEdit']))
 			{
+				require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataNumericType.php");
 				require_once("Input/parser/EditParser/CustomerEditParser.php");
-				require_once("Output/Retriever/CustomerRetriever.php");
+				require_once("Output/SpecificRetriever/CustomerSpecificRetriever.php");
 				require_once("Process/ProEdit/ProEditCustomer.php");
 				
 				ProQueryFunctionCallback($DBConn, "ProEditCustomer", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
 			}
 			else
 			{
-				require_once("Output/SpecificRetriever/AccessSpecificRetriever.php");
+				require_once("Output/Retriever/AccessRetriever.php");
+				require_once("Output/SpecificRetriever/CustomerSpecificRetriever.php");
 				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
 				require_once("Struct/Module/Form/EditForm/CustomerEditForm.php");
 				
@@ -156,9 +166,11 @@ else
 		}
 		case 2:
 		{
+			require_once("Input/Parser/VisibilityParser/CustomerVisParser.php");
+			require_once("Output/SpecificRetriever/CustomerSpecificRetriever.php");
 			require_once("Process/ProDel/ProDelCustomer.php");
 
-			ProQueryFunctionCallback($DBConn, "ProDelCustomerParser", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			ProQueryFunctionCallback($DBConn, "ProDelCustomer", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
 			
 			break;
 		}

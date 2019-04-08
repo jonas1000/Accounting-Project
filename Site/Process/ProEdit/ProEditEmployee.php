@@ -1,9 +1,9 @@
 <?php
-function ProEditEmployee(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex)
+function ProEditEmployee(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel)
 {
     if(isset($_POST['EmployeeIndex'], $_POST['Name'], $_POST['Surname'], $_POST['Email'], $_POST['Salary'], $_POST['BDay'], $_POST['PN'], $_POST['SN'], $_POST['Company'], $_POST['EmployeePosition'], $_POST['Access']))
     {
-        if(ME_MultyCheckEmptyType($_POST['EmployeeIndex'], $_POST['Name'], $_POST['Surname'], $_POST['PN'], $IniUserAccessLevelIndex))
+        if(!ME_MultyCheckEmptyType($_POST['EmployeeIndex'], $_POST['Name'], $_POST['Surname'], $_POST['PN']))
         {
             if(ME_MultyCheckNumericType($_POST['EmployeeIndex'], $_POST['Company'], $_POST['EmployeePosition'], $_POST['Access']))
             {
@@ -29,9 +29,9 @@ function ProEditEmployee(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelI
                 ME_SecDataFilter($sStableNumber);
                 ME_SecDataFilter($sBDay);
 
-                if(($fSalary > -1) && ($iEmployeeIndex > 0) && ($iCompanyIndex > 0) && ($iEmployeePositionIndex > 0) && ($iContentAccessIndex > 0) && ($IniUserAccessLevelIndex > 0))
+                if(($fSalary > -1) && ($iEmployeeIndex > 0) && ($iCompanyIndex > 0) && ($iEmployeePositionIndex > 0) && ($iContentAccessIndex > 0) && ($IniUserAccessLevel > 0))
                 {
-                    EmployeeGeneralSpecificRetriever($InDBConn, $iEmployeeIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                    EmployeeSpecificRetriever($InDBConn, $iEmployeeIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
                     $aEmployeeRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
                     $iEmployeeNumRows = $InDBConn->GetResultNumRows();
@@ -39,31 +39,42 @@ function ProEditEmployee(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelI
                     if(!empty($aEmployeeRow) && ($iEmployeeNumRows > 0 && $iEmployeeNumRows < 2))
                     {
                         $iEmployeeDataIndex = (int) $aEmployeeRow['EMP_DATA_ID'];
+                        $iEmployeeAccessLevel = (int) $aEmployeeRow['EMP_ACCESS'];
 
-                        EmployeeEditParser($InDBConn, $iEmployeeIndex, $iEmployeePositionIndex, $iCompanyIndex, $iContentAccessIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                        if(($iEmployeeDataIndex > 0) && ($iEmployeeAccessLevel > 0))
+                        {
+                            if($iEmployeeAccessLevel > ($IniUserAccessLevel - 1))
+                            {
+                                EmployeeEditParser($InDBConn, $iEmployeeIndex, $iEmployeePositionIndex, $iCompanyIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
 
-                        EmployeeDataEditParser($InDBConn, $iEmployeeDataIndex, $sName, $sSurname, $sEmail, $fSalary, $sBDay, $sPhoneNumber, $sStableNumber, $iContentAccessIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                                EmployeeDataEditParser($InDBConn, $iEmployeeDataIndex, $sName, $sSurname, $sEmail, $fSalary, $sBDay, $sPhoneNumber, $sStableNumber, $iContentAccessIndex, $_ENV['Available']['Show']);
+                            }
+                            else
+                                throw new Exception("insufficient privilage to access content");
+                        }
+                        else
+							throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
 
-                        unset($iEmployeeDataIndex);
+                        unset($iEmployeeDataIndex, $iEmployeeAccessLevel);
                     }
                     else
-                        throw new Exception("Could not fetch result for Company");
+                        throw new Exception("Could not fetch Table result");
 
                     unset($aEmployeeRow, $iEmployeeNumRows);
                 }
                 else
-                    throw new Exception("Some POST data do not meet the requirement range");
+                    throw new Exception("Some variables do not meet the process requirement range, Check your variables");
 
                 unset($sName, $sSurname, $sEmail, $sPhoneNumber, $sStableNumber, $sBDay, $fSalary, $iEmployeeIndex, $iCompanyIndex, $iEmployeePositionIndex, $iContentAccessIndex);
                 header('Location:.?MenuIndex='.$_ENV['MenuIndex']['Employee']);
             }
             else 
-                throw new Exception("Some POST data are not considered numeric type");
-        }
-        else
-			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+                throw new Exception("Some POST variables are not considered numeric type");
+		}
+		else
+			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+		throw new Exception("Missing POST variables to complete transaction");
 }
 ?>

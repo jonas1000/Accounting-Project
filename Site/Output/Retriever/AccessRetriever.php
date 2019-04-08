@@ -1,22 +1,23 @@
 <?php
-function AccessFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function AccessSelectElemRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-	if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
 		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery = "SELECT
 		ACCESS_ID,
 		ACCESS_TITLE,
 		ACCESS_LEVEL
 		FROM
-		".$InDBConn->GetPrefix()."VIEW_ACCESS
+		".$sPrefix."VIEW_ACCESS
 		WHERE
-		".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_AVAIL = " . $IniIsAvailIndex . "
+		".$sPrefix."VIEW_ACCESS.ACCESS_AVAIL = " . $IniIsAvailIndex . "
 		AND
-		".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_LEVEL > ".($IniUserAccessLevelIndex - 1)."
+		".$sPrefix."VIEW_ACCESS.ACCESS_LEVEL > ".($IniUserAccessLevel - 1)."
 		ORDER BY
-		".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_LEVEL ASC;";
+		".$sPrefix."VIEW_ACCESS.ACCESS_LEVEL ASC;";
 
 		$InDBConn->ExecQuery($sDBQuery, FALSE);
 
@@ -28,30 +29,31 @@ function AccessFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
 		else
 			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery);
+		unset($sDBQuery, $sPrefix);
 	}
 	else
 		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function AccessSelectFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function AccessSelectFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-	if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
 		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery = "SELECT
 		ACCESS_ID,
 		ACCESS_TITLE,
 		ACCESS_LEVEL
 		FROM
-		".$InDBConn->GetPrefix()."VIEW_ACCESS
+		".$sPrefix."VIEW_ACCESS
 		WHERE
-		".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_AVAIL = " . $IniIsAvailIndex . "
+		".$sPrefix."VIEW_ACCESS.ACCESS_AVAIL = " . $IniIsAvailIndex . "
 		AND
-		".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_LEVEL > ".($IniUserAccessLevelIndex - 1)."
+		".$sPrefix."VIEW_ACCESS.ACCESS_LEVEL > ".($IniUserAccessLevel - 1)."
 		ORDER BY
-		".$InDBConn->GetPrefix()."VIEW_ACCESS.ACCESS_LEVEL ASC;";
+		".$sPrefix."VIEW_ACCESS.ACCESS_LEVEL ASC;";
 
 		$InDBConn->ExecQuery($sDBQuery, FALSE);
 
@@ -63,7 +65,7 @@ function AccessSelectFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAc
 		else
 			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery);
+		unset($sDBQuery, $sPrefix);
 	}
 	else
 		throw new Exception("Input parameters do not meet requirements range");

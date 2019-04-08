@@ -1,8 +1,11 @@
 <?php
 require_once("../MedaLib/Class/Log/LogSystem.php");
+require_once("../MedaLib/Class/Manager/DBConnManager.php");
 require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFilter.php");
 require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
 require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
+
+$DBConn = new ME_CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
 function HTMLLogedIn()
 {
@@ -22,7 +25,7 @@ function HTMLLogedIn()
 		print("</div>");
 
 		print("<div>");
-		print("<a href='Struct/Module/Session/Logout.php'>");
+		print("<a href='.?Logout'>");
 		print("<h4>Logout</h4>");
 		print("</a>");
 		print("</div>");
@@ -67,7 +70,7 @@ function HTMLLoginForm()
 	print("</div>");
 
 	print("<div>");
-	print("<input type='submit' value='Login' formaction='Process/ProCheck/ProLoginCheck.php'>");
+	print("<input type='submit' value='Login' formaction='.?Login'>");
 	print("</div>");
 
 	print("</form>");
@@ -75,11 +78,32 @@ function HTMLLoginForm()
  	print("</div>");
 }
 
-if(isset($_SESSION['LogedIn']))
+if(!isset($_GET['Login']))
 {
-	if($_SESSION['LogedIn'])
-		ProFunctionCallback("HTMLLogedIn", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], $_SERVER['REQUEST_METHOD'], "GET", "Logs");
+	if(!isset($_GET['Logout']))
+	{
+		if(isset($_SESSION['LogedIn']))
+		{
+			if($_SESSION['LogedIn'])
+				ProFunctionCallback("HTMLLogedIn", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], $_SERVER['REQUEST_METHOD'], "GET", "Logs");
+		}
+		else
+			ProFunctionCallback("HTMLLoginForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Guest'], $_SERVER["REQUEST_METHOD"], "GET", "Logs");
+	}
+	else
+	{
+		require_once("Struct/Module/Session/Logout.php");
+		ProFunctionCallback("Logout", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
+	}
 }
 else
-	ProFunctionCallback("HTMLLoginForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Guest'], $_SERVER["REQUEST_METHOD"], "GET", "Logs");
+{
+	require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataEmptyType.php");
+	require_once("Output/SpecificRetriever/EmployeeSpecificRetriever.php");
+	require_once("Process/ProCheck/ProLoginCheck.php");
+
+	ProQueryFunctionCallback($DBConn, "LoginCheck", $_SESSION['AccessID'], $_ENV['AccessLevel']['Guest'], "POST", "Logs");
+}
+
+unset($DBConn);
 ?>

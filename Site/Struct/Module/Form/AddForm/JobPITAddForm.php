@@ -1,12 +1,9 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLJobPITAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLJobPITAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
-	require_once("Output/Retriever/AccessRetriever.php");
-	require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
-
+  //-------------<PHP-HTML>-------------//
   print("<div class='Form'>");
-
   print("<form method='POST'>");
   print("<div>");
 
@@ -29,7 +26,7 @@ function HTMLJobPITAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLeve
   //Input Row
   print("<div>");
   print("<div>");
-  print("<h5>Date</h5>");
+  print("<h5>Date*</h5>");
   print("</div>");
 
   print("<div>");
@@ -44,7 +41,7 @@ function HTMLJobPITAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLeve
   print("</div>");
 
   print("<div>");
-  RenderAccessSelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+  RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
   print("</div>");
   print("</div>");
 

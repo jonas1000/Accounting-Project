@@ -1,22 +1,20 @@
 <?php
 //-------------<FUNCTION>-------------//
-function CountryEditParser(ME_CDBConnManager &$InDBConn, int &$IniCountryIndex, int &$IniContentAccessLevelIndex, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CountryEditParser(ME_CDBConnManager &$InDBConn, int &$IniCountryIndex, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(($IniContentAccessLevelIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniCountryIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniContentAccessLevelIndex > 0) && ($IniCountryIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
 		$sDBQuery = "";
 		$sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery = "UPDATE
-		".$sPrefix."VIEW_COUNTRY
+		".$sPrefix."VIEW_COUNTRY_EDIT
 		SET
-		".$sPrefix."VIEW_COUNTRY.COUN_ACCESS = ".$IniContentAccessLevelIndex."
+		".$sPrefix."VIEW_COUNTRY_EDIT.COUN_ACCESS_ID = ".$IniContentAccessLevelIndex."
 		WHERE
-		(".$sPrefix."VIEW_COUNTRY.COUN_ID = ".$IniCountryIndex."
+		(".$sPrefix."VIEW_COUNTRY_EDIT.COUN_AVAIL_ID = ".$IniIsAvailIndex.")
 		AND
-		".$sPrefix."VIEW_COUNTRY.COUN_ACCESS > ".($IniUserAccessLevelIndex - 1)."
-		AND
-		".$sPrefix."VIEW_COUNTRY.COUN_AVAIL = ".$IniIsAvailIndex.");";
+		(".$sPrefix."VIEW_COUNTRY_EDIT.COUN_ID = ".$IniCountryIndex.");";
 
 		$InDBConn->ExecQuery($sDBQuery, TRUE);
 
@@ -34,27 +32,24 @@ function CountryEditParser(ME_CDBConnManager &$InDBConn, int &$IniCountryIndex, 
 		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function CountryDataEditParser(ME_CDBConnManager &$InDBConn, int &$IniCountryDataIndex, string &$InsTitle, int &$IniContentAccessLevelIndex, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CountryDataEditParser(ME_CDBConnManager &$InDBConn, int &$IniCountryDataIndex, string &$InsTitle, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
 	if(!empty($InsTitle))
 	{
-		if(($IniCountryDataIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		if(($IniCountryDataIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 		{
 			$sDBQuery = "";
 			$sPrefix = $InDBConn->GetPrefix();
 
 			$sDBQuery = "UPDATE
-			".$sPrefix."VIEW_COUNTRY_DATA
+			".$sPrefix."VIEW_COUNTRY_DATA_EDIT
 			SET
-			COUN_DATA_TITLE = \"".$InsTitle."\",
-			COUN_DATA_ACCESS = ".$IniContentAccessLevelIndex.",
-			COUN_DATA_AVAIL = ".$IniIsAvailIndex."
+			".$sPrefix."VIEW_COUNTRY_DATA_EDIT.COUN_DATA_TITLE = \"".$InsTitle."\",
+			".$sPrefix."VIEW_COUNTRY_DATA_EDIT.COUN_DATA_ACCESS_ID = ".$IniContentAccessLevelIndex."
 			WHERE
-			(".$sPrefix."VIEW_COUNTRY_DATA.COUN_DATA_ID = ".$IniCountryDataIndex."
+			(".$sPrefix."VIEW_COUNTRY_DATA_EDIT.COUN_DATA_AVAIL_ID = ".$IniIsAvailIndex.")
 			AND
-			".$sPrefix."VIEW_COUNTRY_DATA.COUN_DATA_ACCESS > ".($IniUserAccessLevelIndex - 1)."
-			AND
-			".$sPrefix."VIEW_COUNTRY_DATA.COUN_DATA_AVAIL = ".$IniIsAvailIndex.");";
+			(".$sPrefix."VIEW_COUNTRY_DATA_EDIT.COUN_DATA_ID = ".$IniCountryDataIndex.");";
 
 			$InDBConn->ExecQuery($sDBQuery, TRUE);
 

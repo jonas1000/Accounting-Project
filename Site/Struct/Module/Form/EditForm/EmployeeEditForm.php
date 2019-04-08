@@ -1,6 +1,6 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLEmployeeEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLEmployeeEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
     if(isset($_POST['EmpIndex']))
     {
@@ -12,12 +12,12 @@ function HTMLEmployeeEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
             
             if($iEmployeeIndex > 0)
             {
-                EmployeeGeneralSpecificRetriever($InDBConn, $iEmployeeIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                EmployeeEditFormSpecificRetriever($InDBConn, $iEmployeeIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
                 $aEmployeeRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
                 $iEmployeeNumRows = $InDBConn->GetResultNumRows();
 
-                if(!empty($aEmployeeRow) && ($iEmployeeNumRows > 0) && ($iEmployeeNumRows < 2))
+                if(!empty($aEmployeeRow) && ($iEmployeeNumRows > 0 && $iEmployeeNumRows < 2))
                 {
                     $iEmployeeAccessIndex = (int) $aEmployeeRow['EMP_ACCESS'];
                     $iCompanyIndex = (int) $aEmployeeRow['COMP_ID'];
@@ -37,7 +37,7 @@ function HTMLEmployeeEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     //Input Row
                     print("<div>");
                     print("<div>");
-                    print("<h5>Name</h5>");
+                    print("<h5>Name*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -48,7 +48,7 @@ function HTMLEmployeeEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     //Input Row
                     print("<div>");
                     print("<div>");
-                    print("<h5>Surname</h5>");
+                    print("<h5>Surname*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -59,7 +59,7 @@ function HTMLEmployeeEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     //Input Row
                     print("<div>");
                     print("<div>");
-                    print("<h5>Email</h5>");
+                    print("<h5>Email*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -81,7 +81,7 @@ function HTMLEmployeeEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     //Input Row
                     print("<div>");
                     print("<div>");
-                    print("<h5>Birth Date</h5>");
+                    print("<h5>Birth Date*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -92,7 +92,7 @@ function HTMLEmployeeEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     //Input Row
                     print("<div>");
                     print("<div>");
-                    print("<h5>Phone Number</h5>");
+                    print("<h5>Phone Number*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -118,7 +118,7 @@ function HTMLEmployeeEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     print("</div>");
 
                     print("<div>");
-                    RenderCompanySelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iCompanyIndex);
+                    RenderCompanySelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCompanyIndex);
                     print("</div>");
                     print("</div>");
 
@@ -129,7 +129,7 @@ function HTMLEmployeeEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     print("</div>");
 
                     print("<div>");
-                    RenderEmployeePosSelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iEmployeePositionIndex);
+                    RenderEmployeePosSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iEmployeePositionIndex);
                     print("</div>");
                     print("</div>");
 
@@ -140,7 +140,7 @@ function HTMLEmployeeEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessL
                     print("</div>");
 
                     print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iEmployeeAccessIndex);
+                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iEmployeeAccessIndex);
                     print("</div>");
                     print("</div>");
 

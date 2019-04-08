@@ -1,6 +1,6 @@
 <?php
  //-------------<FUNCTION>-------------//
-function HTMLCountyEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIndex) : void
+function HTMLCountyEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevel) : void
 {
     if(isset($_POST['CouIndex']))
     {
@@ -12,12 +12,12 @@ function HTMLCountyEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIn
 
             if($iCountyIndex > 0)
             {
-                CountyGeneralSpecificRetriever($InDBConn, $iCountyIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                CountyEditFormSpecificRetriever($InDBConn, $iCountyIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
                 $aCountyRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
                 $iCountyNumRows = $InDBConn->GetResultNumRows();
 
-                if(!empty($aCountyRow) && ($iCountyNumRows > 0) && ($iCountyNumRows < 2)) 
+                if(!empty($aCountyRow) && ($iCountyNumRows > 0 && $iCountyNumRows < 2)) 
                 {
                     $iCountyAccessIndex = (int) $aCountyRow['COU_DATA_ACCESS'];
                     $iCountryIndex = (int) $aCountyRow['COUN_ID'];
@@ -37,7 +37,7 @@ function HTMLCountyEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIn
                     //Input Row
                     print("<div>");
                     print("<div>");
-                    print("<h5>Name</h5>");
+                    print("<h5>Name*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -67,17 +67,6 @@ function HTMLCountyEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIn
                     print("</div>");
                     print("</div>");
 
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Date</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input type='Date' placeholder='County modification date' name='Date' value='%s' required>", $aCountyRow['COU_DATA_DATE']);
-                    print("</div>");
-                    print("</div>");
-
                     //get rows and render <select> element with data
                     print("<div>");
                     print("<div>");
@@ -85,7 +74,7 @@ function HTMLCountyEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIn
                     print("</div>");
 
                     print("<div>");
-                    RenderCountrySelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iCountryIndex);
+                    RenderCountrySelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCountryIndex);
                     print("</div>");
                     print("</div>");
 
@@ -96,7 +85,7 @@ function HTMLCountyEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevelIn
                     print("</div>");
 
                     print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iCountyAccessIndex);
+                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCountyAccessIndex);
                     print("</div>");
                     print("</div>");
 

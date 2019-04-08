@@ -8,21 +8,21 @@ function JobPITAddParser(ME_CDBConnManager &$InDBConn, int &$IniJobIndex, float 
 			$sDBQuery = "";
 
 			$sDBQuery="INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_TIME
+			".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_TIME_ADD
 			(
-				JOB_ID,
-				JOB_PIT,
-				JOB_PIT_DATE,
-				JOB_PIT_ACCESS,
-				JOB_PIT_AVAIL
+			JOB_ID,
+			JOB_PIT_PAYMENT,
+			JOB_PIT_DATE,
+			JOB_PIT_ACCESS_ID,
+			JOB_PIT_AVAIL_ID
 			)
 			VALUES
 			(
-				".$IniJobIndex.",
-				".$InfPIT.",
-				\"".$InsDate."\",
-				".$IniContentAccessLevelIndex.",
-				".$IniIsAvailIndex."
+			".$IniJobIndex.",
+			".$InfPIT.",
+			\"".$InsDate."\",
+			".$IniContentAccessLevelIndex.",
+			".$IniIsAvailIndex."
 			);";
 
 			$InDBConn->ExecQuery($sDBQuery, TRUE);

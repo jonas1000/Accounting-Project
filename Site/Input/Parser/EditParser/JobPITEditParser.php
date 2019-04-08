@@ -1,25 +1,22 @@
 <?php
-function JobPITAddParser(ME_CDBConnManager &$InDBConn, int &$IniJobPITIndex, float &$InfPIT, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function JobPITEditParser(ME_CDBConnManager &$InDBConn, int &$IniJobPITIndex, float &$InfPIT, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
 	if(!empty($InsDate))
 	{
-		if(($IniJobPITIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		if(($IniJobPITIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 		{
 			$sDBQuery = "";
 			$sPrefix = $InDBConn->GetPrefix();
 
 			$sDBQuery="UPDATE
-            ".$sPrefix."VIEW_JOB_INCOME_TIME
-            SET
-            ".$sPrefix."VIEW_JOB_INCOME_TIME.JOB_PIT = ".$InfPIT.",
-            ".$sPrefix."VIEW_JOB_INCOME_TIME.JOB_PIT_DATE = \"".$InsDate."\",
-            ".$sPrefix."VIEW_JOB_INCOME_TIME.JOB_PIT_ACCESS = ".$IniContentAccessLevelIndex."
-            WHERE
-			(".$sPrefix."VIEW_JOB_INCOME_TIME.JOB_PIT_ID = ".$IniJobPITIndex."
+			".$sPrefix."VIEW_JOB_INCOME_TIME_EDIT
+			SET
+			".$sPrefix."VIEW_JOB_INCOME_TIME_EDIT.JOB_PIT_PAYMENT = ".(empty($InfPIT) ? 0 : $InfPIT).",
+			".$sPrefix."VIEW_JOB_INCOME_TIME_EDIT.JOB_PIT_ACCESS_ID = ".$IniContentAccessLevelIndex."
+			WHERE
+			(".$sPrefix."VIEW_JOB_INCOME_TIME_EDIT.JOB_PIT_AVAIL_ID = ".$IniIsAvailIndex.")
 			AND
-			".$sPrefix."VIEW_JOB_INCOME_TIME.JOB_PIT_ACCESS > ".($IniUserAccessLevelIndex - 1)."
-			AND
-			".$sPrefix."VIEW_JOB_INCOME_TIME.JOB_PIT_AVAIL = ".$IniIsAvailIndex.");";
+			(".$sPrefix."VIEW_JOB_INCOME_TIME_EDIT.JOB_PIT_ID = ".$IniJobPITIndex.");";
 
 			$InDBConn->ExecQuery($sDBQuery, TRUE);
 

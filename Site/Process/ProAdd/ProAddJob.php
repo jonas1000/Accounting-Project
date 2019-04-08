@@ -4,9 +4,9 @@ function ProAddJob(ME_CDBConnManager &$InDBConn)
 {
 	if(isset($_POST['Company'], $_POST['Name'], $_POST['Date'], $_POST['Price'], $_POST['PIA'], $_POST['Expenses'], $_POST['Damage'], $_POST['Access']))
 	{
-	 	if(ME_MultyCheckEmptyType($_POST['Company'], $_POST['Name'], $_POST['Date'], $_POST['Access']))
+	 	if(!ME_MultyCheckEmptyType($_POST['Company'], $_POST['Name'], $_POST['Date'], $_POST['Access']))
 		{
-			if(ME_MultyCheckNumericType($_POST['Company'], $_POST['Price'], $_POST['PIA'], $_POST['Expenses'], $_POST['Damage'], $_POST['Access']))
+			if(ME_MultyCheckNumericType($_POST['Company'], $_POST['Access']))
 			{
 				//take strings as is
 				$sName = $_POST['Name'];
@@ -31,7 +31,7 @@ function ProAddJob(ME_CDBConnManager &$InDBConn)
 				//Limit data to a certain acceptable range
 				//database cannot accept Primary or foreighn keys below 1
 				//If duplicate the database will throw a exception
-				if(($fPIA > -1) && ($fExpenses < 1) && ($fDamage < 1) && ($iCompanyIndex > 0) && ($iContentAccessIndex > 0))
+				if(($fPIA > -1) && ($iCompanyIndex > 0) && ($iContentAccessIndex > 0))
 				{
 					JobOutcomeAddParser($InDBConn, $fExpenses, $fDamage, $iContentAccessIndex, $_ENV['Available']['Show']);
 
@@ -63,18 +63,18 @@ function ProAddJob(ME_CDBConnManager &$InDBConn)
 						throw new Exception("Failed to get id from last query");
 				}
 				else
-					throw new Exception("Some POST data do not meet the requirement range");
+					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
 					
 				unset($iCompanyIndex, $sName, $sDate, $fPrice, $fPIA, $fExpenses, $fDamage, $iContentAccessIndex);
 				header("Location:Index.php?MenuIndex=".$_ENV['MenuIndex']['Job']);
 			}
 			else 
-                throw new Exception("Some POST data are not considered numeric type");
+                throw new Exception("Some POST variables are not considered numeric type");
 		}
 		else
-			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+		throw new Exception("Missing POST variables to complete transaction");
 }
 ?>

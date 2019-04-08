@@ -8,7 +8,7 @@ function ME_MultyCheckEmptyType(...$InaVar) : bool
 
   for($I=0; $iArrayLenght > $I; $I++)
   {
-    if(!empty($InaVar[$I]))
+    if(empty($InaVar[$I]))
       return TRUE;
   }
 

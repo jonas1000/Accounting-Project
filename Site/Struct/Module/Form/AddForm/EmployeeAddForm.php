@@ -1,14 +1,7 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLEmployeeAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLEmployeeAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
-	require_once("Output/Retriever/AccessRetriever.php");
-	require_once("Output/Retriever/CompanyRetriever.php");
-	require_once("Output/Retriever/EmployeeRetriever.php");
-	require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
-	require_once("Struct/Element/Function/Select/SelectCompanyRowRender.php");
-	require_once("Struct/Element/Function/Select/SelectEmployeePositionRowRender.php");
-
   //-------------<PHP-HTML>-------------//
   print("<div class='Form'>");
   print("<form method='POST'>");
@@ -22,7 +15,7 @@ function HTMLEmployeeAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
   //Input Row
   print("<div>");
   print("<div>");
-  print("<h5>Name</h5>");
+  print("<h5>Name*</h5>");
   print("</div>");
 
   print("<div>");
@@ -33,7 +26,7 @@ function HTMLEmployeeAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
 	//Input Row
 	print("<div>");
 	print("<div>");
-	print("<h5>Surname</h5>");
+	print("<h5>Surname*</h5>");
 	print("</div>");
 
 	print("<div>");
@@ -44,7 +37,7 @@ function HTMLEmployeeAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
   //Input Row
   print("<div>");
   print("<div>");
-  print("<h5>Temporary Password</h5>");
+  print("<h5>Temporary Password*</h5>");
   print("</div>");
 
   print("<div>");
@@ -55,11 +48,11 @@ function HTMLEmployeeAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
   //Input Row
   print("<div>");
   print("<div>");
-  print("<h5>Email</h5>");
+  print("<h5>Email*</h5>");
   print("</div>");
 
   print("<div>");
-  print("<input type='email' name='Email' placeholder='Employee Email'>");
+  print("<input type='email' name='Email' placeholder='Employee Email' required>");
   print("</div>");
   print("</div>");
 
@@ -77,7 +70,7 @@ function HTMLEmployeeAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
   //Input Row
   print("<div>");
   print("<div>");
-  print("<h5>Birth Date</h5>");
+  print("<h5>Birth Date*</h5>");
   print("</div>");
 
   print("<div>");
@@ -88,7 +81,7 @@ function HTMLEmployeeAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
   //Input Row
   print("<div>");
   print("<div>");
-  print("<h5>Phone Number</h5>");
+  print("<h5>Phone Number*</h5>");
   print("</div>");
 
   print("<div>");
@@ -114,7 +107,7 @@ function HTMLEmployeeAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
   print("</div>");
 
   print("<div>");
-  RenderCompanySelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+  RenderCompanySelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
   print("</div>");
   print("</div>");
 
@@ -125,7 +118,7 @@ function HTMLEmployeeAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
   print("</div>");
 
   print("<div>");
-  RenderEmployeePosSelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+  RenderEmployeePosSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
   print("</div>");
   print("</div>");
 
@@ -136,7 +129,7 @@ function HTMLEmployeeAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLe
   print("</div>");
 
   print("<div>");
-  RenderAccessSelectRow($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+  RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
   print("</div>");
   print("</div>");
 

@@ -1,18 +1,17 @@
 <?php
-function EmployeeVisParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeeIndex, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex)
+function EmployeeVisParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeeIndex, int &$IniIsAvailIndex)
 {
-	if(($IniEmployeeIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniEmployeeIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
 		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery="UPDATE
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE
+		".$sPrefix."VIEW_EMPLOYEE_VISIBILITY
 		SET
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE.EMP_AVAIL = ".$IniIsAvailIndex."
+		".$sPrefix."VIEW_EMPLOYEE_VISIBILITY.EMP_AVAIL_ID = ".$IniIsAvailIndex."
 		WHERE
-		(".$InDBConn->GetPrefix()."VIEW_EMPLOYEE.EMP_ID = ".$IniEmployeeIndex."
-		AND
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE.EMP_ACCESS > ".($IniUserAccessLevelIndex - 1).");";
+		(".$sPrefix."VIEW_EMPLOYEE_VISIBILITY.EMP_ID = ".$IniEmployeeIndex.");";
 
 		$InDBConn->ExecQuery($sDBQuery, TRUE);
 
@@ -24,7 +23,37 @@ function EmployeeVisParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeeIndex,
 		else
 			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery);
+		unset($sDBQuery, $sPrefix);
+	}
+	else
+		throw new Exception("Input parameters do not meet requirements range");
+}
+
+function EmployeeDataVisParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeeDataIndex, int &$IniIsAvailIndex)
+{
+	if(($IniEmployeeDataIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	{
+		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
+
+		$sDBQuery="UPDATE
+		".$sPrefix."VIEW_EMPLOYEE_DATA_VISIBILITY
+		SET
+		".$sPrefix."VIEW_EMPLOYEE_DATA_VISIBILITY.EMP_DATA_AVAIL_ID = ".$IniIsAvailIndex."
+		WHERE
+		(".$sPrefix."VIEW_EMPLOYEE_DATA_VISIBILITY.EMP_DATA_ID = ".$IniEmployeeDataIndex.");";
+
+		$InDBConn->ExecQuery($sDBQuery, TRUE);
+
+		if(!$InDBConn->HasError())
+		{
+			if($InDBConn->HasWarning())
+				throw new Exception($InDBConn->GetWarning());
+		}
+		else
+			throw new Exception($InDBConn->GetError());
+
+		unset($sDBQuery, $sPrefix);
 	}
 	else
 		throw new Exception("Input parameters do not meet requirements range");

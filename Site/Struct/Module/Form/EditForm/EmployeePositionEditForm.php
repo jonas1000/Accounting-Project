@@ -1,6 +1,6 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLEmployeePositionEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex) : void
+function HTMLEmployeePositionEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
     if(isset($_POST['EmpPosIndex']))
     {
@@ -12,12 +12,12 @@ function HTMLEmployeePositionEditForm(ME_CDBConnManager &$InDBConn, int &$IniUse
 
             if($iEmployeePositionIndex > 0)
             {
-                EmployeePositionSpecificRetriever($InDBConn, $iEmployeePositionIndex, $IniUserAccessLevelIndex, $_ENV['Available']['Show']);
+                EmployeePositionSpecificRetriever($InDBConn, $iEmployeePositionIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
                 $aEmployeePositionRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
                 $iEmployeePositionNumRows = $InDBConn->GetResultNumRows();
 
-                if(!empty($aEmployeePositionRow) && $iEmployeePositionNumRows > 0 && $iEmployeePositionNumRows < 2)
+                if(!empty($aEmployeePositionRow) && ($iEmployeePositionNumRows > 0 && $iEmployeePositionNumRows < 2))
                 {
                     $iEmployeePositionAccessIndex = (int) $aEmployeePositionRow['EMP_POS_ACCESS'];
 
@@ -35,7 +35,7 @@ function HTMLEmployeePositionEditForm(ME_CDBConnManager &$InDBConn, int &$IniUse
                     //Input Row
                     print("<div>");
                     print("<div>");
-                    print("<h5>Title</h5>");
+                    print("<h5>Title*</h5>");
                     print("</div>");
 
                     print("<div>");
@@ -50,7 +50,7 @@ function HTMLEmployeePositionEditForm(ME_CDBConnManager &$InDBConn, int &$IniUse
                     print("</div>");
 
                     print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevelIndex, $_ENV['Available']['Show'], $iEmployeePositionAccessIndex);
+                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iEmployeePositionAccessIndex);
                     print("</div>");
                     print("</div>");
 

@@ -1,9 +1,88 @@
 <?php
-function EmployeeGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function EmployeeRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-	if(($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
 		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
+
+		$sDBQuery = "SELECT
+		".$sPrefix."VIEW_EMPLOYEE.EMP_ID,
+		".$sPrefix."VIEW_EMPLOYEE.EMP_POS_ID,
+		".$sPrefix."VIEW_EMPLOYEE.COMP_ID,
+		".$sPrefix."VIEW_EMPLOYEE.EMP_DATA_ID,
+		".$sPrefix."VIEW_EMPLOYEE.EMP_ACCESS
+		FROM
+		".$sPrefix."VIEW_EMPLOYEE
+		WHERE
+		(".$sPrefix."VIEW_EMPLOYEE.EMP_AVAIL = ".$IniIsAvailIndex.")
+		AND
+		(".$sPrefix."VIEW_EMPLOYEE.EMP_ACCESS > ".($IniUserAccessLevel - 1).")
+		ORDER BY EMP_ID DESC;";
+
+		$InDBConn->ExecQuery($sDBQuery, FALSE);
+
+		if(!$InDBConn->HasError())
+		{
+			if($InDBConn->HasWarning())
+				throw new Exception($InDBConn->GetWarning());
+		}
+		else
+			throw new Exception($InDBConn->GetError());
+
+		unset($sDBQuery, $sPrefix);
+	}
+	else
+		throw new Exception("Input parameters do not meet requirements range");
+}
+
+function EmployeeDataRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+{
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	{
+		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
+
+		$sDBQuery = "SELECT
+		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_ID,
+		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_SALARY,
+		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_NAME,
+		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_SURNAME,
+		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_EMAIL,
+		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_BDAY,
+		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_PN,
+		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_SN,
+		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_ACCESS
+		FROM
+		".$sPrefix."VIEW_EMPLOYEE_DATA
+		WHERE
+		(".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_AVAIL = ".$IniIsAvailIndex.")
+		AND
+		(".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_ACCESS > ".($IniUserAccessLevel - 1).")
+		ORDER BY EMP_DATA_ID DESC;";
+
+		$InDBConn->ExecQuery($sDBQuery, FALSE);
+
+		if(!$InDBConn->HasError())
+		{
+			if($InDBConn->HasWarning())
+				throw new Exception($InDBConn->GetWarning());
+		}
+		else
+			throw new Exception($InDBConn->GetError());
+
+		unset($sDBQuery, $sPrefix);
+	}
+	else
+		throw new Exception("Input parameters do not meet requirements range");
+}
+
+function EmployeeGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+{
+	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	{
+		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery = "SELECT
 		EMP_ID,
@@ -23,11 +102,11 @@ function EmployeeGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAcc
 		EMP_POS_AVAIL,
 		EMP_POS_TITLE
 		FROM
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL
+		".$sPrefix."VIEW_EMPLOYEE_GENERAL
 		WHERE
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL.EMP_AVAIL = " . $IniIsAvailIndex . "
+		(".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_AVAIL = ".$IniIsAvailIndex.")
 		AND
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL.EMP_ACCESS > ".($IniUserAccessLevelIndex - 1).";";
+		(".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_ACCESS > ".($IniUserAccessLevel - 1).");";
 
 		$InDBConn->ExecQuery($sDBQuery, FALSE);
 
@@ -39,22 +118,22 @@ function EmployeeGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAcc
 		else
 			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery);
+		unset($sDBQuery, $sPrefix);
 	}
 	else
 		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function EmployeeOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function EmployeeOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-	if($IniUserAccessLevelIndex > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if($IniUserAccessLevel > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
 		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery = "SELECT
 		EMP_ID,
-		EMP_ACCESS,
-		EMP_AVAIL,
+		EMP_DATA_ACCESS,
 		EMP_DATA_SALARY,
 		EMP_DATA_EMAIL,
 		EMP_DATA_NAME,
@@ -62,13 +141,15 @@ function EmployeeOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAc
 		EMP_DATA_BDAY,
 		EMP_DATA_PN,
 		EMP_DATA_SN,
+		EMP_POS_ACCESS,
 		EMP_POS_TITLE
 		FROM
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL
+		".$sPrefix."VIEW_EMPLOYEE_OVERVIEW
 		WHERE
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL.EMP_AVAIL = " . $IniIsAvailIndex . "
+		(".$sPrefix."VIEW_EMPLOYEE_OVERVIEW.EMP_AVAIL = ".$IniIsAvailIndex.")
 		AND
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL.EMP_ACCESS > ".($IniUserAccessLevelIndex - 1).";";
+		(".$sPrefix."VIEW_EMPLOYEE_OVERVIEW.EMP_ACCESS > ".($IniUserAccessLevel - 1).")
+		ORDER BY EMP_ID DESC;";
 
 		$InDBConn->ExecQuery($sDBQuery, FALSE);
 
@@ -80,27 +161,30 @@ function EmployeeOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAc
 		else
 			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery);
+		unset($sDBQuery, $sPrefix);
 	}
 	else
 		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function EmployeePositionRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function EmployeePositionOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-	if($IniUserAccessLevelIndex > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if($IniUserAccessLevel > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
 		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery = "SELECT
 		EMP_POS_ID,
+		EMP_POS_ACCESS,
 		EMP_POS_TITLE
 		FROM
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION
+		".$sPrefix."VIEW_EMPLOYEE_POSITION_OVERVIEW
 		WHERE
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION.EMP_POS_AVAIL = " . $IniIsAvailIndex . "
+		(".$sPrefix."VIEW_EMPLOYEE_POSITION_OVERVIEW.EMP_POS_AVAIL = ".$IniIsAvailIndex.")
 		AND
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION.EMP_POS_ACCESS > ".($IniUserAccessLevelIndex - 1).";";
+		(".$sPrefix."VIEW_EMPLOYEE_POSITION_OVERVIEW.EMP_POS_ACCESS > ".($IniUserAccessLevel - 1).")
+		ORDER BY EMP_POS_ID DESC;";
 
 		$InDBConn->ExecQuery($sDBQuery, FALSE);
 
@@ -112,31 +196,33 @@ function EmployeePositionRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAc
 		else
 			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery);
+		unset($sDBQuery, $sPrefix);
 	}
 	else
 		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function EmployeeFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function EmployeeSelectElemRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-	if($IniUserAccessLevelIndex > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if($IniUserAccessLevel > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
 		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery = "SELECT
 		EMP_ID,
 		EMP_DATA_NAME
 		FROM
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL
+		".$sPrefix."VIEW_EMPLOYEE_GENERAL
 		WHERE
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL.EMP_AVAIL = " . $IniIsAvailIndex . "
+		(".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_AVAIL = ".$IniIsAvailIndex."
 		AND
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL.EMP_DATA_AVAIL = " . $IniIsAvailIndex . "
+		".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_DATA_AVAIL = ".$IniIsAvailIndex."
 		AND
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL.EMP_POS_AVAIL = " . $IniIsAvailIndex . "
+		".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_POS_AVAIL = ".$IniIsAvailIndex.")
 		AND
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL.EMP_ACCESS > ".($IniUserAccessLevelIndex - 1).";";
+		(".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_ACCESS > ".($IniUserAccessLevel - 1).")
+		ORDER BY EMP_ID DESC;";
 
 		$InDBConn->ExecQuery($sDBQuery, FALSE);
 
@@ -148,27 +234,66 @@ function EmployeeFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccess
 		else
 			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery);
+		unset($sDBQuery, $sPrefix);
 	}
 	else
 		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function EmployeePosFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function EmployeeEditFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
 {
-	if($IniUserAccessLevelIndex > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if($IniUserAccessLevel > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
 		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
+
+		$sDBQuery = "SELECT
+		EMP_ID,
+		EMP_DATA_NAME
+		FROM
+		".$sPrefix."VIEW_EMPLOYEE_GENERAL
+		WHERE
+		(".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_AVAIL = ".$IniIsAvailIndex."
+		AND
+		".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_DATA_AVAIL = ".$IniIsAvailIndex."
+		AND
+		".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_POS_AVAIL = ".$IniIsAvailIndex.")
+		AND
+		(".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_ACCESS > ".($IniUserAccessLevel - 1).")
+		ORDER BY EMP_ID DESC;";
+
+		$InDBConn->ExecQuery($sDBQuery, FALSE);
+
+		if(!$InDBConn->HasError())
+		{
+			if($InDBConn->HasWarning())
+				throw new Exception($InDBConn->GetWarning());
+		}
+		else
+			throw new Exception($InDBConn->GetError());
+
+		unset($sDBQuery, $sPrefix);
+	}
+	else
+		throw new Exception("Input parameters do not meet requirements range");
+}
+
+function EmployeePosSelectElemRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+{
+	if($IniUserAccessLevel > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	{
+		$sDBQuery = "";
+		$sPrefix = $InDBConn->GetPrefix();
 
 		$sDBQuery = "SELECT
 		EMP_POS_ID,
 		EMP_POS_TITLE
 		FROM
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION
+		".$sPrefix."VIEW_EMPLOYEE_POSITION
 		WHERE
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION.EMP_POS_AVAIL = " . $IniIsAvailIndex . "
+		".$sPrefix."VIEW_EMPLOYEE_POSITION.EMP_POS_AVAIL = ".$IniIsAvailIndex."
 		AND
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION.EMP_POS_ACCESS > ".($IniUserAccessLevelIndex - 1).";";
+		".$sPrefix."VIEW_EMPLOYEE_POSITION.EMP_POS_ACCESS > ".($IniUserAccessLevel - 1).";";
 
 		$InDBConn->ExecQuery($sDBQuery, FALSE);
 
@@ -180,42 +305,7 @@ function EmployeePosFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAcc
 		else
 			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery);
-	}
-	else
-		throw new Exception("Input parameters do not meet requirements range");
-}
-
-function EmployeeLoginRetriever(ME_CDBConnManager &$InDBConn, string &$InsEmail, int &$IniIsAvailIndex) : void
-{
-	if(($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
-	{
-		$sDBQuery = "";
-
-		$sDBQuery = "SELECT
-		EMP_ID,
-		EMP_ACCESS,
-		EMP_DATA_NAME,
-		EMP_DATA_SURNAME,
-		EMP_DATA_PASS
-		FROM
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_LOGIN
-		WHERE
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_LOGIN.EMP_AVAIL = " . $IniIsAvailIndex . "
-		AND
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_LOGIN.EMP_DATA_EMAIL = \"" . $InsEmail . "\";";
-
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
-		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
-		}
-		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery);
+		unset($sDBQuery, $sPrefix);
 	}
 	else
 		throw new Exception("Input parameters do not meet requirements range");

@@ -7,11 +7,11 @@ function CountryAddParser(ME_CDBConnManager &$InDBConn, int &$IniContentAccessLe
 		$sDBQuery = "";
 
 		$sDBQuery = "INSERT INTO
-		".$InDBConn->GetPrefix()."VIEW_COUNTRY
+		".$InDBConn->GetPrefix()."VIEW_COUNTRY_ADD
 		(
 		COUN_DATA_ID,
-		COUN_ACCESS,
-		COUN_AVAIL
+		COUN_ACCESS_ID,
+		COUN_AVAIL_ID
 		)
 		VALUES
 		(
@@ -45,11 +45,11 @@ function CountryDataAddParser(ME_CDBConnManager &$InDBConn, string &$InsTitle, i
 			$sDBQuery = "";
 
 			$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_COUNTRY_DATA
+			".$InDBConn->GetPrefix()."VIEW_COUNTRY_DATA_ADD
 			(
 			COUN_DATA_TITLE,
-			COUN_DATA_ACCESS,
-			COUN_DATA_AVAIL
+			COUN_DATA_ACCESS_ID,
+			COUN_DATA_AVAIL_ID
 			)
 			VALUES
 			(
