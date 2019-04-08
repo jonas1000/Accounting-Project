@@ -1,4 +1,7 @@
 <?php
+//-------------<FUNCTION>-------------//
+//Take an array and check every key value is Empty
+//Return false the first key it finds it is not Empty
 function ME_MultyCheckEmptyType(...$InaVar) : bool
 {
   $iArrayLenght = count($InaVar);
@@ -6,9 +9,9 @@ function ME_MultyCheckEmptyType(...$InaVar) : bool
   for($I=0; $iArrayLenght > $I; $I++)
   {
     if(empty($InaVar[$I]))
-      return FALSE;
+      return TRUE;
   }
 
-  return TRUE;
+  return FALSE;
 }
 ?>

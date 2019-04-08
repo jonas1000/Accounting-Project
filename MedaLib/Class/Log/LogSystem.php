@@ -1,9 +1,8 @@
 <?php
-
 class ME_CLog
 {
 	//Stream source file
-	private $rLogFile=NULL;
+	private $rLogFile=0;
 
 	//File name
 	private $sLogFileName="";

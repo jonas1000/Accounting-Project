@@ -1,28 +1,60 @@
 <?php
-function ProDelCountry(CDBConnManager &$InDBConn) : void
+//-------------<FUNCTION>-------------//
+function ProDelCountry(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
 	if(isset($_POST['CounIndex']))
 	{
-		if(ME_MultyCheckEmptyType($InDBConn, $_POST['CounIndex']))
+		if(!empty($_POST['CounIndex']))
 		{
-			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
-			require_once("Input/Parser/VisibilityParser/CountryVisParser.php");
-			
-			$sCounIndex = $_POST['CounIndex'];
+			if(is_numeric($_POST['CounIndex']))
+			{
+				//variables consindered to be holding ID
+				$iCountryIndex = (int) $_POST['CounIndex'];
 
-			ME_SecDataFilter($sCounIndex);
+				unset($_POST['CounIndex']);
 
-			$iCounIndex = (int) $sCounIndex;
+				//database cannot accept Primary or foreign keys below 1
+				//If duplicate the database will throw a exception
+				if(($iCountryIndex > 0) && ($IniUserAccessLevel > 0))
+				{
+					CountrySpecificRetriever($InDBConn, $iCountryIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
-			unset($sCounIndex);
+					$aCountryRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
+					$iCountryNumRows = $InDBConn->GetResultNumRows();
 
-			CountryVisParser($InDBConn, $iCounIndex, $_ENV['Available']['Hide']);
+					if(!empty($aCountryRow) && ($iCountryNumRows > 0 && $iCountryNumRows < 2))
+					{
+						$iCountryDataIndex = (int) $aCountryRow['COUN_DATA_ID'];
 
-			unset($iCounIndex);
-			unset($_POST['CounIndex']);
+						if($iCountryDataIndex > 0)
+						{
+							CountryVisParser($InDBConn, $iCountryIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
 
-			header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Country']);
+							CountryDataVisParser($InDBConn, $iCountryDataIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
+						}
+						else
+							throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
+
+						unset($iCountryDataIndex);
+					}
+					else
+						throw new Exception("Could not fetch Table result");
+						
+					unset($aCountryRow, $iCountryNumRows);
+				}
+				else
+					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+
+				unset($iCountryIndex);
+				header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Country']);
+			}
+			else 
+                throw new Exception("Some POST variables are not considered numeric type");
 		}
+		else
+			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
 	}
+	else
+		throw new Exception("Missing POST variables to complete transaction");
 }
 ?>

@@ -1,5 +1,4 @@
 <?php
-
 printf("<div class='Footer'>");
 
 printf("<div>");
@@ -9,5 +8,4 @@ if(isset($_SESSION['AppVersion']))
 printf("</div>");
 
 printf("</div>");
-
 ?>

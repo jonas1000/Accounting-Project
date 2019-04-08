@@ -1,68 +1,67 @@
 <?php
-function EmployeeAddParser(CDBConnManager &$InDBConn, int &$IniPositionIndex, int &$IniCompanyIndex, int $IniAccessIndex, int $IniIsAvailIndex) : void
+function EmployeeAddParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeePositionIndex, int &$IniCompanyIndex, int $IniContentAccessLevelIndex, int $IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $IniPositionIndex, $IniCompanyIndex, $IniAccessIndex, $IniIsAvailIndex))
+	if(($IniEmployeePositionIndex > 0) && ($IniCompanyIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		if(($IniPositionIndex > 0) && ($IniCompanyIndex > 0) && ($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		$sDBQuery = "";
+		
+		$sDBQuery = "INSERT INTO
+		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_ADD
+		(
+		EMP_DATA_ID,
+		EMP_POS_ID,
+		COMP_ID,
+		EMP_ACCESS_ID,
+		EMP_AVAIL_ID
+		)
+		VALUES
+		(
+		".$InDBConn->GetLastQueryID().",
+		".$IniEmployeePositionIndex.",
+		".$IniCompanyIndex.",
+		".$IniContentAccessLevelIndex.",
+		".$IniIsAvailIndex."
+		);";
+
+		$InDBConn->ExecQuery($sDBQuery, TRUE);
+
+		//detect and print if any error has been detected in query
+		if(!$InDBConn->HasError())
 		{
-			$DBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_EMPLOYEE
-			(
-			EMP_DATA_ID,
-			EMP_POS_ID,
-			COMP_ID,
-			EMP_ACCESS,
-			EMP_AVAIL
-			)
-			VALUES
-			(
-			".$InDBConn->GetLastQueryID().",
-			".$IniPositionIndex.",
-			".$IniCompanyIndex.",
-			".$IniAccessIndex.",
-			".$IniIsAvailIndex."
-			);";
-
-			$InDBConn->ExecQuery($DBQuery, TRUE);
-
-			//detect and print if any error has been detected in query
-			if(!$InDBConn->HasError())
-			{
-					if($InDBConn->HasWarning())
-						throw new Exception($InDBConn->GetWarning());
-			}
-			else
-				throw new Exception($InDBConn->GetError());
-
-			unset($DBQuery);
+			if($InDBConn->HasWarning())
+				throw new Exception($InDBConn->GetWarning());
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			throw new Exception($InDBConn->GetError());
+
+		unset($sDBQuery);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function EmployeeDataAddParser(CDBConnManager &$InDBConn, string &$InsName, string &$InsSurname, string &$InsPassword, string &$InsEmail, float &$InfSalary, string &$InsBDay, string &$InsPhoneNumber, string &$InsStableNumber, int &$IniAccessIndex, int &$IniIsAvailIndex, int &$IniPasswordCost=10) : void
+function EmployeeDataAddParser(ME_CDBConnManager &$InDBConn, string &$InsName, string &$InsSurname, string &$InsPassword, string &$InsEmail, float &$InfSalary, string &$InsBDay, string &$InsPhoneNumber, string &$InsStableNumber, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex, int &$IniPasswordCost=10) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $InsName, $InsSurname, $InsPassword, $InsEmail, $InsBDay, $IniAccessIndex, $IniIsAvailIndex, $IniPasswordCost))
+	if(!ME_MultyCheckEmptyType($InsName, $InsSurname, $InsPassword, $InsEmail, $InsBDay))
 	{
-		if(($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)) && ($IniPasswordCost > 0))
 		{
+			$sDBQuery = "";
+			
 			//database Query
-			$DBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_DATA
+			$$sDBQuery = "INSERT INTO
+			".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_DATA_ADD
 			(
 			EMP_DATA_NAME,
 			EMP_DATA_SURNAME,
 			EMP_DATA_PASS,
 			EMP_DATA_EMAIL,
-			EMP_DATA_SAL,
+			EMP_DATA_SALARY,
 			EMP_DATA_BDAY,
 			EMP_DATA_PN,
 			EMP_DATA_SN,
-			EMP_DATA_ACCESS,
-			EMP_DATA_AVAIL
+			EMP_DATA_ACCESS_ID,
+			EMP_DATA_AVAIL_ID
 			)
 			VALUES
 			(
@@ -70,15 +69,15 @@ function EmployeeDataAddParser(CDBConnManager &$InDBConn, string &$InsName, stri
 			\"".$InsSurname."\",
 			\"".password_hash($InsPassword, PASSWORD_BCRYPT, ["cost" => $IniPasswordCost])."\",
 			\"".$InsEmail."\",
-			".((empty($InfSalary) || ($InfSalary < 0)) ? 0 : $InfSalary).",
+			".$InfSalary.",
 			\"".$InsBDay."\",
 			\"".(empty($InsPhoneNumber) ? "None" : $InsPhoneNumber)."\",
 			\"".(empty($InsStableNumber) ? "None" : $InsStableNumber)."\",
-			".$IniAccessIndex.",
+			".$IniContentAccessLevelIndex.",
 			".$IniIsAvailIndex."
 			);";
 
-			$InDBConn->ExecQuery($DBQuery, TRUE);
+			$InDBConn->ExecQuery($$sDBQuery, TRUE);
 
 			//detect and throw if any error has been detected in query
 			if(!$InDBConn->HasError())
@@ -89,7 +88,7 @@ function EmployeeDataAddParser(CDBConnManager &$InDBConn, string &$InsName, stri
 			else
 				throw new Exception($InDBConn->GetError());
 
-			unset($DBQuery);
+			unset($$sDBQuery);
 		}
 		else
 			throw new Exception("Input parameters do not meet requirements range");

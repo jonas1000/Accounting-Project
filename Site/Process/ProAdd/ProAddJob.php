@@ -1,75 +1,80 @@
 <?php
-function ProAddJob(CDBConnManager &$InDBConn)
+//-------------<FUNCTION>-------------//
+function ProAddJob(ME_CDBConnManager &$InDBConn)
 {
 	if(isset($_POST['Company'], $_POST['Name'], $_POST['Date'], $_POST['Price'], $_POST['PIA'], $_POST['Expenses'], $_POST['Damage'], $_POST['Access']))
 	{
-	 	if(ME_MultyCheckEmptyType($InDBConn, $_POST['Company'], $_POST['Name'], $_POST['Date'], $_POST['Access']))
+	 	if(!ME_MultyCheckEmptyType($_POST['Company'], $_POST['Name'], $_POST['Date'], $_POST['Access']))
 		{
-			$sCompany = $_POST['Company'];
-			$sName = $_POST['Name'];
-			$sDate = $_POST['Date'];
-			$sPrice = $_POST['Price'];
-			$sPIA = $_POST['PIA'];
-			$sExpenses = $_POST['Expenses'];
-			$sDamage = $_POST['Damage'];
-			$sAccess = $_POST['Access'];
-
-			ME_SecDataFilter($sCompany);
-			ME_SecDataFilter($sName);
-			ME_SecDataFilter($sDate);
-			ME_SecDataFilter($sPrice);
-			ME_SecDataFilter($sPIA);
-			ME_SecDataFilter($sExpenses);
-			ME_SecDataFilter($sDamage);
-			ME_SecDataFilter($sAccess);
-
-			$fPrice = (float) $sPrice;
-			$fPIA = (float) $sPIA;
-			$fExpenses = (float) $sExpenses;
-			$fDamage = (float) $sDamage;
-			$iCompanyIndex = (int) $sCompany;
-			$iAccessIndex = (int) $sAccess;
-
-			unset($sPrice, $sPIA, $sExpenses, $sDamage, $sAccess);
-
-			JobOutcomeAddParser($InDBConn, $fExpenses, $fDamage, $iAccessIndex, $_ENV['Available']['Show']);
-
-			$iLastQueryOutcomeIndex = $InDBConn->GetLastQueryID();
-
-			if($iLastQueryOutcomeIndex)
+			if(ME_MultyCheckNumericType($_POST['Company'], $_POST['Access']))
 			{
+				//take strings as is
+				$sName = $_POST['Name'];
+				$sDate = $_POST['Date'];
 
-				JobIncomeAddParser($InDBConn, $fPrice, $fPIA, $iAccessIndex, $_ENV['Available']['Show']);
+				//Convert data to float for logical methematical operations
+				$fPrice = (float) $_POST['Price'];
+				$fPIA = (float) $_POST['PIA'];
+				$fExpenses = (float) $_POST['Expenses'];
+				$fDamage = (float) $_POST['Damage'];
 
-				$iLastQueryIncomeIndex = $InDBConn->GetLastQueryID();
+				//variables consindered to be holding ID's
+				$iCompanyIndex = (int) $_POST['Company'];
+				$iContentAccessIndex = (int) $_POST['Access'];
 
-				if($iLastQueryIncomeIndex)
+				unset($_POST['Company'], $_POST['Name'], $_POST['Date'], $_POST['Price'], $_POST['PIA'], $_POST['Expenses'], $_POST['Damage'], $_POST['Access']);
+
+				//format the string to be compatible with HTML and avoid SQL injection
+				ME_SecDataFilter($sName);
+				ME_SecDataFilter($sDate);
+
+				//Limit data to a certain acceptable range
+				//database cannot accept Primary or foreighn keys below 1
+				//If duplicate the database will throw a exception
+				if(($fPIA > -1) && ($iCompanyIndex > 0) && ($iContentAccessIndex > 0))
 				{
+					JobOutcomeAddParser($InDBConn, $fExpenses, $fDamage, $iContentAccessIndex, $_ENV['Available']['Show']);
 
-					JobDataAddParser($InDBConn, $sName, $sDate, $iAccessIndex, $_ENV['Available']['Show']);
+					$iLastQueryOutcomeIndex = $InDBConn->GetLastQueryID();
 
-					if($InDBConn->GetLastQueryID())
+					if($iLastQueryOutcomeIndex)
 					{
-						JobAddParser($InDBConn, $iLastQueryOutcomeIndex, $iLastQueryIncomeIndex, $iCompanyIndex, $iAccessIndex, $_ENV['Available']['Show']);
+
+						JobIncomeAddParser($InDBConn, $fPrice, $fPIA, $iContentAccessIndex, $_ENV['Available']['Show']);
+
+						$iLastQueryIncomeIndex = $InDBConn->GetLastQueryID();
+
+						if($iLastQueryIncomeIndex)
+						{
+
+							JobDataAddParser($InDBConn, $sName, $sDate, $iContentAccessIndex, $_ENV['Available']['Show']);
+
+							if($InDBConn->GetLastQueryID())
+							{
+								JobAddParser($InDBConn, $iLastQueryOutcomeIndex, $iLastQueryIncomeIndex, $iCompanyIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
+							}
+							else
+								throw new Exception("Failed to get id from last query");
+						}
+						else
+							throw new Exception("Failed to get id from last query");
 					}
 					else
 						throw new Exception("Failed to get id from last query");
 				}
 				else
-					throw new Exception("Failed to get id from last query");
+					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+					
+				unset($iCompanyIndex, $sName, $sDate, $fPrice, $fPIA, $fExpenses, $fDamage, $iContentAccessIndex);
+				header("Location:Index.php?MenuIndex=".$_ENV['MenuIndex']['Job']);
 			}
-			else
-				throw new Exception("Failed to get id from last query");
-
-			unset($iCompanyIndex, $sName, $sDate, $fPrice, $fPIA, $fExpenses, $fDamage, $iAccessIndex);
-			unset($_POST['Company'], $_POST['Name'], $_POST['Date'], $_POST['Price'], $_POST['PIA'], $_POST['Expenses'], $_POST['Damage'], $_POST['Access']);
-
-			header("Location:Index.php?MenuIndex=".$_ENV['MenuIndex']['Job']);
+			else 
+                throw new Exception("Some POST variables are not considered numeric type");
 		}
 		else
-			throw new Exception("Missing POST data to complete transaction");
+			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+		throw new Exception("Missing POST variables to complete transaction");
 }
 ?>

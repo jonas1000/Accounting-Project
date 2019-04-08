@@ -7,33 +7,33 @@ session_start();
 require_once("Data/GlobalData.php");
 require_once("Data/ConnData/DBConnData.php");
 
-printf("<!DOCTYPE html>");
-printf("<html lang='en'>");
+print("<!DOCTYPE html>");
+print("<html lang='en'>");
 
-printf("<head>");
-printf("<meta charset=utf8>");
-printf("<link rel='icon' href='../images/FaviconPlaceholder.png' type='image/png'>");
-printf("<title>Home</title>");
-printf("<link rel='stylesheet' href='../css/Device/Desktop/DesktopMediaRule.css'>");
-printf("<link rel='stylesheet' href='../css/Body.css'>");
-printf("<link rel='stylesheet' href='../css/Header.css'>");
-printf("<link rel='stylesheet' href='../css/MainMenu.css'>");
-printf("<link rel='stylesheet' href='../css/Content.css'>");
-printf("<link rel='stylesheet' href='../css/Footer.css'>");
-printf("<link rel='stylesheet' href='../css/Form.css'>");
-printf("<link rel='stylesheet' href='../css/DataBlock.css'>");
-printf("</head>");
+print("<head>");
+print("<meta charset=utf8>");
+print("<link rel='icon' href='../images/FaviconPlaceholder.png' type='image/png'>");
+print("<title>Home</title>");
+print("<link rel='stylesheet' href='../css/Device/Desktop/DesktopMediaRule.css'>");
+print("<link rel='stylesheet' href='../css/Body.css'>");
+print("<link rel='stylesheet' href='../css/Header.css'>");
+print("<link rel='stylesheet' href='../css/MainMenu.css'>");
+print("<link rel='stylesheet' href='../css/Content.css'>");
+print("<link rel='stylesheet' href='../css/Footer.css'>");
+print("<link rel='stylesheet' href='../css/Form.css'>");
+print("<link rel='stylesheet' href='../css/DataBlock.css'>");
+print("</head>");
 
-printf("<body onload='Main()'>");
+print("<body onload='Main()'>");
 
-printf("<script src='../js/Main.js'></script>");
-printf("<script src='../js/MenuDisplay.js'></script>");
+print("<script src='../js/Main.js'></script>");
+print("<script src='../js/MenuDisplay.js'></script>");
 
 //Main Menu
 require_once("Struct/Component/MainMenu.php");
 
 //wrapper
-printf("<div class=Wrapper>");
+print("<div class=Wrapper>");
 
 //Header content
 require_once("Struct/Component/Header.php");
@@ -43,9 +43,8 @@ require_once("Struct/Component/Content.php");
 
 //Footer content
 require_once("Struct/Component/Footer.php");
-printf("</div>");
+print("</div>");
 
-printf("</body>");
-printf("</html>");
-
+print("</body>");
+print("</html>");
 ?>

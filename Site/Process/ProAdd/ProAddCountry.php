@@ -1,36 +1,51 @@
 <?php
-function ProAddCountry(CDBConnManager &$InDBConn)
+//-------------<FUNCTION>-------------//
+function ProAddCountry(ME_CDBConnManager &$InDBConn)
 {
+	//Check if POST data exists, if not then throw a exception
 	if(isset($_POST['Name'], $_POST['Access']))
 	{
-		if(ME_MultyCheckEmptyType($InDBConn, $_POST['Name'], $_POST['Access']))
+		//Check if POST data are NOT empty, if false then throw a exception
+		if(!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Access']))
 		{
-			$sTitle = $_POST['Name'];
-			$sAccess = $_POST['Access'];
+			//Check if POST data are numeric, if false then throw a exception
+			if(is_numeric($_POST['Access']))
+			{
+				//take strings as is
+				$sTitle = $_POST['Name'];
 
-			ME_SecDataFilter($sTitle);
-			ME_SecDataFilter($sAccess);
+				//variables consindered to be holding ID's
+				$iContentAccessIndex = (int) $_POST['Access'];
 
-			$iAccessIndex = (int) $sAccess;
+				unset($_POST['Name'], $_POST['Access']);
 
-			unset($sAccess);
+				//format the string to be compatible with HTML and avoid SQL injection
+				ME_SecDataFilter($sTitle);
 
-			CountryDataAddParser($InDBConn, $sTitle, $iAccessIndex, $_ENV['Available']['Show']);
+				//database cannot accept Primary or foreighn keys below 1
+				//If duplicate the database will throw a exception
+				if($iContentAccessIndex > 0)
+				{
+					CountryDataAddParser($InDBConn, $sTitle, $iContentAccessIndex, $_ENV['Available']['Show']);
 
-			if($InDBConn->GetLastQueryID())
-				CountryAddParser($InDBConn, $iAccessIndex, $_ENV['Available']['Show']);
-			else
-				throw new Exception("Error: Failed to get the id of last query");
-
-			unset($sTitle, $iAccessIndex);
-			unset($_POST['Name'], $_POST['Access']);
-
-			header("Location:.?MenuIndex=".$_ENV['MenuIndex']['Country']);
+					if($InDBConn->GetLastQueryID())
+						CountryAddParser($InDBConn, $iContentAccessIndex, $_ENV['Available']['Show']);
+					else
+						throw new Exception("Error: Failed to get the id of last query");
+				}
+				else
+					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+					
+				unset($sTitle, $iContentAccessIndex);
+				header("Location:.?MenuIndex=".$_ENV['MenuIndex']['Country']);
+			}
+			else 
+                throw new Exception("Some POST variables are not considered numeric type");
 		}
 		else
-			throw new Exception("Some POST data are NULL, Those POST cannot be NULL");
+			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+		throw new Exception("Missing POST variables to complete transaction");
 }
 ?>

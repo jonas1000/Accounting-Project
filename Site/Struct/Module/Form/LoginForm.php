@@ -1,33 +1,36 @@
 <?php
 require_once("../MedaLib/Class/Log/LogSystem.php");
+require_once("../MedaLib/Class/Manager/DBConnManager.php");
 require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFilter.php");
 require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
 require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
+
+$DBConn = new ME_CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
 function HTMLLogedIn()
 {
 	if(isset($_SESSION['Username']))
 	{
-		printf("<div class='LogedIn'>");
-		printf("<div>");
+		print("<div class='LogedIn'>");
+		print("<div>");
 
-		printf("<div>");
-		printf("<h2>Welcome</h2>");
-		printf("</div>");
+		print("<div>");
+		print("<h2>Welcome</h2>");
+		print("</div>");
 
-		printf("<div>");
-		printf("<h4>" . (!empty($_SESSION['Username']) ? $_SESSION['Username'] : "No Name") . "</h4>");
-		printf("</div>");
+		print("<div>");
+		printf("<h4>%s</h4>", (!empty($_SESSION['Username']) ? $_SESSION['Username'] : "No Name"));
+		print("</div>");
 
-		printf("</div>");
+		print("</div>");
 
-		printf("<div>");
-		printf("<a href='Struct/Module/Session/Logout.php'>");
-		printf("<h4>Logout</h4>");
-		printf("</a>");
-		printf("</div>");
+		print("<div>");
+		print("<a href='.?Logout'>");
+		print("<h4>Logout</h4>");
+		print("</a>");
+		print("</div>");
 
-		printf("</div>");
+		print("</div>");
 	}
 	else
 		throw new Exception("Session username not declared");
@@ -35,51 +38,72 @@ function HTMLLogedIn()
 
 function HTMLLoginForm()
 {
-	printf("<div class='Login'>");
+	print("<div class='Login'>");
 
-	printf("<form method='POST'>");
-	printf("<div>");
+	print("<form method='POST'>");
+	print("<div>");
 
-	printf("<div id='Title'>");
-	printf("<h4>Login</h4>");
-	printf("</div>");
+	print("<div id='Title'>");
+	print("<h4>Login</h4>");
+	print("</div>");
 
-	printf("<div>");
-	printf("<div>");
-	printf("<h5>Email</h5>");
-	printf("</div>");
+	print("<div>");
+	print("<div>");
+	print("<h5>Email</h5>");
+	print("</div>");
 
-	printf("<div>");
-	printf("<input type='email' name='Email' required>");
-	printf("</div>");
-	printf("</div>");
+	print("<div>");
+	print("<input type='email' name='Email' required>");
+	print("</div>");
+	print("</div>");
 
-	printf("<div>");
-	printf("<div>");
-	printf("<h5>Password</h5>");
-	printf("</div>");
+	print("<div>");
+	print("<div>");
+	print("<h5>Password</h5>");
+	print("</div>");
 
-	printf("<div>");
-	printf("<input type='password' name='Pass' required>");
-	printf("</div>");
-	printf("</div>");
+	print("<div>");
+	print("<input type='password' name='Pass' required>");
+	print("</div>");
+	print("</div>");
 
-	printf("</div>");
+	print("</div>");
 
-	printf("<div>");
-	printf("<input type='submit' value='Login' formaction='Process/ProCheck/ProLoginCheck.php'>");
-	printf("</div>");
+	print("<div>");
+	print("<input type='submit' value='Login' formaction='.?Login'>");
+	print("</div>");
 
-	printf("</form>");
+	print("</form>");
 
- 	printf("</div>");
+ 	print("</div>");
 }
 
-if(isset($_SESSION['LogedIn']))
+if(!isset($_GET['Login']))
 {
-	if(!empty($_SESSION['LogedIn']))
-		ProFunctionCallback("HTMLLogedIn", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], $_SERVER['REQUEST_METHOD'], "GET", "Logs");
+	if(!isset($_GET['Logout']))
+	{
+		if(isset($_SESSION['LogedIn']))
+		{
+			if($_SESSION['LogedIn'])
+				ProFunctionCallback("HTMLLogedIn", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], $_SERVER['REQUEST_METHOD'], "GET", "Logs");
+		}
+		else
+			ProFunctionCallback("HTMLLoginForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Guest'], $_SERVER["REQUEST_METHOD"], "GET", "Logs");
+	}
+	else
+	{
+		require_once("Struct/Module/Session/Logout.php");
+		ProFunctionCallback("Logout", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
+	}
 }
 else
-	ProFunctionCallback("HTMLLoginForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Guest'], $_SERVER["REQUEST_METHOD"], "GET", "Logs");
+{
+	require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataEmptyType.php");
+	require_once("Output/SpecificRetriever/EmployeeSpecificRetriever.php");
+	require_once("Process/ProCheck/ProLoginCheck.php");
+
+	ProQueryFunctionCallback($DBConn, "LoginCheck", $_SESSION['AccessID'], $_ENV['AccessLevel']['Guest'], "POST", "Logs");
+}
+
+unset($DBConn);
 ?>

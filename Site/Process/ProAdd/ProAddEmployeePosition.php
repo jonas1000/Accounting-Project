@@ -1,31 +1,41 @@
 <?php
-function ProAddEmployeePosition(CDBConnManager &$InDBConn)
+//-------------<FUNCTION>-------------//
+function ProAddEmployeePosition(ME_CDBConnManager &$InDBConn)
 {
 	if(isset($_POST['Name'], $_POST['Access']))
 	{
-		if(ME_MultyCheckEmptyType($InDBConn, $_POST['Name'], $_POST['Access']))
+		if(!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Access']))
 		{
-			$sName = $_POST['Name'];
-			$sAccess = $_POST['Access'];
+			if(is_numeric($_POST['Access']))
+			{
+				//take strings as is
+				$sName = $_POST['Name'];
+				
+				//variables consindered to be holding ID's
+				$iContentAccessIndex = (int) $_POST['Access'];
 
-			ME_SecDataFilter($sName);
-			ME_SecDataFilter($sAccess);
+				unset($_POST['Name'], $_POST['Access']);
 
-			$iAccessIndex = (int) $sAccess;
+				//format the string to be compatible with HTML and avoid SQL injection
+				ME_SecDataFilter($sName);
 
-			unset($sAccess);
-
-			EmployeePositionAddParser($InDBConn, $sName, $iAccessIndex, $_ENV['Available']['Show']);
-
-			unset($sName, $iAccessIndex);
-			unset($_POST['Name'], $_POST['Access']);
-
-			header("Location:Index.php?MenuIndex=".$_ENV['MenuIndex']['EmployeePosition']);
+				//database cannot accept Primary or foreighn keys below 1
+				//If duplicate the database will throw a exception
+				if($iContentAccessIndex > 0)
+					EmployeePositionAddParser($InDBConn, $sName, $iContentAccessIndex, $_ENV['Available']['Show']);
+				else
+					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+					
+				unset($sName, $iContentAccessIndex);
+				header("Location:Index.php?MenuIndex=".$_ENV['MenuIndex']['EmployeePosition']);
+			}
+			else 
+                throw new Exception("Some POST variables are not considered numeric type");
 		}
 		else
-			throw new Exception("Missing POST data to complete transaction");
+			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+		throw new Exception("Missing POST variables to complete transaction");
 }
 ?>

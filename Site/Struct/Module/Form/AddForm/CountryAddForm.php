@@ -1,55 +1,52 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLCountryAddForm(CDBConnManager &$InDBConn) : void
+function HTMLCountryAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
-	require_once("Output/Retriever/AccessRetriever.php");
-	require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
-
   //-------------<PHP-HTML>-------------//
-  printf("<div class='Form'>");
+  print("<div class='Form'>");
 
-  printf("<form method='POST'>");
-  printf("<div>");
+  print("<form method='POST'>");
+  print("<div>");
 
   //Title
-  printf("<div id='FormTitle'>");
-  printf("<h3>New Country</h3>");
-  printf("</div>");
+  print("<div id='FormTitle'>");
+  print("<h3>New Country</h3>");
+  print("</div>");
 
   //Input Row
-  printf("<div>");
+  print("<div>");
 
-  printf("<div>");
-  printf("<h5>Name</h5>");
-  printf("</div>");
+  print("<div>");
+  print("<h5>Name*</h5>");
+  print("</div>");
 
-  printf("<div>");
-  printf("<input type='text' placeholder='Country name' name='Name' required>");
-  printf("</div>");
+  print("<div>");
+  print("<input type='text' placeholder='Country name' name='Name' required>");
+  print("</div>");
 
-  printf("</div>");
+  print("</div>");
 
   //get rows and render <select> element with data
-  printf("<div>");
+  print("<div>");
 
-  printf("<div>");
-  printf("<h5>Access</h5>");
-  printf("</div>");
+  print("<div>");
+  print("<h5>Access</h5>");
+  print("</div>");
 
-  printf("<div>");
-  RenderAccessSelectRow($InDBConn, $_SESSION['AccessID'], $_ENV['Available']['Show']);
-  printf("</div>");
+  print("<div>");
+  RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
+  print("</div>");
 
-  printf("</div>");
+  print("</div>");
 
-  printf("</div>");
+  print("</div>");
 
-  printf("<div>");
-  printf("<input type='submit' value='Save' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=".$_GET['Module']."&AddPro'>");
-  printf("<a href='.?MenuIndex=".$_ENV['MenuIndex']['Country']."'><div class='Button-Left'><p>Cancel</p></div></a>");
-  printf("</div>");
-  printf("</form>");
+  print("<div>");
+  printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $_GET['MenuIndex'], $_GET['Module']);
+  printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['Country']);
+  print("</div>");
+  print("</form>");
 
-  printf("</div>");
+  print("</div>");
 }
 ?>

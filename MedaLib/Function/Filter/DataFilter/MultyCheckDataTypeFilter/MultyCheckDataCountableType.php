@@ -1,4 +1,7 @@
 <?php
+//-------------<FUNCTION>-------------//
+//Take an array and check every key value is Countable
+//Return false the first key it finds is not Countable
 function ME_MultyCheckCountableType(...$InaVar) : bool
 {
   $iArrayLenght = count($InaVar);

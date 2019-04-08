@@ -1,4 +1,7 @@
 <?php
+//-------------<FUNCTION>-------------//
+//Take an array and check every key value is Iterable
+//Return false the first key it finds is not Iterable
 function ME_MultyCheckIterableType(...$InaVar) : bool
 {
   $iArrayLenght = count($InaVar);

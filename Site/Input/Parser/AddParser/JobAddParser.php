@@ -1,68 +1,67 @@
 <?php
-function JobAddParser(CDBConnManager &$InDBConn, int &$IniJobOutIndex, int &$IniJobIncIndex, int &$IniCompanyIndex, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
+function JobAddParser(ME_CDBConnManager &$InDBConn, int &$IniJobOutIndex, int &$IniJobIncIndex, int &$IniCompanyIndex, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $IniJobOutIndex, $IniJobIncIndex, $IniCompanyIndex, $IniAccessIndex, $IniIsAvailIndex))
+	if(($IniJobOutIndex > 0) && ($IniJobIncIndex > 0) && ($IniCompanyIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		if(($IniJobOutIndex > 0) && ($IniJobIncIndex > 0) && ($IniCompanyIndex > 0) && ($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		$sDBQuery = "";
+		
+		$sDBQuery = "INSERT INTO
+		".$InDBConn->GetPrefix()."VIEW_JOB_ADD
+		(
+		JOB_DATA_ID,
+		JOB_OUT_ID,
+		JOB_INC_ID,
+		COMP_ID,
+		JOB_ACCESS_ID,
+		JOB_AVAIL_ID
+		)
+		VALUES
+		(
+		".$InDBConn->GetLastQueryID().",
+		".$IniJobOutIndex.",
+		".$IniJobIncIndex.",
+		".$IniCompanyIndex.",
+		".$IniContentAccessLevelIndex.",
+		".$IniIsAvailIndex."
+		);";
+
+		$InDBConn->ExecQuery($sDBQuery, TRUE);
+
+		if(!$InDBConn->HasError())
 		{
-			$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_JOB
-			(
-			JOB_DATA_ID,
-			JOB_OUT_ID,
-			JOB_INC_ID,
-			COMP_ID,
-			JOB_ACCESS,
-			JOB_AVAIL
-			)
-			VALUES
-			(
-			".$InDBConn->GetLastQueryID().",
-			".$IniJobOutIndex.",
-			".$IniJobIncIndex.",
-			".$IniCompanyIndex.",
-			".$IniAccessIndex.",
-			".$IniIsAvailIndex."
-			);";
-
-			$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-			if(!$InDBConn->HasError())
-			{
-				if($InDBConn->HasWarning())
-					throw new Exception($InDBConn->GetWarning());
-			}
-			else
-				throw new Exception($InDBConn->GetError());
-
-			unset($sDBQuery);
+			if($InDBConn->HasWarning())
+				throw new Exception($InDBConn->GetWarning());
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			throw new Exception($InDBConn->GetError());
+
+		unset($sDBQuery);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function JobDataAddParser(CDBConnManager &$InDBConn, string &$InsName, string &$InsDate, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
+function JobDataAddParser(ME_CDBConnManager &$InDBConn, string &$InsName, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $InsName, $InsDate, $IniAccessIndex, $IniIsAvailIndex))
+	if(!ME_MultyCheckEmptyType($InsName, $InsDate))
 	{
-		if(($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < 3))
+		if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 		{
+			$sDBQuery = "";
+
 			$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_JOB_DATA
+			".$InDBConn->GetPrefix()."VIEW_JOB_DATA_ADD
 			(
 			JOB_DATA_TITLE,
 			JOB_DATA_DATE,
-			JOB_DATA_ACCESS,
-			JOB_DATA_AVAIL
+			JOB_DATA_ACCESS_ID,
+			JOB_DATA_AVAIL_ID
 			)
 			VALUES
 			(
 			\"".$InsName."\",
 			\"".$InsDate."\" ,
-			".$IniAccessIndex.",
+			".$IniContentAccessLevelIndex.",
 			".$IniIsAvailIndex."
 			);";
 
@@ -83,85 +82,79 @@ function JobDataAddParser(CDBConnManager &$InDBConn, string &$InsName, string &$
 		throw new Exception("Input parameters are empty");
 }
 
-function JobIncomeAddParser(CDBConnManager &$InDBConn, float &$InfPrice, float &$InfPIA, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
+function JobIncomeAddParser(ME_CDBConnManager &$InDBConn, float &$InfPrice, float &$InfPIA, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $IniAccessIndex, $IniIsAvailIndex))
+	if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		if(($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < 3))
+		$sDBQuery = "";
+
+		$sDBQuery = "INSERT INTO
+		".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_ADD
+		(
+		JOB_INC_PRICE,
+		JOB_INC_PIA,
+		JOB_INC_ACCESS_ID,
+		JOB_INC_AVAIL_ID
+		)
+		VALUES
+		(
+		".((empty($InfPrice) || !is_numeric($InfPrice)) ? 0 : abs($InfPrice)).",
+		".((empty($InfPIA) || !is_numeric($InfPIA))? 0 : abs($InfPIA)).",
+		".$IniContentAccessLevelIndex.",
+		".$IniIsAvailIndex."
+		);";
+
+		$InDBConn->ExecQuery($sDBQuery, TRUE);
+
+		if(!$InDBConn->HasError())
 		{
-			$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_JOB_INCOME
-			(
-			JOB_INC_PRICE,
-			JOB_INC_PIA,
-			JOB_INC_ACCESS,
-			JOB_INC_AVAIL
-			)
-			VALUES
-			(
-			".(empty($InfPrice) ? 0 : abs($InfPrice)).",
-			".(empty($InfPIA) ? 0 : abs($InfPIA)).",
-			".$IniAccessIndex.",
-			".$IniIsAvailIndex."
-			);";
-
-			$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-			if(!$InDBConn->HasError())
-			{
-				if($InDBConn->HasWarning())
-					throw new Exception($InDBConn->GetWarning());
-			}
-			else
-				throw new Exception($InDBConn->GetError());
-
-			unset($sDBQuery);
+			if($InDBConn->HasWarning())
+				throw new Exception($InDBConn->GetWarning());
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			throw new Exception($InDBConn->GetError());
+
+		unset($sDBQuery);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function JobOutcomeAddParser(CDBConnManager &$InDBConn, float &$InfExpenses, float &$InfDamage, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
+function JobOutcomeAddParser(ME_CDBConnManager &$InDBConn, float &$InfExpenses, float &$InfDamage, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $IniAccessIndex, $IniIsAvailIndex))
+	if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		if(($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < 3))
+		$sDBQuery = "";
+
+		$sDBQuery = "INSERT INTO
+		".$InDBConn->GetPrefix()."VIEW_JOB_OUTCOME_ADD
+		(
+		JOB_OUT_EXPENSES,
+		JOB_OUT_DAMAGE,
+		JOB_OUT_ACCESS_ID,
+		JOB_OUT_AVAIL_ID
+		)
+		VALUES
+		(
+		".((empty($InfExpenses) || !is_numeric($InfExpenses)) ? 0 : -(abs($InfExpenses))).",
+		".((empty($InfDamage) || !is_numeric($InfDamage)) ? 0 : -(abs($InfDamage))).",
+		".$IniContentAccessLevelIndex.",
+		".$IniIsAvailIndex."
+		);";
+
+		$InDBConn->ExecQuery($sDBQuery, TRUE);
+
+		if(!$InDBConn->HasError())
 		{
-			$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_JOB_OUTCOME
-			(
-			JOB_OUT_EXP,
-			JOB_OUT_DAM,
-			JOB_OUT_ACCESS,
-			JOB_OUT_AVAIL
-			)
-			VALUES
-			(
-			".(empty($InfExpenses) ? 0 : -(abs($InfExpenses))).",
-			".(empty($InfDamage) ? 0 : -(abs($InfDamage))).",
-			".$IniAccessIndex.",
-			".$IniIsAvailIndex."
-			);";
-
-			$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-			if(!$InDBConn->HasError())
-			{
-				if($InDBConn->HasWarning())
-					throw new Exception($InDBConn->GetWarning());
-			}
-			else
-				throw new Exception($InDBConn->GetError());
-			
-			unset($sDBQuery);
+			if($InDBConn->HasWarning())
+				throw new Exception($InDBConn->GetWarning());
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			throw new Exception($InDBConn->GetError());
+		
+		unset($sDBQuery);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		throw new Exception("Input parameters do not meet requirements range");
 }
 ?>

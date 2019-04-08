@@ -1,54 +1,57 @@
 <?php
-require("../../Data/ConnData/DBSessionToken.php");
-
-session_start();
-
-require_once("../../../MedaLib/Class/Log/LogSystem.php");
-require_once("../../Data/GlobalData.php");
-require_once("../../../MedaLib/Function/Filter/SecurityFilter/SecurityFilter.php");
-require_once("../../Process/ProErrorLog/ProCallbackErrorLog.php");
-
-function LoginCheck()
+function LoginCheck(ME_CDBConnManager &$InDBConn)
 {
-	if(isset($_POST['Email'], $_POST['Pass']) &&
-	$_POST['Email'] && $_POST['Pass'])
-	{
-		require_once("../../../MedaLib/Class/Manager/DBConnManager.php");
-		require_once("../../../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
-		require_once("../../Output/Retriever/EmployeeRetriever.php");
+    if(isset($_POST['Email'], $_POST['Pass'])) 
+    {
+        if(!ME_MultyCheckEmptyType($_POST['Email'], $_POST['Pass']))
+        {
+            //Users email and password
+            $sEmail = $_POST['Email'];
+            $sPass = $_POST['Pass'];
 
-		$sEmail = $_POST['Email'];
-		$sPass = $_POST['Pass'];
+            unset($_POST['Email'], $_POST['Pass']);
 
-		ME_SecDataFilter($Email);
-		ME_SecDataFilter($Pass);
+            //format the string to be compatible with HTML and avoid SQL injection
+            ME_SecDataFilter($sEmail);
+            ME_SecDataFilter($sPass);
 
-		$aEmpRows = EmployeeLoginRetriever($sEmail, $_ENV['Available']['Show']);
+            EmployeeLoginRetriever($InDBConn, $sEmail, $_ENV['Available']['Show']);
 
-		if(empty($aEmpRows))
-			throw new Exception("Couldn't find user, result turned empty");
-		else
-		{
+            $aEmpRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
+            $iEmpNumRows = $InDBConn->GetResultNumRows();
 
-			foreach($aEmpRows as $EmpRow => $EmpData)
-			{
-				if(password_verify($Pass, $EmpData['EMP_DATA_PASS']))
-				{
-					$_SESSION['Username'] = $EmpData['EMP_DATA_NAME'] . " " . $EmpData['EMP_DATA_SURNAME'];
-					$_SESSION['AccessID'] = $EmpData['EMP_ACCESS'];
-					$_SESSION['UserID'] = $EmpData['EMP_ID'];
-					$_SESSION['LogedIn'] = TRUE;
-				}
-				else
-				{
-					throw new Exception("Wrong password, request access user id: " . $EmpData['EMP_ID']);
-				}
-			}
+            if(!empty($aEmpRow) && ($iEmpNumRows < 2 && $iEmpNumRows > 0))
+            {
+                $iEmployeeIndex = (int) $aEmpRow['EMP_ID'];
 
-			header("Location:Index.php");
-		}
+                if($iEmployeeIndex > 0)
+                {
+                    if(password_verify($sPass, $aEmpRow['EMP_DATA_PASS'])) 
+                    {
+                        $_SESSION['Username'] = $aEmpRow['EMP_DATA_NAME'] . " " . $aEmpRow['EMP_DATA_SURNAME'];
+                        $_SESSION['AccessID'] = $aEmpRow['EMP_ACCESS'];
+                        $_SESSION['UserID'] = $iEmployeeIndex;
+                        $_SESSION['LogedIn'] = TRUE;
+                    } 
+                    else 
+                        throw new Exception("Wrong password, requested access user id: " . $iEmployeeIndex);
+                }
+                else
+                    throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
+                    
+                unset($iEmployeeIndex); 
+            }
+            else
+                throw new Exception("Couldn't find user, result turned empty");
+
+            unset($sEmail, $sPass, $aEmpRow, $iEmpNumRows);
+
+            header("Location:Index.php");
+        }
+        else
+			throw new Exception("Some POST data are empty, Those POST cannot be empty");
 	}
+	else
+		throw new Exception("Some POST data are not initialized");
 }
-
-ProFunctionCallback("LoginCheck", $_ENV['AccessLevel']['Guest'], "POST", "../../Logs");
 ?>

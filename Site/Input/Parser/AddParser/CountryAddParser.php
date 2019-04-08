@@ -1,61 +1,60 @@
 <?php
 //-------------<FUNCTION>-------------//
-function CountryAddParser(CDBConnManager &$InDBConn, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
+function CountryAddParser(ME_CDBConnManager &$InDBConn, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $IniAccessIndex, $IniIsAvailIndex))
+	if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 	{
-		if(($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		$sDBQuery = "";
+
+		$sDBQuery = "INSERT INTO
+		".$InDBConn->GetPrefix()."VIEW_COUNTRY_ADD
+		(
+		COUN_DATA_ID,
+		COUN_ACCESS_ID,
+		COUN_AVAIL_ID
+		)
+		VALUES
+		(
+		".$InDBConn->GetLastQueryID().",
+		".$IniContentAccessLevelIndex.",
+		".$IniIsAvailIndex."
+		);";
+
+		$InDBConn->ExecQuery($sDBQuery, TRUE);
+
+		if(!$InDBConn->HasError())
 		{
-			$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_COUNTRY
-			(
-			COUN_DATA_ID,
-			COUN_ACCESS,
-			COUN_AVAIL
-			)
-			VALUES
-			(
-			".$InDBConn->GetLastQueryID().",
-			".$IniAccessIndex.",
-			".$IniIsAvailIndex."
-			);";
-
-			$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-			if(!$InDBConn->HasError())
-			{
-					if($InDBConn->HasWarning())
-						throw new Exception("warning detected: " . $InDBConn->GetWarning());
-			}
-			else
-					throw new Exception("Error: " . $InDBConn->GetError());
-
-			unset($sDBQuery);
+				if($InDBConn->HasWarning())
+					throw new Exception("warning detected: " . $InDBConn->GetWarning());
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+				throw new Exception("Error: " . $InDBConn->GetError());
+
+		unset($sDBQuery);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function CountryDataAddParser(CDBConnManager &$InDBConn, string &$InsTitle, int &$IniAccessIndex, int &$IniIsAvailIndex) : void
+function CountryDataAddParser(ME_CDBConnManager &$InDBConn, string &$InsTitle, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
 {
-	if(ME_MultyCheckEmptyType($InDBConn, $InsTitle, $IniAccessIndex, $IniIsAvailIndex))
+	if(!empty($InsTitle))
 	{
-		if(($IniAccessIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
 		{
+			$sDBQuery = "";
+
 			$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_COUNTRY_DATA
+			".$InDBConn->GetPrefix()."VIEW_COUNTRY_DATA_ADD
 			(
 			COUN_DATA_TITLE,
-			COUN_DATA_ACCESS,
-			COUN_DATA_AVAIL
+			COUN_DATA_ACCESS_ID,
+			COUN_DATA_AVAIL_ID
 			)
 			VALUES
 			(
 			\"".$InsTitle."\",
-			".$IniAccessIndex.",
+			".$IniContentAccessLevelIndex.",
 			".$IniIsAvailIndex."
 			);";
 

@@ -1,47 +1,57 @@
 <?php
-function ProAddCounty(CDBConnManager &$InDBConn)
+//-------------<FUNCTION>-------------//
+function ProAddCounty(ME_CDBConnManager &$InDBConn)
 {
-	if(isset($_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Date'], $_POST['Access']))
+	//Check if POST data exists, if not then throw a exception
+	if(isset($_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Access']))
 	{
-		if(ME_MultyCheckEmptyType($InDBConn, $_POST['Name'], $_POST['Date'], $_POST['Access']))
+		//Check if POST data are NOT empty, if false then throw a exception
+		if(!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Access']))
 		{
-			$sTitle = $_POST['Name'];
-			$sTax = $_POST['Tax'];
-			$sInterestRate = $_POST['IR'];
-			$sDate = $_POST['Date'];
-			$sCountry = $_POST['Country'];
-			$sAccess = $_POST['Access'];
+			//Check if POST data are numeric, if false then throw a exception
+			if(ME_MultyCheckNumericType($_POST['Country'], $_POST['Access']))
+			{
+				//take strings as is
+				$sTitle = $_POST['Name'];
 
-			ME_SecDataFilter($sTitle);
-			ME_SecDataFilter($sTax);
-			ME_SecDataFilter($sInterestRate);
-			ME_SecDataFilter($sDate);
-			ME_SecDataFilter($sCountry);
-			ME_SecDataFilter($sAccess);
+				//Convert data to float for logical methematical operations
+				$fTax = (float) $_POST['Tax'];
+				$fInterestRate = (float) $_POST['IR'];
 
-			$fTax = (float) $sTax;
-			$fInterestRate = (float) $sInterestRate;
-			$iCountryIndex = (int) $sCountry;
-			$iAccessIndex = (int) $sAccess;
+				//variables consindered to be holding ID's
+				$iCountryIndex = (int) $_POST['Country'];
+				$iContentAccessIndex = (int) $_POST['Access'];
 
-			unset($sTax, $sInterestRate, $sCountry, $sAccess);
+				unset($_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Country'], $_POST['Access']);
 
-			CountyDataAddParser($InDBConn, $sTitle, $fTax, $fInterestRate, $sDate, $iAccessIndex, $_ENV['Available']['Show']);
+				//format the string to be compatible with HTML and avoid SQL injection
+				ME_SecDataFilter($sTitle);
 
-			if($InDBConn->GetLastQueryID())
-				CountyAddParser($InDBConn, $iCountryIndex, $iAccessIndex, $_ENV['Available']['Show']);
-			else
-				throw new Exception("Failed to get the id of last query");
+				//Limit data to a certain acceptable range
+				//database cannot accept Primary or foreighn keys below 1
+				//If duplicate the database will throw a exception
+				if(($iCountryIndex > 0) && ($iContentAccessIndex > 0))
+				{
+					CountyDataAddParser($InDBConn, $sTitle, $fTax, $fInterestRate, $iContentAccessIndex, $_ENV['Available']['Show']);
 
-			unset($sTitle, $fTax, $fInterestRate, $sDate, $iCountryIndex, $iAccessIndex);
-			unset($_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Date'], $_POST['Country'], $_POST['Access']);
+					if($InDBConn->GetLastQueryID())
+						CountyAddParser($InDBConn, $iCountryIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
+					else
+						throw new Exception("Failed to get the id of last query");
+				}
+				else
+					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
 
-			header("Location:.?MenuIndex=".$_ENV['MenuIndex']['County']);
+				unset($sTitle, $fTax, $fInterestRate, $sDate, $iCountryIndex, $iContentAccessIndex);					
+				header("Location:.?MenuIndex=".$_ENV['MenuIndex']['County']);
+			}
+			else 
+                throw new Exception("Some POST variables are not considered numeric type");
 		}
 		else
-			throw new Exception("Some POST data are NULL, Those POST cannot be NULL");
+			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+		throw new Exception("Missing POST variables to complete transaction");
 }
 ?>

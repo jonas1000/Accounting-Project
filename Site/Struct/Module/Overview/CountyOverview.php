@@ -5,75 +5,67 @@ require_once("../MedaLib/Class/Log/LogSystem.php");
 require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFilter.php");
 require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
 
-$DBConn = new CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
+$DBConn = new ME_CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
-function HTMLCountyOverview(CDBConnManager &$InDBConn) : void
+function HTMLCountyOverview(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
 	require_once("Output/Retriever/CountyRetriever.php");
 
-	CountyGeneralRetriever($InDBConn, $_SESSION['AccessID'], $_ENV['Available']['Show']);
+	CountyOverviewRetriever($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
 	foreach($InDBConn->GetResult() as $CouRow => $CouData)
 	{
-		printf("<div class='DataBlock'>");
+		if(((int) $CouData['COU_DATA_ACCESS']) > ($IniUserAccessLevel - 1))
+		{
+			print("<div class='DataBlock'>");
 
-		printf("<form method='POST'>");
+			print("<form method='POST'>");
 
-		//Data div block
-		printf("<div>");
+			//Data div block
+			print("<div>");
 
-		printf("<div>");
-		printf("<h5>".$CouData['COU_DATA_TITLE']."</h5>");
-		printf("</div>");
+			print("<div>");
+			printf("<h5>%s</h5>", $CouData['COU_DATA_TITLE']);
+			print("</div>");
 
-		//Data Row
-		printf("<div>");
-		printf("<div>");
-		printf("<b><p>Tax</p></b>");
-		printf("</div>");
+			//Data Row
+			print("<div>");
+			print("<div>");
+			print("<b><p>Tax</p></b>");
+			print("</div>");
 
-		printf("<div>");
-		printf("<p>".$CouData['COU_DATA_TAX']."</p>");
-		printf("</div>");
-		printf("</div>");
+			print("<div>");
+			printf("<p>%s</p>", $CouData['COU_DATA_TAX']);
+			print("</div>");
+			print("</div>");
 
-		//Data Row
-		printf("<div>");
-		printf("<div>");
-		printf("<b><p>Interest Rate</p></b>");
-		printf("</div>");
+			//Data Row
+			print("<div>");
+			print("<div>");
+			print("<b><p>Interest Rate</p></b>");
+			print("</div>");
 
-		printf("<div>");
-		printf("<p>".$CouData['COU_DATA_IR']."</p>");
-		printf("</div>");
-		printf("</div>");
+			print("<div>");
+			printf("<p>%s</p>", $CouData['COU_DATA_IR']);
+			print("</div>");
+			print("</div>");
 
-		//Data Row
-		printf("<div>");
-		printf("<div>");
-		printf("<b><p>Date</p></b>");
-		printf("</div>");
+			print("</div>");
 
-		printf("<div>");
-		printf("<p>".$CouData['COU_DATA_DATE']."</p>");
-		printf("</div>");
-		printf("</div>");
+			//Input Block
+			print("<div>");
+			printf("<input type='hidden' name='CouIndex' value='%s'>", $CouData['COU_ID']);
+			printf("<input type='submit' value='Delete' formaction='.?MenuIndex=%s&Module=2'>", $_GET['MenuIndex']);
+			printf("<input type='submit' value='Edit' formaction='.?MenuIndex=%s&Module=1'>", $_GET['MenuIndex']);
+			print("</div>");
 
-		printf("</div>");
+			print("</form>");
 
-		//Input Block
-		printf("<div>");
-		printf("<input type='hidden' name='CouIndex' value=".$CouData['COU_ID'].">");
-		printf("<input type='submit' value='Delete' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=2'>");
-		printf("<input type='submit' value='Edit' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=1'>");
-		printf("</div>");
-
-		printf("</form>");
-
-		printf("</div>");
+			print("</div>");
+		}
 	}
 
-	printf("<a href='.?MenuIndex=".$_GET['MenuIndex']."&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>");
+	printf("<a href='.?MenuIndex=%s&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>", $_GET['MenuIndex']);
 }
 
 //-------------<PHP-HTML>-------------//
@@ -84,9 +76,9 @@ else
 	{
 		case 0:
 		{
-			if(isset($_GET['AddPro']))
+			if(isset($_GET['ProAdd']))
 			{
-				require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
+				require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataNumericType.php");
 				require_once("Input/Parser/AddParser/CountyAddParser.php");
 				require_once("Process/ProAdd/ProAddCounty.php");
 
@@ -94,6 +86,10 @@ else
 			}
 			else
 			{
+				require_once("Output/Retriever/CountryRetriever.php");
+				require_once("Output/Retriever/AccessRetriever.php");
+				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
+				require_once("Struct/Element/Function/Select/SelectCountryRowRender.php");
 				require_once("Struct/Module/Form/AddForm/CountyAddForm.php");
 
 				ProQueryFunctionCallback($DBConn, "HTMLCountyAddForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
@@ -103,17 +99,35 @@ else
 		}
 		case 1:
 		{
-			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
-			require_once("Input/Parser/EditParser/CountyEditParser.php");
-			require_once("Struct/Module/Form/EditForm/CountyEditForm.php");
+            require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
 
-			ProQueryFunctionCallback($DBConn, "HTMLCountyEditForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			if(isset($_GET['ProEdit']))
+			{
+				require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataNumericType.php");
+				require_once("Input/Parser/EditParser/CountyEditParser.php");
+				require_once("Output/SpecificRetriever/CountySpecificRetriever.php");
+				require_once("Process/ProEdit/ProEditCounty.php");
+				
+                ProQueryFunctionCallback($DBConn, "ProEditCounty", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			}
+			else
+			{
+				require_once("Output/SpecificRetriever/CountySpecificRetriever.php");
+				require_once("Output/Retriever/CountryRetriever.php");
+				require_once("Output/Retriever/AccessRetriever.php");
+				require_once("Struct/Element/Function/Select/SelectCountryRowRender.php");
+				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
+				require_once("Struct/Module/Form/EditForm/CountyEditForm.php");
+
+				ProQueryFunctionCallback($DBConn, "HTMLCountyEditForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			}
+
 			break;
 		}
 		case 2:
 		{
-			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
 			require_once("Input/Parser/VisibilityParser/CountyVisParser.php");
+			require_once("Output/SpecificRetriever/CountySpecificRetriever.php");
 			require_once("Process/ProDel/ProDelCounty.php");
 
 			ProQueryFunctionCallback($DBConn, "ProDelCounty", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");

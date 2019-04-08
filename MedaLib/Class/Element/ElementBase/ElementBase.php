@@ -108,13 +108,13 @@ abstract class ME_CHTMLLinkElementBase implements ME_IHTMLGlobAttr
 
 class ME_CHTMLElement extends ME_CHTMLElementBase implements ME_IHTMLEventAttr
 {
-	private static $iNumElements = NULL;
-	protected $sElemAttr = NULL;
-	protected $sElemType = NULL;
+	private static $iNumElements = 0;
+	protected $sElemAttr = 0;
+	protected $sElemType = 0;
 
 	protected function AttributeAssigment($InsAttr, $InsValue)
 	{
-		if(is_string($InValue))
+		if(is_string($InsValue))
 			$this->sElemAttr .= $InsAttr."=\"".$InsValue."\"";
 		else
 			throw new Exception("Attribute value is not a string");
@@ -157,7 +157,7 @@ class ME_CHTMLElement extends ME_CHTMLElementBase implements ME_IHTMLEventAttr
 			$sKey = array_search($IniAttr, ME_CHTMLElement::CONST_EVENT_ATTR_LIST);
 
 			if(!is_bool($sKey))
-				$this->AttributeAssigment($sKey, $IniValue);
+				$this->AttributeAssigment($sKey, $InsValue);
 			else
 				throw new Exception("Array is not of the constant arrays of the class");
 		}

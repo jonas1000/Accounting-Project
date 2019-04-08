@@ -1,53 +1,48 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLShareholderAddForm(CDBConnManager &$InDBConn) : void
+function HTMLShareholderAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
 {
-	require_once("Output/Retriever/AccessRetriever.php");
-	require_once("Output/Retriever/EmployeeRetriever.php");
-	require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
-	require_once("Struct/Element/Function/Select/SelectEmployeeRowRender.php");
+  	//-------------<PHP-HTML>-------------//
+	print("<div class='Form'>");
+	print("<form method='POST'>");
+	print("<div>");
 
-  printf("<div class='Form'>");
-  printf("<form method='POST'>");
-  printf("<div>");
-
-  //Title
-  printf("<div id='FormTitle'>");
-  printf("<h3>New Shareholder</h3>");
-  printf("</div>");
-
-  //Input Row
-  printf("<div>");
-  printf("<div>");
-  printf("<h5>Employee</h5>");
-  printf("</div>");
-
-  printf("<div>");
-  RenderEmployeeSelectRow($InDBConn, $_SESSION['AccessID'], $_ENV['Available']['Show']);
-  printf("</div>");
-  printf("</div>");
+	//Title
+	print("<div id='FormTitle'>");
+	print("<h3>New Shareholder</h3>");
+	print("</div>");
 
 	//Input Row
-  printf("<div>");
-  printf("<div>");
-  printf("<h5>Access</ph5>");
-  printf("</div>");
+	print("<div>");
+	print("<div>");
+	print("<h5>Employee</h5>");
+	print("</div>");
 
-  printf("<div>");
-  RenderAccessSelectRow($InDBConn, $_SESSION['AccessID'], $_ENV['Available']['Show']);
-  printf("</div>");
-  printf("</div>");
+	print("<div>");
+	RenderEmployeeSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
+	print("</div>");
+	print("</div>");
 
-  printf("</div>");
+	//Input Row
+	print("<div>");
+	print("<div>");
+	print("<h5>Access</ph5>");
+	print("</div>");
 
-  printf("<div>");
-  printf("<input type='hidden' name='MenuIndex' value='".$_GET['MenuIndex']."'>");
-  printf("<input type='submit' value='Save' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=".$_GET['Module']."&AddPro'>");
-  printf("<a href='.?MenuIndex=".$_GET['MenuIndex']."'><div class='Button-Left'><p>Cancel</p></div></a>");
-  printf("</div>");
+	print("<div>");
+	RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
+	print("</div>");
+	print("</div>");
 
-  printf("</form>");
+	print("</div>");
 
-  printf("</div>");
+	print("<div>");
+	printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $_GET['MenuIndex'], $_GET['Module']);
+	printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_GET['MenuIndex']);
+	print("</div>");
+
+	print("</form>");
+
+	print("</div>");
 }
 ?>

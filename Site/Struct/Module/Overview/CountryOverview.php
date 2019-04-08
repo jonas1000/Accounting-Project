@@ -5,40 +5,45 @@ require_once("../MedaLib/Class/Log/LogSystem.php");
 require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFilter.php");
 require_once("Process/ProErrorLog/ProCallbackErrorLog.php");
 
-$DBConn = new CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
+$DBConn = new ME_CDBConnManager($_SESSION['ServerName'], $_SESSION['DBName'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
 //-------------<FUNCTION>-------------//
-function HTMLCountryOverview(CDBConnManager &$InDBConn) : void
+function HTMLCountryOverview(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevel) : void
 {
 	require_once("Output/Retriever/CountryRetriever.php");
 
-	CountryGeneralRetriever($InDBConn, $_SESSION['AccessID'], $_ENV['Available']['Show']);
+	CountryOverviewRetriever($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
 
 	foreach($InDBConn->GetResult() as $CountryRow => $CountryData)
 	{
-			printf("<div class='DataBlock'>");
+		if(((int) $CountryData['COUN_DATA_ACCESS']) > ($IniUserAccessLevel - 1))
+		{
+			print("<div class='DataBlock'>");
 
-			printf("<form method='POST'>");
-			printf("<div>");
+			print("<form method='POST'>");
 
+			print("<div>");
+		
 			//Title
-			printf("<div>");
-			printf("<h5>".$CountryData['COUN_DATA_TITLE']."</h5>");
-			printf("</div>");
+			print("<div>");
+			printf("<h5>%s</h5>", $CountryData['COUN_DATA_TITLE']);
+			print("</div>");
 
-			printf("</div>");
+			print("</div>");
 
-			printf("<div>");
-			printf("<input type='hidden' name='CounIndex' value=".$CountryData['COUN_ID'].">");
-			printf("<input type='submit' value='Delete' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=2'>");
-			printf("<input type='submit' value='Edit' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=1'>");
-			printf("</div>");
-			printf("</form>");
+			print("<div>");
+			printf("<input type='hidden' name='CounIndex' value='%s'>", $CountryData['COUN_ID']);
+			printf("<input type='submit' value='Delete' formaction='.?MenuIndex=%s&Module=2'>", $_GET['MenuIndex']);
+			printf("<input type='submit' value='Edit' formaction='.?MenuIndex=%s&Module=1'>", $_GET['MenuIndex']);
+			print("</div>");
 
-			printf("</div>");
+			print("</form>");
+
+			print("</div>");
+		}
 	}
 
-	printf("<a href='.?MenuIndex=".$_GET['MenuIndex']."&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>");
+	printf("<a href='.?MenuIndex=%s&Module=0'><div class='Button-Left'><h5>Add</h5></div></a>", $_GET['MenuIndex']);
 }
 
 //-------------<PHP-HTML>-------------//
@@ -49,7 +54,7 @@ else
 	{
 		case 0:
 		{
-			if(isset($_GET['AddPro']))
+			if(isset($_GET['ProAdd']))
 			{
 				require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
 				require_once("Input/Parser/AddParser/CountryAddParser.php");
@@ -59,28 +64,48 @@ else
 			}
 			else
 			{
+				require_once("Output/Retriever/AccessRetriever.php");
+				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
 				require_once("Struct/Module/Form/AddForm/CountryAddForm.php");
 
 				ProQueryFunctionCallback($DBConn, "HTMLCountryAddForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "GET", "Logs");
 			}
+
 			break;
 		}
 		case 1:
 		{
 			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
-			require_once("Input/Parser/EditParser/CountryEditParser.php");
-			require_once("Struct/Module/Form/EditForm/CountryEditForm.php");
 
-			ProQueryFunctionCallback($DBConn, "HTMLCountryEditForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			if(isset($_GET['ProEdit']))
+			{
+				require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataNumericType.php");
+				require_once("Input/Parser/EditParser/CountryEditParser.php");
+				require_once("Output/SpecificRetriever/CountrySpecificRetriever.php");
+				require_once("Process/ProEdit/ProEditCountry.php");
+
+				ProQueryFunctionCallback($DBConn, "ProEditCountry", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			}
+			else
+			{
+				require_once("Output/SpecificRetriever/CountrySpecificRetriever.php");
+				require_once("Output/Retriever/AccessRetriever.php");
+				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
+				require_once("Struct/Module/Form/EditForm/CountryEditForm.php");
+
+				ProQueryFunctionCallback($DBConn, "HTMLCountryEditForm", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			}
+
 			break;
 		}
 		case 2:
 		{
-			require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
 			require_once("Input/Parser/VisibilityParser/CountryVisParser.php");
+			require_once("Output/SpecificRetriever/CountrySpecificRetriever.php");
 			require_once("Process/ProDel/ProDelCountry.php");
 
 			ProQueryFunctionCallback($DBConn, "ProDelCountry", $_SESSION['AccessID'], $_ENV['AccessLevel']['Employee'], "POST", "Logs");
+			
 			break;
 		}
 		default:
