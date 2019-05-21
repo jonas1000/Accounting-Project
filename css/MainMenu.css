@@ -1,0 +1,129 @@
+@media screen and (min-width: 640px)
+{
+	.MenuWindow
+	{
+		width:auto;
+		height:720px;
+		float:left;
+		clear:both;
+		position:fixed;
+		z-index:1;
+	}
+}
+
+@media screen and (min-width: 1280px)
+{
+	.MenuWindow
+	{
+		width:auto;
+		height:1080px;
+		float:left;
+		clear:both;
+		position:fixed;
+		z-index:1;
+	}
+}
+
+@media screen and (min-width: 2560px)
+{
+	.MenuWindow
+	{
+		width:auto;
+		height:1800px;
+		float:left;
+		clear:both;
+		position:fixed;
+		z-index:1;
+	}
+}
+
+@media screen and (min-width: 3840px)
+{
+	.MenuWindow
+	{
+		width:auto;
+		height:2160px;
+		float:left;
+		clear:both;
+		position:fixed;
+		z-index:1;
+	}
+}
+
+@media screen and (min-width: 4096px)
+{
+	.MenuWindow
+	{
+		width:auto;
+		height:2880px;
+		float:left;
+		clear:both;
+		position:fixed;
+		z-index:1;
+	}
+}
+
+@media screen and (min-width: 7680px)
+{
+
+	.MenuWindow
+	{
+		width:auto;
+		height:4320px;
+		float:left;
+		clear:both;
+		position:fixed;
+		z-index:1;
+	}
+}
+
+.MainMenu
+{
+	background-color:rgba(120, 140, 255, 1);
+	width:25%;
+	height:100%;
+	min-width:200px;
+	max-width:300px;
+	margin:0%;
+	padding:0%;
+	float:left;
+	clear:left;
+	display:none;
+}
+
+.MainMenu div
+{
+	width:100%;
+	height:100%;
+	border-right:0.1875em solid rgba(0,0,0,1);
+	padding:1% 0%;
+	margin:0%;
+	float:left;
+	clear:both;
+}
+
+.MainMenu div a .MainMenuButton
+{
+	background-color:rgba(177, 187, 255, 1);
+	color:rgba(255,255,255,1);
+	width:95%;
+	height:auto;
+	border-style:none;
+	padding:0%;
+	margin:2% 2.5%;
+}
+
+.MainMenu p
+{
+	text-align:center;
+}
+
+.MenuButton
+{
+	background-color:rgba(100,100,0,1);
+	width:30px;
+	height:30px;
+	margin:25% 0%;
+	float:left;
+	clear:right;
+}

@@ -1,0 +1,37 @@
+.Content
+{
+	width:100%;
+	height:100%;
+	clear:both;
+	margin:0%;
+	padding:0% 0%;
+	z-index:-1;
+}
+
+.ContentArrayBlock
+{
+	width:100%;
+	float:left;
+	clear:both;
+}
+
+.ContentToolBar
+{
+	background-color:rgba(120, 128, 142, 1);
+	border-bottom-width:0.1875em;
+	border-bottom-color:rgba(50,52,48,1);
+	border-bottom-style:solid;
+	width:100%;
+	float:left;
+	padding:0%;
+	margin:0%;
+}
+
+.ContentToolBar div
+{
+	width:5%;
+	padding:1%;
+	clear:both;
+	float:left;
+	margin:0.5% 0.0% 0.5% 0.5%;
+}

@@ -1,0 +1,169 @@
+#FormTitle
+{
+	background-color:rgba(21, 41, 119, 1);
+	color:rgba(255,255,255,1);
+	width:100%;
+	text-align:center;
+	margin:0% 0% 2% 0%;
+	padding:1% 0% 1% 0%;
+}
+
+.Form
+{
+	background-color:rgba(255, 255, 255, 1);
+	width:50%;
+	min-width:32em;
+	height:auto;
+	float:left;
+	clear:both;
+	margin:2% 24%;
+	padding:0% 0% 0% 0%;
+}
+
+.Form div:first-child
+{
+	width:100%;
+	height:auto;
+	float:left;
+	clear:both;
+	margin:0%;
+	padding:0%;
+}
+
+.Form div:last-child
+{
+	width:100%;
+	height:auto;
+	float:left;
+	clear:both;
+	margin:0%;
+	padding:0%;
+}
+
+.Form div div
+{
+	background-color:rgba(120, 140, 255, 1);
+	color:rgba(255,255,255,1);
+	width:68%;
+	height:auto;
+	float:left;
+	clear:both;
+	margin:0.25% 15%;
+	padding:1%;
+}
+
+.Form div div:last-child
+{
+	width:68%;
+	height:auto;
+	float:left;
+	clear:both;
+	margin:0.25% 15%;
+	padding:1%;
+}
+
+.Form div div div
+{
+	background-color:rgba(0,0,0,0);
+	background-image:none;
+	border-style:none;
+}
+
+.Form div:first-child div div:first-child
+{
+	width:60%;
+	height:auto;
+	float:left;
+	clear:left;
+	margin:0%;
+	padding:0%;
+}
+
+.Form div:first-child div div:last-child
+{
+	width:40%;
+	height:auto;
+	float:right;
+	clear:right;
+	margin:1% 0% 0% 0%;
+	padding:0%;
+}
+
+.Form div:first-child div div:last-child input
+{
+	width:100%;
+	min-width:8em;
+	height:auto;
+	float:right;
+	clear:right;
+	margin:0%;
+	padding:0%;
+}
+
+.Form div:first-child div div:last-child textarea
+{
+	width:100%;
+	min-width:8em;
+	height:auto;
+	float:right;
+	clear:right;
+	margin:0%;
+	padding:0%;
+}
+
+.Form div:first-child div div:last-child select
+{
+	width:100%;
+	min-width:8em;
+	text-align:center;
+	height:auto;
+	float:right;
+	clear:right;
+	margin:0%;
+	padding:0%;
+}
+
+.Form div:last-child a div
+{
+	background-color:rgba(120, 140, 255, 1);
+	color:rgba(255,255,255,1);
+	text-shadow:none;
+	border-style:none;
+	width:10%;
+	min-width:64px;
+	text-align:center;
+	clear:left;
+	margin:1%;
+	padding:2%;
+	transition:transform 0.25s, text-shadow 0.25s, background-color 0.25s;
+}
+
+.Form div:last-child a div:hover
+{
+	background-color:rgba(235, 120, 120);
+	text-shadow:0px 0px 4px rgba(255,255,255,1);
+	transform:scale(1.1);
+}
+
+.Form input[type='submit']
+{
+	background-color:rgba(120, 140, 255, 1);
+	color:rgba(255,255,255,1);
+	font-size:16px;
+	border-style:none;
+	width:14%;
+	min-width:64px;
+	float:right;
+	clear:right;
+	margin:1%;
+	padding:2%;
+	transition:transform 0.25s, text-shadow 0.25s, background-color 0.25s;
+}
+
+.Form input[type='submit']:hover
+{
+	background-color:rgba(140, 160, 255, 1);
+	text-shadow:0px 0px 4px rgba(255,255,255,1);
+	transform:scale(1.1);
+	cursor:pointer;
+}
