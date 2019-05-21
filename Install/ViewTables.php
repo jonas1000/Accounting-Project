@@ -1275,8 +1275,6 @@ AND
 AND
 ".$sPrefix."COUNTRY.COUNTRY_DATA_ID = ".$sPrefix."COUNTRY_DATA.COUNTRY_DATA_ID;";
 
-printf($sDBQuery);
-
 $DBConn->ExecQuery($sDBQuery);
 
 if(!$DBConn->HasError())

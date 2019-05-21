@@ -1,63 +1,27 @@
 <?php
 
-printf("<div class='MenuWindow'>");
-printf("<div class='MainMenu' id='MainMenu'>");
-printf("<div>");
+print("<div class='MenuWindow'>");
+print("<div class='MainMenu' id='MainMenu'>");
+print("<div>");
 
-printf("<a href='.?MenuIndex=".$_ENV['MenuIndex']['Company']."'>");
-printf("<div class='MainMenuButton'>");
-printf("<p>Company Overview</p>");
-printf("</div>");
-printf("</a>");
+foreach($_ENV['MenuIndex'] as $Row => $RowData)
+{
+    if($RowData > -1)
+    {
+        printf("<a href='.?MenuIndex=%s'>", $RowData);
+        print("<div class='MainMenuButton'>");
+        printf("<p>%s Overview</p>", $Row);
+        print("</div>");
+        print("</a>");
+    }
+}
 
-printf("<a href='.?MenuIndex=".$_ENV['MenuIndex']['Country']."'>");
-printf("<div class='MainMenuButton'>");
-printf("<p>Country Overview</p>");
-printf("</div>");
-printf("</a>");
+print("</div>");
+print("</div>");
 
-printf("<a href='.?MenuIndex=".$_ENV['MenuIndex']['Employee']."'>");
-printf("<div class='MainMenuButton'>");
-printf("<p>Employee Overview</p>");
-printf("</div>");
-printf("</a>");
+print("<div class='MenuButton' onclick='RenderMenuDisplay()'>");
+print("</div>");
 
-printf("<a href='.?MenuIndex=".$_ENV['MenuIndex']['EmployeePosition']."'>");
-printf("<div class='MainMenuButton'>");
-printf("<p>Employee Position Overview</p>");
-printf("</div>");
-printf("</a>");
-
-printf("<a href='.?MenuIndex=".$_ENV['MenuIndex']['Job']."'>");
-printf("<div class='MainMenuButton'>");
-printf("<p>Job Overview</p>");
-printf("</div>");
-printf("</a>");
-
-printf("<a href='.?MenuIndex=".$_ENV['MenuIndex']['Shareholder']."'>");
-printf("<div class='MainMenuButton'>");
-printf("<p>Shareholder Overview</p>");
-printf("</div>");
-printf("</a>");
-
-printf("<a href='.?MenuIndex=".$_ENV['MenuIndex']['Customer']."'>");
-printf("<div class='MainMenuButton'>");
-printf("<p>Customer Overview</p>");
-printf("</div>");
-printf("</a>");
-
-printf("<a href='.?MenuIndex=".$_ENV['MenuIndex']['County']."'>");
-printf("<div class='MainMenuButton'>");
-printf("<p>County Overview</p>");
-printf("</div>");
-printf("</a>");
-
-printf("</div>");
-printf("</div>");
-
-printf("<div class='MenuButton' onclick='RenderMenuDisplay()'>");
-printf("</div>");
-
-printf("</div>");
+print("</div>");
 
 ?>

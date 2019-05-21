@@ -6,12 +6,12 @@ function RenderEmployeeSelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAcce
 	{
 		EmployeeSelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
-		printf("<select name='Employee'>");
+		print("<select name='Employee'>");
 
 		foreach($InDBConn->GetResult() as $EmpRow => $EmpData)
-			printf("<option value='". $EmpData['EMP_ID'] ."'>". $EmpData['EMP_DATA_NAME'] ."</option>");
+			printf("<option value='%s'>%s</option>", $EmpData['EMP_ID'], $EmpData['EMP_DATA_NAME']);
 
-		printf("</select>");
+		print("</select>");
 	}
 }
 
@@ -22,12 +22,12 @@ function RenderEmployeeSelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUse
 	{
 		EmployeeSelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
-		printf("<select name='Employee'>");
+		print("<select name='Employee'>");
 
 		foreach($InDBConn->GetResult() as $EmpRow => $EmpData)
 			printf("<option value='%s' %s>%s</option>", $EmpData['EMP_ID'], ($IniSelected == (int) $EmpData['EMP_ID'] ? "selected" : ""), $EmpData['EMP_DATA_NAME']);
 
-		printf("</select>");
+		print("</select>");
 	}
 }
 ?>

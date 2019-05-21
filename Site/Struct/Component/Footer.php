@@ -1,11 +1,11 @@
 <?php
-printf("<div class='Footer'>");
+print("<div class='Footer'>");
 
-printf("<div>");
-printf("<h1>Footer</h1>");
+print("<div>");
+print("<h1>Footer</h1>");
 if(isset($_SESSION['AppVersion']))
-	printf("<p>Version:".$_SESSION['AppVersion']."</p>");
-printf("</div>");
+	printf("<p>Version:%s</p>", $_SESSION['AppVersion']);
+print("</div>");
 
-printf("</div>");
+print("</div>");
 ?>

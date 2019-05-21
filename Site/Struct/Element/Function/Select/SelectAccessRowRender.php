@@ -7,12 +7,12 @@ function RenderAccessSelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccess
     {
         AccessSelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
-        printf("<select name='Access'>");
+        print("<select name='Access'>");
 
         foreach ($InDBConn->GetResult() as $AccessRow => $AccessData)
-            printf("<option value='" . $AccessData['ACCESS_ID'] . "'>" . $AccessData['ACCESS_TITLE'] . "</option>");
+            printf("<option value='%s'>%s</option>", $AccessData['ACCESS_ID'], $AccessData['ACCESS_TITLE']);
 
-        printf("</select>");
+        print("</select>");
     }
 }
 
@@ -23,12 +23,12 @@ function RenderAccessSelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserA
     {
         AccessSelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
-        printf("<select name='Access'>");
+        print("<select name='Access'>");
 
         foreach ($InDBConn->GetResult() as $AccessRow => $AccessData)
-            printf("<option value='" . $AccessData['ACCESS_ID'] . "' " . (($IniSelected == (int)$AccessData['ACCESS_ID']) ? "selected" : "") . ">" . $AccessData['ACCESS_TITLE'] . "</option>");
+            printf("<option value='%s' %s>%s</option>", $AccessData['ACCESS_ID'], (($IniSelected == (int)$AccessData['ACCESS_ID']) ? "selected" : ""), $AccessData['ACCESS_TITLE']);
 
-        printf("</select>");
+        print("</select>");
     }
 }
 ?>

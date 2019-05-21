@@ -1,5 +1,4 @@
 <?php
-
 /*----Error messages to display*/
 
 //failling to init the connection with the desired encoding.

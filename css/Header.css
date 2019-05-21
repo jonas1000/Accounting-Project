@@ -26,24 +26,39 @@
 .HeaderTitle
 {
 	width:75%;
-	height:auto;
+	height:100%;
 	text-align:center;
 	float:left;
 	clear:both;
 }
 
+.HeaderTitle > h1
+{
+	padding:4% 0% 0% 0%;
+}
+
 .Login
 {
-	background-color:rgba(90, 98, 102, 1);
+	background-color:rgba(110, 118, 122, 1);
 	color:rgba(255,255,255,1);
 	width:25%;
 	margin:0%;
 	padding:0%;
-	float:right;
+	float:left;
 	clear:right;
 }
 
-.Login div
+.Login > div
+{
+	width:99.5%;
+	border-left-width:0.1875em;
+	border-left-color:rgba(50,52,48,1);
+	border-left-style:solid;
+	float:left;
+	clear:both;
+}
+
+.Login > div div
 {
 	width:96%;
 	margin:1% 1%;
@@ -52,19 +67,19 @@
 	clear:both;
 }
 
-.Login div div
+.Login > div div div
 {
 	background-color:rgba(120, 140, 255, 1);
 }
 
-.Login div:nth-child(2) > input
+.Login > div div:nth-child(2) > input
 {
 	background-color:rgba(120, 140, 255, 1);
 	color:inherit;
 	float:right;
 }
 
-.Login div > div:first-child
+.Login > div div > div:first-child
 {
 	background-color:rgba(255,255,255,0);
 	width:98%;
@@ -73,14 +88,14 @@
 	clear:both;
 }
 
-.Login div div > input
+.Login > div div div > input
 {
 	width:100%;
 	float:left;
 	clear:both;
 }
 
-.Login div div > div:nth-child(1)
+.Login > div div div > div:nth-child(1)
 {
 	background-color:rgba(255,255,255,0);
 	width:45%;
@@ -92,7 +107,7 @@
 	clear:left;
 }
 
-.Login div div > div:nth-child(2)
+.Login > div div div > div:nth-child(2)
 {
 	background-color:rgba(255,255,255,0);
 	width:45%;
@@ -103,7 +118,7 @@
 	clear:right;
 }
 
-.Login div div div:nth-child(2) > input
+.Login > div div div div:nth-child(2) > input
 {
 	background-color:rgba(255, 255, 255, 1);
 	color:rgba(0,0,0,1);
@@ -115,14 +130,24 @@
 
 .LogedIn
 {
-	background-color:rgba(90, 98, 102, 1);
-	width:25%;
+	background-color:rgba(110, 118, 122, 1);
 	color:rgba(255,255,255,1);
-	float:right;
+	width:25%;
+	float:left;
 	clear:right;
 }
 
-.LogedIn div
+.LogedIn > div
+{
+	width:99.5%;
+	border-left-width:0.1875em;
+	border-left-color:rgba(50,52,48,1);
+	border-left-style:solid;
+	float:right;
+	clear:both;
+}
+
+.LogedIn div div
 {
 	width:100%;
 	margin:0% 0% 5% 0%;
@@ -130,13 +155,13 @@
 	clear:both;
 }
 
-.LogedIn div > div
+.LogedIn div > div > div
 {
 	text-align:center;
 	margin:0%;
 }
 
-.LogedIn div > div:first-child
+.LogedIn div > div > div:first-child
 {
 	background-color:rgba(120, 140, 255, 1);
 	margin:0% 0% 5% 0%;

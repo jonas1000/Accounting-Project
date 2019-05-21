@@ -6,12 +6,12 @@ function RenderCountrySelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAcces
     {
         CountrySelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
-        printf("<select name='Country'>");
+        print("<select name='Country'>");
 
         foreach($InDBConn->GetResult() as $CountryRow => $CountryData)
-            printf("<option value='" . $CountryData['COUN_ID'] . "'>" . $CountryData['COUN_DATA_TITLE'] . "</option>");
+            printf("<option value='%s'>%s</option>", $CountryData['COUN_ID'], $CountryData['COUN_DATA_TITLE']);
 
-        printf("</select>");
+        print("</select>");
     }
 }
 
@@ -22,12 +22,12 @@ function RenderCountrySelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUser
     {
         CountrySelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
 
-        printf("<select name='Country'>");
+        print("<select name='Country'>");
 
         foreach($InDBConn->GetResult() as $CountryRow => $CountryData)
-            printf("<option value='" . $CountryData['COUN_ID'] . "' ".($IniSelected == (int) $CountryData['COUN_ID'] ? "selected" : "").">" . $CountryData['COUN_DATA_TITLE'] . "</option>");
+            printf("<option value='%s' %s>%s</option>", $CountryData['COUN_ID'], ($IniSelected == (int) $CountryData['COUN_ID'] ? "selected" : ""), $CountryData['COUN_DATA_TITLE']);
 
-        printf("</select>");
+        print("</select>");
     }
 }
 ?>

@@ -1,11 +1,11 @@
 <?php
-require("Data/HeaderData/HeaderData.php");
+require_once("Data/HeaderData/HeaderData.php");
 require_once("Data/ConnData/DBSessionToken.php");
 
 require_once("../MedaLib/Class/Log/LogSystem.php");
 require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFilter.php");
 
-printf("<div class='Content'>");
+print("<div class='Content'>");
 
 //If $_GET['MenuIndex'] is set
 if(isset($_GET["MenuIndex"]))
@@ -67,5 +67,5 @@ if(isset($_GET["MenuIndex"]))
 else
 	require_once("Struct/Module/Home.php");
 
-printf("</div>");
+print("</div>");
 ?>

@@ -1,7 +1,6 @@
 <?php
 /*----Success messages to display*/
 
-
 //Succesfully encoded the connection in the desired encoding.
 $DBConEncSuccMsg = "Successfuly encoded the connection to UTF8";
 

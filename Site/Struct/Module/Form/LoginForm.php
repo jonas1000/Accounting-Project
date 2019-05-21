@@ -13,6 +13,7 @@ function HTMLLogedIn()
 	{
 		print("<div class='LogedIn'>");
 		print("<div>");
+		print("<div>");
 
 		print("<div>");
 		print("<h2>Welcome</h2>");
@@ -31,6 +32,8 @@ function HTMLLogedIn()
 		print("</div>");
 
 		print("</div>");
+
+		print("</div>");
 	}
 	else
 		throw new Exception("Session username not declared");
@@ -39,8 +42,10 @@ function HTMLLogedIn()
 function HTMLLoginForm()
 {
 	print("<div class='Login'>");
+	print("<div>");
 
 	print("<form method='POST'>");
+
 	print("<div>");
 
 	print("<div id='Title'>");
@@ -75,7 +80,8 @@ function HTMLLoginForm()
 
 	print("</form>");
 
- 	print("</div>");
+	print("</div>");
+	print("</div>");
 }
 
 if(!isset($_GET['Login']))
