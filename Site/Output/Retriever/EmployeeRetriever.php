@@ -1,90 +1,164 @@
 <?php
-function EmployeeRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function EmployeeSearchConstructor(string &$InsSearchTypeQuery, string &$IniSearchType) : void
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	switch($IniSearchType)
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Name']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_NAME";
+			break;
+		}
 
-		$sDBQuery = "SELECT
-		".$sPrefix."VIEW_EMPLOYEE.EMP_ID,
-		".$sPrefix."VIEW_EMPLOYEE.EMP_POS_ID,
-		".$sPrefix."VIEW_EMPLOYEE.COMP_ID,
-		".$sPrefix."VIEW_EMPLOYEE.EMP_DATA_ID,
-		".$sPrefix."VIEW_EMPLOYEE.EMP_ACCESS
-		FROM
-		".$sPrefix."VIEW_EMPLOYEE
-		WHERE
-		(".$sPrefix."VIEW_EMPLOYEE.EMP_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_EMPLOYEE.EMP_ACCESS > ".($IniUserAccessLevel - 1).")
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Surname']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_SURNAME";
+			break;
+		}
+
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Phone']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_PN";
+			break;
+		}
+
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Stable']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_SN";
+			break;
+		}
+
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Email']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_EMAIL";
+			break;
+		}
+
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Salary']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_SALARY";
+			break;
+		}
+
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Title']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_TITLE";
+			break;
+		}
+
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_BirthDay']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_BDAY";
+			break;
+		}
+
+		default:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_NAME";
+			break;
+		}
+	}
+}
+
+function EmployeePosSearchConstructor(string &$InsSearchTypeQuery, string &$IniSearchType) : void
+{
+	switch($IniSearchType)
+	{
+		case $GLOBALS['EMPLOYEE_POSITION_SEARCH_TYPE']['Employee_Position_Title']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_POS_TITLE";
+			break;
+		}
+
+		default:
+		{
+			$InsSearchTypeQuery = "EMP_POS_TITLE";
+			break;
+		}
+	}
+}
+
+function EmployeeRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
+{
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
+	{
+		$rStatement = 0;
+
+		$sQuery = "SELECT
+		EMP_ID,
+		EMP_POS_ID,
+		COMP_ID,
+		EMP_DATA_ID,
+		EMP_ACCESS
+		FROM ".$InrConn->GetPrefix()."VIEW_EMPLOYEE
+		WHERE (EMP_AVAIL = ?)
+		AND (EMP_ACCESS >= ?)
 		ORDER BY EMP_ID DESC;";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("ii", $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function EmployeeDataRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function EmployeeDataRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
-		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_ID,
-		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_SALARY,
-		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_NAME,
-		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_SURNAME,
-		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_EMAIL,
-		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_BDAY,
-		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_PN,
-		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_SN,
-		".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_ACCESS
-		FROM
-		".$sPrefix."VIEW_EMPLOYEE_DATA
-		WHERE
-		(".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_ACCESS > ".($IniUserAccessLevel - 1).")
+		$sQuery = "SELECT
+		EMP_DATA_ID,
+		EMP_DATA_SALARY,
+		EMP_DATA_NAME,
+		EMP_DATA_SURNAME,
+		EMP_DATA_EMAIL,
+		EMP_DATA_BDAY,
+		EMP_DATA_PN,
+		EMP_DATA_SN,
+		EMP_DATA_ACCESS
+		FROM ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_DATA
+		WHERE (EMP_DATA_AVAIL = ?)
+		AND (EMP_DATA_ACCESS >= ?)
 		ORDER BY EMP_DATA_ID DESC;";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("ii", $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function EmployeeGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function EmployeeGeneralRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
+		$sQuery = "SELECT
 		EMP_ID,
 		EMP_ACCESS,
 		EMP_AVAIL,
@@ -101,37 +175,42 @@ function EmployeeGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAcc
 		EMP_POS_ACCESS,
 		EMP_POS_AVAIL,
 		EMP_POS_TITLE
-		FROM
-		".$sPrefix."VIEW_EMPLOYEE_GENERAL
-		WHERE
-		(".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_ACCESS > ".($IniUserAccessLevel - 1).");";
+		FROM ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL
+		WHERE (EMP_AVAIL = ?)
+		AND (EMP_ACCESS >= ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("ii", $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function EmployeeOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function EmployeeOverviewRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail, string &$InsSearchType="", string &$InsSearchQuery="")
 {
-	if($IniUserAccessLevel > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$sSearchConstruction = "";
+		$sSearchQuery = ME_SecDataFilter($InsSearchQuery);
 
-		$sDBQuery = "SELECT
+		$rStatement = 0;
+
+		EmployeeSearchConstructor($sSearchConstruction, $InsSearchType);
+
+		SearchQueryConstructor($sSearchQuery);
+
+		$sQuery = "SELECT
 		EMP_ID,
 		EMP_DATA_ACCESS,
 		EMP_DATA_SALARY,
@@ -143,171 +222,166 @@ function EmployeeOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAc
 		EMP_DATA_SN,
 		EMP_POS_ACCESS,
 		EMP_POS_TITLE
-		FROM
-		".$sPrefix."VIEW_EMPLOYEE_OVERVIEW
-		WHERE
-		(".$sPrefix."VIEW_EMPLOYEE_OVERVIEW.EMP_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_EMPLOYEE_OVERVIEW.EMP_ACCESS > ".($IniUserAccessLevel - 1).")
+		FROM ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_OVERVIEW
+		WHERE (EMP_AVAIL = ?)
+		AND (EMP_ACCESS >= ?)
+		AND (".$sSearchConstruction." LIKE ?)
 		ORDER BY EMP_ID DESC;";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iis", $IniAvail, $IniUserAccess, $sSearchQuery))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function EmployeePositionOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function EmployeePositionOverviewRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail, string &$InsSearchType="", string &$InsSearchQuery="")
 {
-	if($IniUserAccessLevel > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$sSearchConstruction = "";
+		$sSearchQuery = ME_SecDataFilter($InsSearchQuery);
 
-		$sDBQuery = "SELECT
+		$rStatement = 0;
+
+		EmployeePosSearchConstructor($sSearchConstruction, $InsSearchType);
+
+		SearchQueryConstructor($sSearchQuery);
+
+		$sQuery = "SELECT
 		EMP_POS_ID,
 		EMP_POS_ACCESS,
 		EMP_POS_TITLE
-		FROM
-		".$sPrefix."VIEW_EMPLOYEE_POSITION_OVERVIEW
-		WHERE
-		(".$sPrefix."VIEW_EMPLOYEE_POSITION_OVERVIEW.EMP_POS_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_EMPLOYEE_POSITION_OVERVIEW.EMP_POS_ACCESS > ".($IniUserAccessLevel - 1).")
+		FROM ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_POSITION_OVERVIEW
+		WHERE (EMP_POS_AVAIL = ?)
+		AND (EMP_POS_ACCESS >= ?)
+		AND (".$sSearchConstruction." LIKE ?)
 		ORDER BY EMP_POS_ID DESC;";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iis", $IniAvail, $IniUserAccess, $sSearchQuery))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function EmployeeSelectElemRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function EmployeeSelectElemRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if($IniUserAccessLevel > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
+		$sQuery = "SELECT
 		EMP_ID,
 		EMP_DATA_NAME
-		FROM
-		".$sPrefix."VIEW_EMPLOYEE_GENERAL
-		WHERE
-		(".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_DATA_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_POS_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_ACCESS > ".($IniUserAccessLevel - 1).")
+		FROM ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL
+		WHERE (EMP_AVAIL = ?
+		AND EMP_DATA_AVAIL = ?
+		AND EMP_POS_AVAIL = ?)
+		AND (EMP_ACCESS >= ?)
 		ORDER BY EMP_ID DESC;";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iiii", $IniAvail, $IniAvail, $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function EmployeeEditFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function EmployeeEditFormRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if($IniUserAccessLevel > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
+		$sQuery = "SELECT
 		EMP_ID,
 		EMP_DATA_NAME
-		FROM
-		".$sPrefix."VIEW_EMPLOYEE_GENERAL
-		WHERE
-		(".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_DATA_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_POS_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_EMPLOYEE_GENERAL.EMP_ACCESS > ".($IniUserAccessLevel - 1).")
+		FROM ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL
+		WHERE (EMP_AVAIL = ?
+		AND EMP_DATA_AVAIL = ?
+		AND EMP_POS_AVAIL = ?)
+		AND (EMP_ACCESS >= ?)
 		ORDER BY EMP_ID DESC;";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iiii", $IniAvail, $IniAvail, $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function EmployeePosSelectElemRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function EmployeePosSelectElemRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if($IniUserAccessLevel > 0 && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
+		$sQuery = "SELECT
 		EMP_POS_ID,
 		EMP_POS_TITLE
-		FROM
-		".$sPrefix."VIEW_EMPLOYEE_POSITION
-		WHERE
-		".$sPrefix."VIEW_EMPLOYEE_POSITION.EMP_POS_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_EMPLOYEE_POSITION.EMP_POS_ACCESS > ".($IniUserAccessLevel - 1).";";
+		FROM ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_POSITION
+		WHERE (EMP_POS_AVAIL = ?)
+		AND (EMP_POS_ACCESS >= ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("ii", $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

@@ -1,0 +1,6 @@
+"use script";
+
+function IncomeReport()
+{
+
+}

@@ -1,83 +1,107 @@
 <?php
-function CountyRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function CountySearchConstructor(string &$InsSearchTypeQuery, string &$IniSearchType) : void
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	switch($IniSearchType)
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
-
-		$sDBQuery = "SELECT
-		".$sPrefix."VIEW_COUNTY.COU_ID,
-		".$sPrefix."VIEW_COUNTY.COU_DATA_ID,
-		".$sPrefix."VIEW_COUNTY.COUN_ID,
-		".$sPrefix."VIEW_COUNTY.COU_ACCESS
-		FROM
-		".$sPrefix."VIEW_COUNTY
-		WHERE
-		(".$sPrefix."VIEW_COUNTY.COU_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_COUNTY.COU_ACCESS > ".($IniUserAccessLevel - 1).");";
-
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		case $GLOBALS['COUNTY_SEARCH_TYPE']['County_Title']["name"]:
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			$InsSearchTypeQuery = "COU_DATA_TITLE";
+			break;
 		}
-		else
-			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery, $sPrefix);
+		case $GLOBALS['COUNTY_SEARCH_TYPE']['County_Tax']["name"]:
+		{
+			$InsSearchTypeQuery = "COU_DATA_TAX";
+			break;
+		}
+
+		case $GLOBALS['COUNTY_SEARCH_TYPE']['County_IR']["name"]:
+		{
+			$InsSearchTypeQuery = "COU_DATA_IR";
+			break;
+		}
+
+		default:
+		{
+			$InsSearchTypeQuery = "COU_DATA_TITLE";
+			break;
+		}
 	}
-	else
-		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function CountyDataRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function CountyRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
-		".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_ID,
-		".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_TITLE,
-		".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_TAX,
-		".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_IR,
-		".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_ACCESS
-		FROM
-		".$sPrefix."VIEW_COUNTY_DATA
-		WHERE
-		(".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_ACCESS > ".($IniUserAccessLevel - 1).");";
+		$sQuery = "SELECT
+		COU_ID,
+		COU_DATA_ID,
+		COUN_ID,
+		COU_ACCESS
+		FROM ".$InrConn->GetPrefix()."VIEW_COUNTY
+		WHERE (COU_AVAIL = ?)
+		AND	(COU_ACCESS >= ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("ii", $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function CountyGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function CountyDataRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$sQuery = "SELECT
+		COU_DATA_ID,
+		COU_DATA_TITLE,
+		COU_DATA_TAX,
+		COU_DATA_IR,
+		COU_DATA_ACCESS
+		FROM ".$InrConn->GetPrefix()."VIEW_COUNTY_DATA
+		WHERE (COU_DATA_AVAIL = ?)
+		AND	(COU_DATA_ACCESS >= ?);";
 
-		$sDBQuery = "SELECT
+		if($rStatement = $InrConn->CreateStatement($sQuery))
+		{
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("ii", $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
+		}
+		else
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
+	}
+	else
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
+}
+
+function CountyGeneralRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
+{
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
+	{
+		$rStatement = 0;
+
+		$sQuery = "SELECT
 		COU_ID,
 		COU_ACCESS,
 		COU_AVAIL,
@@ -87,101 +111,100 @@ function CountyGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAcces
 		COU_DATA_TAX,
 		COU_DATA_IR,
 		COU_DATA_DATE
-		FROM
-		".$sPrefix."VIEW_COUNTY_GENERAL
-		WHERE
-		".$sPrefix."VIEW_COUNTY_GENERAL.COU_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COUNTY_GENERAL.COU_DATA_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COUNTY_GENERAL.COU_ACCESS > ".($IniUserAccessLevel - 1).";";
+		FROM ".$InrConn->GetPrefix()."VIEW_COUNTY_GENERAL
+		WHERE (COU_AVAIL = ?
+		AND	COU_DATA_AVAIL = ?)
+		AND	(COU_ACCESS >= ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iii", $IniAvail, $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function CountyOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function CountyOverviewRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail, string &$InsSearchType="", string &$InsSearchQuery="")
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$sSearchConstruction = "";
+		$sSearchQuery = ME_SecDataFilter($InsSearchQuery);
 
-		$sDBQuery = "SELECT
+		$rStatement = 0;
+
+		CountySearchConstructor($sSearchConstruction, $InsSearchType);
+
+		SearchQueryConstructor($sSearchQuery);
+
+		$sQuery = "SELECT
 		COU_ID,
 		COU_DATA_ACCESS,
 		COU_DATA_TITLE,
 		COU_DATA_TAX,
 		COU_DATA_IR
-		FROM
-		".$sPrefix."VIEW_COUNTY_OVERVIEW
-		WHERE
-		".$sPrefix."VIEW_COUNTY_OVERVIEW.COU_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COUNTY_OVERVIEW.COU_DATA_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COUNTY_OVERVIEW.COU_ACCESS > ".($IniUserAccessLevel - 1).";";
+		FROM ".$InrConn->GetPrefix()."VIEW_COUNTY_OVERVIEW
+		WHERE (COU_AVAIL = ?
+		AND	COU_DATA_AVAIL = ?)
+		AND	(COU_ACCESS >= ?)
+		AND	".$sSearchConstruction." LIKE ?;";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iiis", $IniAvail, $IniAvail, $IniUserAccess, $sSearchQuery))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function CountySelectElemRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function CountySelectElemRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	($IniAvail > 0 && $IniAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
+		$sQuery = "SELECT
 		COU_ID,
 		COU_DATA_TITLE
-		FROM
-		".$sPrefix."VIEW_COUNTY_GENERAL
-		WHERE
-		".$sPrefix."VIEW_COUNTY_GENERAL.COU_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COUNTY_GENERAL.COU_DATA_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COUNTY_GENERAL.COU_ACCESS > ".($IniUserAccessLevel - 1).";";
+		FROM ".$InrConn->GetPrefix()."VIEW_COUNTY_OVERVIEW
+		WHERE (COU_AVAIL = ?
+		AND	COU_DATA_AVAIL = ?)
+		AND	(COU_ACCESS >= ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iii", $IniAvail, $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

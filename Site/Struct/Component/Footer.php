@@ -1,11 +1,5 @@
-<?php
-print("<div class='Footer'>");
+<div class='Footer'><div><h1>Footer</h1>
 
-print("<div>");
-print("<h1>Footer</h1>");
-if(isset($_SESSION['AppVersion']))
-	printf("<p>Version:%s</p>", $_SESSION['AppVersion']);
-print("</div>");
+<p>Version: <?php echo $GLOBALS['APP_VERSION_MAJOR'] . "." . $GLOBALS['APP_VERSION_MIDDLE'] . "." . $GLOBALS['APP_VERSION_MINOR'] . "." . $GLOBALS['APP_PATCH'] ?></p>
 
-print("</div>");
-?>
+</div></div>

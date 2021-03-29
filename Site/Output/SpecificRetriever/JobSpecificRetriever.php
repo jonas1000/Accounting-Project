@@ -1,162 +1,157 @@
 <?php
-function JobSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniJobIndex, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function JobSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniJobIndex, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniJobIndex > 0) && ($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	($IniJobIndex > 0) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-        $sDBQuery = "";
-        $sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
-		".$sPrefix."VIEW_JOB.JOB_ID,
-		".$sPrefix."VIEW_JOB.JOB_DATA_ID,
-		".$sPrefix."VIEW_JOB.JOB_INC_ID,
-		".$sPrefix."VIEW_JOB.JOB_OUT_ID,
-		".$sPrefix."VIEW_JOB.COMP_ID,
-		".$sPrefix."VIEW_JOB.JOB_ACCESS
-		FROM
-		".$sPrefix."VIEW_JOB
-		WHERE
-		(".$sPrefix."VIEW_JOB.JOB_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_JOB.JOB_ACCESS > ".($IniUserAccessLevel - 1).")
-		AND
-		(".$sPrefix."VIEW_JOB.JOB_ID = ".$IniJobIndex.");";
+		$sQuery = "SELECT
+		JOB_ID,
+		JOB_DATA_ID,
+		JOB_INC_ID,
+		JOB_OUT_ID,
+		COMP_ID,
+		JOB_ACCESS
+		FROM ".$InrConn->GetPrefix()."VIEW_JOB
+		WHERE (JOB_AVAIL = ?)
+		AND (JOB_ACCESS >= ?)
+		AND (JOB_ID = ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception("warning: " . $InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iii", $IniAvail, $IniUserAccess, $IniJobIndex))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function JobDataSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniJobDataIndex, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function JobDataSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniJobDataIndex, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniJobDataIndex > 0) && ($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	($IniJobDataIndex > 0) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-        $sDBQuery = "";
-        $sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
-		".$sPrefix."VIEW_JOB_DATA.JOB_DATA_ID,
-		".$sPrefix."VIEW_JOB_DATA.JOB_DATA_TITLE,
-		".$sPrefix."VIEW_JOB_DATA.JOB_DATA_DATE,
-		".$sPrefix."VIEW_JOB_DATA.JOB_DATA_ACCESS
-		FROM
-		".$sPrefix."VIEW_JOB_DATA
-		WHERE
-		(".$sPrefix."VIEW_JOB_DATA.JOB_DATA_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_JOB_DATA.JOB_DATA_ACCESS > ".($IniUserAccessLevel - 1).")
-		AND
-		(".$sPrefix."VIEW_JOB_DATA.JOB_DATA_ID = ".$IniJobDataIndex.");";
+		$sQuery = "SELECT
+		JOB_DATA_ID,
+		JOB_DATA_TITLE,
+		JOB_DATA_DATE,
+		JOB_DATA_ACCESS
+		FROM ".$InrConn->GetPrefix()."VIEW_JOB_DATA
+		WHERE (JOB_DATA_AVAIL = ?)
+		AND (JOB_DATA_ACCESS >= ?)
+		AND (JOB_DATA_ID = ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception("warning: " . $InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iii", $IniAvail, $IniUserAccess, $IniJobDataIndex))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function JobIncomeSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniJobIncomeIndex, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function JobIncomeSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniJobIncomeIndex, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniJobIncomeIndex > 0) && ($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	($IniJobIncomeIndex > 0) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-        $sDBQuery = "";
-        $sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
-		".$sPrefix."VIEW_JOB_INCOME.JOB_INC_ID,
-		".$sPrefix."VIEW_JOB_INCOME.JOB_INC_PRICE,
-		".$sPrefix."VIEW_JOB_INCOME.JOB_INC_PIA,
-		".$sPrefix."VIEW_JOB_INCOME.JOB_INC_ACCESS
-		FROM
-		".$sPrefix."VIEW_JOB_INCOME
-		WHERE
-		(".$sPrefix."VIEW_JOB_INCOME.JOB_INC_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_JOB_INCOME.JOB_INC_ACCESS > ".($IniUserAccessLevel - 1).")
-		AND
-		(".$sPrefix."VIEW_JOB_INCOME.JOB_INC_ID = ".$IniJobIncomeIndex.");";
+		$sQuery = "SELECT
+		JOB_INC_ID,
+		JOB_INC_PRICE,
+		JOB_INC_PIA,
+		JOB_INC_ACCESS
+		FROM ".$InrConn->GetPrefix()."VIEW_JOB_INCOME
+		WHERE (JOB_INC_AVAIL = ?)
+		AND (JOB_INC_ACCESS >= ?)
+		AND (JOB_INC_ID = ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception("warning: " . $InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iii", $IniAvail, $IniUserAccess, $IniJobIncomeIndex))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function JobOutcomeSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniJobOutcomeIndex, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function JobOutcomeSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniJobOutcomeIndex, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniJobOutcomeIndex > 0) && ($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	($IniJobOutcomeIndex > 0) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-        $sDBQuery = "";
-        $sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
-		".$sPrefix."VIEW_JOB_OUTCOME.JOB_OUT_ID,
-		".$sPrefix."VIEW_JOB_OUTCOME.JOB_OUT_EXPENSES,
-		".$sPrefix."VIEW_JOB_OUTCOME.JOB_OUT_DAMAGE,
-		".$sPrefix."VIEW_JOB_OUTCOME.JOB_OUT_ACCESS
-		FROM
-		".$sPrefix."VIEW_JOB_OUTCOME
-		WHERE
-		(".$sPrefix."VIEW_JOB_OUTCOME.JOB_OUT_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_JOB_OUTCOME.JOB_OUT_ACCESS > ".($IniUserAccessLevel - 1).")
-		AND
-		(".$sPrefix."VIEW_JOB_OUTCOME.JOB_OUT_ID = ".$IniJobOutcomeIndex.");";
+		$sQuery = "SELECT
+		JOB_OUT_ID,
+		JOB_OUT_EXPENSES,
+		JOB_OUT_DAMAGE,
+		JOB_OUT_ACCESS
+		FROM ".$InrConn->GetPrefix()."VIEW_JOB_OUTCOME
+		WHERE (JOB_OUT_AVAIL = ?)
+		AND (JOB_OUT_ACCESS >= ?)
+		AND (JOB_OUT_ID = ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception("warning: " . $InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iii", $IniAvail, $IniUserAccess, $IniJobOutcomeIndex))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function JobGeneralSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniJobIndex, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+//WARNIGN:To be removed in future versions
+function JobGeneralSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniJobIndex, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniJobIndex > 0) && ($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) && ($IniJobIndex > 0) && ($IniAvail > 0 && $IniAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']))
 	{
-        $sDBQuery = "";
-        $sPrefix = $InDBConn->GetPrefix();
+        $sQuery = "";
+		$sPrefix = $InrConn->GetPrefix();
 
-		$sDBQuery = "SELECT
+		$rStatement = 0;
+
+		$sQuery = "SELECT
 		JOB_ID,
 		JOB_ACCESS,
 		JOB_DATA_ID,
@@ -174,102 +169,111 @@ function JobGeneralSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniJobI
 		FROM
 		".$sPrefix."VIEW_JOB_GENERAL
 		WHERE
-		(".$sPrefix."VIEW_JOB_GENERAL.JOB_AVAIL = " .$IniIsAvailIndex . "
+		(".$sPrefix."VIEW_JOB_GENERAL.JOB_AVAIL = ?
 		AND
-		".$sPrefix."VIEW_JOB_GENERAL.JOB_INC_AVAIL = " .$IniIsAvailIndex . "
+		".$sPrefix."VIEW_JOB_GENERAL.JOB_INC_AVAIL = ?
 		AND
-		".$sPrefix."VIEW_JOB_GENERAL.JOB_OUT_AVAIL = " .$IniIsAvailIndex . "
+		".$sPrefix."VIEW_JOB_GENERAL.JOB_OUT_AVAIL = ?
 		AND
-		".$sPrefix."VIEW_JOB_GENERAL.COMP_AVAIL = ".$IniIsAvailIndex."
+		".$sPrefix."VIEW_JOB_GENERAL.COMP_AVAIL = ?
 		AND
-		".$sPrefix."VIEW_JOB_GENERAL.COMP_DATA_AVAIL = " .$IniIsAvailIndex . "
+		".$sPrefix."VIEW_JOB_GENERAL.COMP_DATA_AVAIL = ?
 		AND
-        ".$sPrefix."VIEW_JOB_GENERAL.JOB_ACCESS > ".($IniUserAccessLevel - 1)."
+        ".$sPrefix."VIEW_JOB_GENERAL.JOB_ACCESS >= ?
         AND
-        ".$sPrefix."VIEW_JOB_GENERAL.JOB_ID = ".$IniJobIndex.");";
+        ".$sPrefix."VIEW_JOB_GENERAL.JOB_ID = ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception("warning: " . $InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iiiiiii", $IniAvail, $IniAvail, $IniAvail, $IniAvail, $IniAvail, $IniUserAccess, $IniJobIndex))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function JobPITSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniJobPITIndex, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function JobPITSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniJobPITIndex, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniJobPITIndex > 0) && ($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) && ($IniJobPITIndex > 0) && ($IniAvail > 0 && $IniAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']))
 	{
-		$sDBQuery = "";
+		$sQuery = "";
+		$sPrefix = $InrConn->GetPrefix();
 
-		$sDBQuery = "SELECT
+		$rStatement = 0;
+
+		$sQuery = "SELECT
 		JOB_PIT_ID,
 		JOB_PIT_ACCESS,
 		JOB_ID,
 		JOB_PIT_PAYMENT,
 		JOB_PIT_DATE
 		FROM
-		".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_TIME
+		".$sPrefix."VIEW_JOB_INCOME_TIME
 		WHERE
-		(".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_TIME.JOB_PIT_AVAIL = " . $IniIsAvailIndex . "
+		(".$sPrefix."VIEW_JOB_INCOME_TIME.JOB_PIT_AVAIL = ?
 		AND
-		".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_TIME.JOB_PIT_ACCESS > ".($IniUserAccessLevel - 1)."
+		".$sPrefix."VIEW_JOB_INCOME_TIME.JOB_PIT_ACCESS >= ?
 		AND
-		".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_TIME.JOB_PIT_ID = ".$IniJobPITIndex.");";
+		".$sPrefix."VIEW_JOB_INCOME_TIME.JOB_PIT_ID = ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iii", $IniAvail, $IniUserAccess, $IniJobPITIndex))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function JobPITByJobIDSpecificRetriever(ME_CDBConnManager &$InDBConn, int &$IniJobIndex, int &$IniUserAccessLevel) : void
+function JobPITByJobIDSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniJobIndex, int $IniUserAccess)
 {
-	if(($IniJobIndex > 0) && ($IniUserAccessLevel > 0))
+	if(CheckAccessRange($IniUserAccess) && ($IniJobIndex > 0))
 	{
-		$sDBQuery = "";
+		$sQuery = "";
+		$sPrefix = $InrConn->GetPrefix();
 
-		$sDBQuery = "SELECT
+		$rStatement = 0;
+
+		$sQuery = "SELECT
 		JOB_ID,
 		JOB_PIT_SUM
 		FROM
-		".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_TIME_SUM_AVAIL
+		".$sPrefix."VIEW_JOB_INCOME_TIME_SUM
 		WHERE
-		(".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_TIME_SUM_AVAIL.JOB_PIT_ACCESS > ".($IniUserAccessLevel - 1)."
+		(".$sPrefix."VIEW_JOB_INCOME_TIME_SUM.JOB_PIT_ACCESS >= ?
 		AND
-		".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_TIME_SUM_AVAIL.JOB_ID = ".$IniJobIndex.");";
-
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		".$sPrefix."VIEW_JOB_INCOME_TIME_SUM.JOB_ID = ?);";
+		
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("ii", $IniUserAccess, $IniJobIndex))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

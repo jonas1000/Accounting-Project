@@ -1,66 +1,51 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProDelJob(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function ProDelJob(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
 {
-	if(isset($_POST['JobIndex']))
+	if(isset($_POST['JobIndex']) && !empty($_POST['JobIndex']) && is_numeric($_POST['JobIndex']))
 	{
-		if(!empty($_POST['JobIndex']))
+		//variables consindered to be holding ID
+		$iJobIndex = (int) $_POST['JobIndex'];
+
+		if(($iJobIndex > 0) && CheckAccessRange($IniUserAccess))
 		{
-			if(is_numeric($_POST['JobIndex']))
+			$rResult = JobSpecificRetriever($InrConn, $InrLogHandle, $iJobIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+
+			if(!empty($rResult) && ($rResult->num_rows == 1))
 			{
-				//variables consindered to be holding ID
-				$iJobIndex = (int) $_POST['JobIndex'];
+				$aDataRow = $rResult->fetch_assoc();
 
-				unset($_POST['JobIndex']);
-
-				//database cannot accept Primary or foreign keys below 1
-				//If duplicate the database will throw a exception
-				if(($iJobIndex > 0) && ($IniUserAccessLevel > 0))
-				{
-					JobSpecificRetriever($InDBConn, $iJobIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
-
-					$aJobRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-					$iJobNumRows = $InDBConn->GetResultNumRows();
-
-					if(!empty($aJobRow) && ($iJobNumRows > 0 && $iJobNumRows < 2))
-					{
-						$iJobDataIndex = (int) $aJobRow['JOB_DATA_ID'];
-						$iJobIncomeIndex = (int) $aJobRow['JOB_INC_ID'];
-						$iJobOutcomeIndex = (int) $aJobRow['JOB_OUT_ID'];
-
-						if(($iJobDataIndex > 0) && ($iJobIncomeIndex > 0) && ($iJobOutcomeIndex > 0))
-						{
-							JobVisParser($InDBConn, $iJobIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
-
-							JobDataVisParser($InDBConn, $iJobDataIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
-
-							JobIncomeVisParser($InDBConn, $iJobIncomeIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
-
-							JobOutcomeVisParser($InDBConn, $iJobOutcomeIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
-						}
-						else
-							throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
-
-						unset($iJobDataIndex, $iJobIncomeIndex, $iJobOutcomeIndex);
-					}
-					else
-						throw new Exception("Could not fetch Table result");
-
-					unset($aJobRow, $iJobNumRows);
-				}
+				if(JobVisParser($InrConn, $InrLogHandle, $iJobIndex, $GLOBALS['AVAILABLE']['Hide']))
+					$InrConn->Commit();
 				else
-					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+					$InrConn->RollBack();
 
-				unset($iJobIndex);
-				header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Job']);
+				if(JobDataVisParser($InrConn, $InrLogHandle, $aDataRow['JOB_DATA_ID'], $GLOBALS['AVAILABLE']['Hide']))
+					$InrConn->Commit();
+				else
+					$InrConn->RollBack();
+
+				if(JobIncomeVisParser($InrConn, $InrLogHandle, $aDataRow['JOB_INC_ID'], $GLOBALS['AVAILABLE']['Hide']))
+					$InrConn->Commit();
+				else
+					$InrConn->RollBack();
+
+				if(JobOutcomeVisParser($InrConn, $InrLogHandle, $aDataRow['JOB_OUT_ID'], $GLOBALS['AVAILABLE']['Hide']))
+					$InrConn->Commit();
+				else
+					$InrConn->RollBack();
+
+				$rResult->free();
 			}
-			else 
-                throw new Exception("Some POST variables are not considered numeric type");
+			else
+				$InrLogHandle->AddLogMessage("Could not fetch Table result", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+			$InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
+
+		header("Location:Index.php?MenuIndex=" . $GLOBALS['MENU_INDEX']['Job']);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+		$InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

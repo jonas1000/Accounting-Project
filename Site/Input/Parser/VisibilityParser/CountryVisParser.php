@@ -1,61 +1,65 @@
 <?php
-function CountryVisParser(ME_CDBConnManager &$InDBConn, int &$IniCountryIndex, int &$IniIsAvailIndex) : void
+function CountryVisParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniCountryIndex, int $IniAvail)
 {
-	if(($IniCountryIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniCountryIndex > 0) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$sPrefix = $InrConn->GetPrefix();
 
-		$sDBQuery="UPDATE
+		$sQuery="UPDATE
 		".$sPrefix."VIEW_COUNTRY_VISIBILITY
 		SET
-		".$sPrefix."VIEW_COUNTRY_VISIBILITY.COUN_AVAIL_ID = ".$IniIsAvailIndex."
+		".$sPrefix."VIEW_COUNTRY_VISIBILITY.COUN_AVAIL_ID = ?
 		WHERE
-		(".$sPrefix."VIEW_COUNTRY_VISIBILITY.COUN_ID = ".$IniCountryIndex.");";
+		(".$sPrefix."VIEW_COUNTRY_VISIBILITY.COUN_ID = ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-		if(!$InDBConn->HasError())
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("ii", $IniAvail, $IniCountryIndex))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function CountryDataVisParser(ME_CDBConnManager &$InDBConn, int &$IniCountryDataIndex, int &$IniIsAvailIndex) : void
+function CountryDataVisParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniCountryDataIndex, int $IniAvail)
 {
-	if(($IniCountryDataIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniCountryDataIndex > 0) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$sPrefix = $InrConn->GetPrefix();
 
-		$sDBQuery="UPDATE
+		$sQuery="UPDATE
 		".$sPrefix."VIEW_COUNTRY_DATA_VISIBILITY
 		SET
-		".$sPrefix."VIEW_COUNTRY_DATA_VISIBILITY.COUN_DATA_AVAIL_ID = ".$IniIsAvailIndex."
+		".$sPrefix."VIEW_COUNTRY_DATA_VISIBILITY.COUN_DATA_AVAIL_ID = ?
 		WHERE
-		(".$sPrefix."VIEW_COUNTRY_DATA_VISIBILITY.COUN_DATA_ID = ".$IniCountryDataIndex.");";
+		(".$sPrefix."VIEW_COUNTRY_DATA_VISIBILITY.COUN_DATA_ID = ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-		if(!$InDBConn->HasError())
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("ii", $IniAvail, $IniCountryDataIndex))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

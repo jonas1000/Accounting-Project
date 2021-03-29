@@ -4,14 +4,14 @@
 //Return false the first key it finds is not a number(NAN)
 function ME_MultyCheckNanType(float ...$InfaVar) : bool
 {
-  $iArrayLenght = count($InfaVar);
+    $iArrayLenght = count($InfaVar);
 
-  for($I=0; $iArrayLenght > $I; $I++)
-  {
-    if(!is_nan($InfaVar[$I]))
-      return FALSE;
-  }
+    for($I=0; $iArrayLenght > $I; $I++)
+    {
+        if(!is_nan($InfaVar[$I]))
+            return FALSE;
+    }
 
-  return TRUE;
+    return TRUE;
 }
 ?>

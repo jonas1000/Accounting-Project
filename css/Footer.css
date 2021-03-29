@@ -1,6 +1,7 @@
 .Footer
 {
-	background-color:rgba(255, 245, 140, 1);
+	background-color:var(--DarkGreyWarmTemp);
+	color:var(--FullWhite);
 	width:100%;
 	height:auto;
 	float:left;
@@ -14,7 +15,7 @@
 	height:auto;
 	border-top-width:0.1875em;
 	border-top-style:solid;
-	border-top-color:rgba(50,52,48,1);
+	border-top-color:var(--MiddleGreyWarmTemp);
 	float:left;
 	clear:both;
 }

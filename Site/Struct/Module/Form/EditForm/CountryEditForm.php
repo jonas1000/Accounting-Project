@@ -1,89 +1,48 @@
 <?php
  //-------------<FUNCTION>-------------//
-function HTMLCountryEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function HTMLCountryEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
 {
-    if(isset($_POST['CounIndex']))
+    if(isset($_POST['CounIndex']) && !empty($_POST['CounIndex']))
     {
-        if(!empty($_POST['CounIndex']))
+        $iCountryIndex = (int) $_POST['CounIndex'];
+
+        if($iCountryIndex > 0)
         {
-            $iCountryIndex = (int) $_POST['CounIndex'];
+            $rResult = CountryEditFormSpecificRetriever($InrConn, $InrLogHandle, $iCountryIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
 
-            unset($_POST['CounIndex']);
-
-            if($iCountryIndex > 0)
+            if(!empty($rResult) && ($rResult->num_rows == 1))
             {
-                CountryEditFormSpecificRetriever($InDBConn, $iCountryIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
+                $aDataRow = $rResult->fetch_assoc();
 
-                $aCountryData = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-                $iCountryNumRows = $InDBConn->GetResultNumRows();
+                //-------------<PHP-HTML>-------------//
+                print("<div class='Form'><form method='POST'><div>");
 
-                if(!empty($aCountryData) && ($iCountryNumRows > 0 && $iCountryNumRows < 2))
-                {
-                    $iCountryAccessIndex = (int) $aCountryData['COUN_ACCESS'];
+                //Title
+                printf("<div id='FormTitle'><h3>Edit Country</h3><br><h4>%s</h4></div>", $aDataRow['COUN_DATA_TITLE']);
 
-                    //-------------<PHP-HTML>-------------//
-                    print("<div class='Form'>");
+                //Input Row - name
+                printf("<div><label>Name*<input type='text' placeholder='Country name' name='Name' value='%s' required></label></div>", $aDataRow['COUN_DATA_TITLE']);
 
-                    print("<form method='POST'>");
-                    print("<div>");
+                //get rows and render <select> element with data
+                print("<div><label>Access");
+                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], $aDataRow['COUN_ACCESS']);
+                print("</label></div></div>");
 
-                    //Title
-                    print("<div id='FormTitle'>");
-                    print("<h3>Edit Country</h3>");
-                    printf("<br><h4>%s</h4>", $aCountryData['COUN_DATA_TITLE']);
-                    print("</div>");
+                printf("<div><input type='hidden' name='CounIndex' value='%s' required>", $aDataRow['COUN_ID']);
+                printf("<input type='submit' value='Save' formaction='.?MenuIndex=%s&Module=%s&ProEdit'>", $GLOBALS['MENU_INDEX']['Country'], $_GET['Module']);
+                printf("<a href='.?MenuIndex=%s'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['Country']);
 
-                    //Input Row
-                    print("<div>");
+                print("</form></div>");
 
-                    print("<div>");
-                    print("<h5>Name*</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input type='text' placeholder='Country name' name='Name' value='%s' required>", $aCountryData['COUN_DATA_TITLE']);
-                    print("</div>");
-
-                    print("</div>");
-
-                    //get rows and render <select> element with data
-                    print("<div>");
-
-                    print("<div>");
-                    print("<h5>Access</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCountryAccessIndex);
-                    print("</div>");
-
-                    print("</div>");
-
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input type='hidden' name='CounIndex' value='%s' required>", $aCountryData['COUN_ID']);
-                    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%s&Module=%s&ProEdit'>", $_GET['MenuIndex'], $_GET['Module']);
-                    printf("<a href='.?MenuIndex=%s'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['Country']);
-                    print("</div>");
-                    print("</form>");
-
-                    print("</div>");
-
-                    unset($iCountryAccessIndex);
-                }
-                else
-                    throw new Exception("Query did not return any row");
-
-                unset($aCountryData, $iCountryIndex, $iCountryNumRows);
+                $rResult->free();
             }
             else
-                throw new Exception("POST data could not be converted to required format");
+                $InrLogHandle->AddLogMessage("empty or too many rows returned, expected 1 result", __FILE__, __FUNCTION__, __LINE__);
         }
         else
-			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+            $InrLogHandle->AddLogMessage("ID expected to be greater than 0, instead value was lesser", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+        $InrLogHandle->AddLogMessage("ID was not set or returned empty", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

@@ -1,6 +1,7 @@
 .Header
 {
-	background-color:rgba(255, 255, 255, 1);
+	background-color:var(--DarkGreyWarmTemp);
+	color:var(--FullWhite);
 	width:100%;
 	height:auto;
 	margin:0%;
@@ -16,7 +17,7 @@
 	height:auto;
 	border-bottom-width:0.1875em;
 	border-bottom-style:solid;
-	border-bottom-color:rgba(50,52,48,1);
+	border-bottom-color:var(--MiddleGreyWarmTemp);
 	margin:0%;
 	padding:0%;
 	float:left;
@@ -39,8 +40,7 @@
 
 .Login
 {
-	background-color:rgba(110, 118, 122, 1);
-	color:rgba(255,255,255,1);
+	background-color:var(--DarkGreyWarmTemp);
 	width:25%;
 	margin:0%;
 	padding:0%;
@@ -52,7 +52,7 @@
 {
 	width:99.5%;
 	border-left-width:0.1875em;
-	border-left-color:rgba(50,52,48,1);
+	border-left-color:var(--MiddleGreyWarmTemp);
 	border-left-style:solid;
 	float:left;
 	clear:both;
@@ -60,6 +60,7 @@
 
 .Login > div div
 {
+	color:var(--FullWhite);
 	width:96%;
 	margin:1% 1%;
 	padding:1%;
@@ -69,19 +70,18 @@
 
 .Login > div div div
 {
-	background-color:rgba(120, 140, 255, 1);
+	background-color:var(--MainButtonColor);
 }
 
 .Login > div div:nth-child(2) > input
 {
-	background-color:rgba(120, 140, 255, 1);
+	background-color:var(--MainButtonColor);
 	color:inherit;
 	float:right;
 }
 
 .Login > div div > div:first-child
 {
-	background-color:rgba(255,255,255,0);
 	width:98%;
 	margin:0% 0% 3% 0%;
 	text-align:center;
@@ -97,7 +97,6 @@
 
 .Login > div div div > div:nth-child(1)
 {
-	background-color:rgba(255,255,255,0);
 	width:45%;
 	height:auto;
 	padding:0%;
@@ -109,7 +108,7 @@
 
 .Login > div div div > div:nth-child(2)
 {
-	background-color:rgba(255,255,255,0);
+	background-color:var(--FullBlack);
 	width:45%;
 	height:auto;
 	padding:0%;
@@ -120,8 +119,8 @@
 
 .Login > div div div div:nth-child(2) > input
 {
-	background-color:rgba(255, 255, 255, 1);
-	color:rgba(0,0,0,1);
+	background-color:var(--FullWhite);
+	color:var(--FullBlack);
 	height:100%;
 	padding:0%;
 	float:right;
@@ -130,8 +129,8 @@
 
 .LogedIn
 {
-	background-color:rgba(110, 118, 122, 1);
-	color:rgba(255,255,255,1);
+	background-color:var(--DarkGreyWarmTemp);
+	color:var(--FullWhite);
 	width:25%;
 	float:left;
 	clear:right;
@@ -141,7 +140,7 @@
 {
 	width:99.5%;
 	border-left-width:0.1875em;
-	border-left-color:rgba(50,52,48,1);
+	border-left-color:var(--MiddleGreyWarmTemp);
 	border-left-style:solid;
 	float:right;
 	clear:both;
@@ -163,6 +162,6 @@
 
 .LogedIn div > div > div:first-child
 {
-	background-color:rgba(120, 140, 255, 1);
+	background-color:var(--MainButtonColor);
 	margin:0% 0% 5% 0%;
 }

@@ -1,39 +1,37 @@
 <?php
-function JobPITEditParser(ME_CDBConnManager &$InDBConn, int &$IniJobPITIndex, float &$InfPIT, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function JobPITEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniJobPITIndex, float $InfPIT, string &$InsDate, int $IniContentAccess, int $IniAvail)
 {
-	if(!empty($InsDate))
+	if(!empty($InsDate) &&
+	($IniJobPITIndex > 0) &&
+	CheckAccessRange($IniContentAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		if(($IniJobPITIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		$fPIT = round((empty($InfPIT) ? 0 : $InfPIT), $GLOBALS['CURRENCY_DECIMAL_PRECISION']);
+
+		$sQuery="UPDATE ".$InrConn->GetPrefix()."VIEW_JOB_INCOME_TIME_EDIT
+		SET 
+		JOB_PIT_PAYMENT = ?,
+		JOB_PIT_DATE = ?,
+		JOB_PIT_ACCESS_ID = ?,
+		JOB_PIT_AVAIL_ID = ?
+		WHERE 
+		JOB_PIT_ID = ?;";
+
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			$sDBQuery = "";
-			$sPrefix = $InDBConn->GetPrefix();
-
-			$sDBQuery="UPDATE
-			".$sPrefix."VIEW_JOB_INCOME_TIME_EDIT
-			SET
-			".$sPrefix."VIEW_JOB_INCOME_TIME_EDIT.JOB_PIT_PAYMENT = ".(empty($InfPIT) ? 0 : $InfPIT).",
-			".$sPrefix."VIEW_JOB_INCOME_TIME_EDIT.JOB_PIT_ACCESS_ID = ".$IniContentAccessLevelIndex."
-			WHERE
-			(".$sPrefix."VIEW_JOB_INCOME_TIME_EDIT.JOB_PIT_AVAIL_ID = ".$IniIsAvailIndex.")
-			AND
-			(".$sPrefix."VIEW_JOB_INCOME_TIME_EDIT.JOB_PIT_ID = ".$IniJobPITIndex.");";
-
-			$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-			if(!$InDBConn->HasError())
-			{
-				if($InDBConn->HasWarning())
-					throw new Exception($InDBConn->GetWarning());
-			}
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("dsiii", $fPIT, $InsDate, $IniContentAccess, $IniAvail, $IniJobPITIndex))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
 			else
-				throw new Exception($InDBConn->GetError());
-
-			unset($sDBQuery);
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

@@ -1,6 +1,26 @@
+:root
+{
+	--LightGreyNeutral:rgb(200, 200, 200);
+	--LightGreyWarmTemp:rgb(200, 190, 190);
+	--LightGreyCoolTemp:rgb(190, 190, 200);
+	--MiddleGreyNeutral:rgb(128, 128, 128);
+	--MiddleGreyWarmTemp:rgb(128, 118, 118);
+	--MiddleGreyCoolTemp:rgb(118, 118, 128);
+	--DarkGreyNeutral:rgb(64, 64, 64);
+	--DarkGreyWarmTemp:rgb(64, 60, 60);
+	--DarkGreyCoolTemp:rgb(60, 60, 64);
+	--VeryDarkGreyNeutral:rgb(32, 32, 32);
+	--VeryDarkGreyWarmTemp:rgb(32, 30, 30);
+	--VeryDarkGreyCoolTemp:rgb(30, 30, 32);
+	--FullBlack:rgba(0, 0, 0, 1);
+	--FullWhite:rgb(255, 255, 255);
+	--MainButtonColor:rgb(115, 124, 175);
+	--MainButtonHoverColor:rgb(125, 144, 195);
+}
+
 body
 {
-	background-color:rgba(90, 98, 102, 1);
+	background-color:var(--VeryDarkGreyWarmTemp);
 	font-size:16px;
 	width:100%;
 	clear:both;
@@ -50,7 +70,7 @@ h1
 
 a
 {
-	color:rgba(0, 0, 0, 1);
+	color:var(--MainConstTextColor);
 	text-decoration:none;
 }
 
@@ -61,14 +81,14 @@ input
 
 a:hover
 {
-	color:rgba(0, 0, 0, 1);
+	color:var(--MainConstTextColor);
 	text-decoration:none;
 }
 
 .Button-Left
 {
-	background-color:rgba(120, 140, 255, 1);
-	color:rgba(255,255,255,1);
+	background-color:var(--MainButtonColor);
+	color:var(--FullWhite);
 	text-shadow:none;
 	width:25%;
 	margin:0%;
@@ -82,19 +102,19 @@ a:hover
 
 .Button-Left:hover
 {
-	background-color:rgba(140, 160, 255, 1);
-	text-shadow: 0px 0px 4px rgba(255,255,255,1);
+	background-color:var(--MainButtonHoverColor);
+	text-shadow: 0px 0px 4px var(--FullWhite);
 	transform:scale(1.1);
 }
 
 .Button-Left-ClearL
 {
-	background-color:rgba(120, 140, 255, 1);
-	color:rgba(255,255,255,1);
+	background-color:var(--MainButtonColor);
+	color:var(--FullWhite);
 	text-shadow:none;
-	width:4em;
-	margin:1em;
-	padding:1em;
+	width:4%;
+	margin:1%;
+	padding:1%;
 	font-size:150%;
 	text-align:center;
 	float:left;
@@ -104,15 +124,15 @@ a:hover
 
 .Button-Left-ClearL:hover
 {
-	background-color:rgba(140, 160, 255, 1);
-	text-shadow: 0px 0px 4px rgba(255,255,255,1);
+	background-color:var(--MainButtonHoverColor);
+	text-shadow: 0px 0px 4px var(--FullWhite);
 	transform:scale(1.1);
 }
 
 .Button-Left-ClearB
 {
-	background-color:rgba(120, 140, 255, 1);
-	color:rgba(255,255,255,1);
+	background-color:var(--MainButtonColor);
+	color:var(--FullWhite);
 	text-shadow:none;
 	width:7%;
 	min-width:100px;
@@ -127,15 +147,15 @@ a:hover
 
 .Button-Left-ClearB:hover
 {
-	background-color:rgba(140, 160, 255, 1);
-	text-shadow: 0px 0px 4px rgba(255,255,255,1);
+	background-color:var(--MainButtonHoverColor);
+	text-shadow: 0px 0px 4px var(--FullWhite);
 	transform:scale(1.1);
 }
 
 .Button-Right
 {
-	background-color:rgba(120, 140, 255, 1);
-	color:rgba(255,255,255,1);
+	background-color:var(--MainButtonColor);
+	color:var(--FullWhite);
 	text-shadow:none;
 	width:7%;
 	min-width:100px;
@@ -150,15 +170,15 @@ a:hover
 
 .Button-Right:hover
 {
-	background-color:rgba(140, 160, 255, 1);
-	text-shadow: 0px 0px 4px rgba(255,255,255,1);
+	background-color:var(--MainButtonHoverColor);
+	text-shadow: 0px 0px 4px var(--FullWhite);
 	transform:scale(1.1);
 }
 
 .Input-Left
 {
-	background-color:rgba(120, 140, 255, 1);
-	color:rgba(255,255,255,1);
+	background-color:var(--MainButtonColor);
+	color:var(--FullWhite);
 	border-style:none;
 	text-shadow:none;
 	font-weight:bold;
@@ -176,15 +196,15 @@ a:hover
 
 .Input-Left:hover
 {
-	background-color:rgba(140, 160, 255, 1);
-	text-shadow: 0px 0px 4px rgba(255,255,255,1);
+	background-color:var(--MainButtonHoverColor);
+	text-shadow: 0px 0px 4px var(--FullWhite);
 	transform:scale(1.1);
 }
 
 .Input-Right
 {
-	background-color:rgba(120, 140, 255, 1);
-	color:rgba(255,255,255,1);
+	background-color:var(--MainButtonColor);
+	color:var(--FullWhite);
 	border-style:none;
 	text-shadow:none;
 	cursor:pointer;
@@ -201,7 +221,7 @@ a:hover
 
 .Input-Right:hover
 {
-	background-color:rgba(140, 160, 255, 1);
-	text-shadow: 0px 0px 4px rgba(255,255,255,1);
+	background-color:var(--MainButtonHoverColor);
+	text-shadow: 0px 0px 4px var(--FullWhite);
 	transform:scale(1.1);
 }

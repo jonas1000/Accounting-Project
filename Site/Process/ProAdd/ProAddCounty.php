@@ -1,57 +1,59 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProAddCounty(ME_CDBConnManager &$InDBConn)
+function ProAddCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : bool
 {
-	//Check if POST data exists, if not then throw a exception
-	if(isset($_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Access']))
+	if(isset($_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Access']) &&
+	!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Access']) &&
+	ME_MultyCheckNumericType($_POST['Country'], $_POST['Access'], $_POST['Tax'], $_POST['IR']))
 	{
-		//Check if POST data are NOT empty, if false then throw a exception
-		if(!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Access']))
+		//format the string to be compatible with HTML and avoid SQL injection
+		$sTitle = ME_SecDataFilter($_POST['Name']);
+
+		$fTax = (float)$_POST['Tax'];
+		$fInterestRate = (float)$_POST['IR'];
+
+		//variables consindered to be holding ID
+		$iCountryIndex = (int)$_POST['Country'];
+		$iContentAccess = (int)$_POST['Access'];
+
+		//Limit data to a certain acceptable range
+		//database cannot accept Primary or foreighn keys below 1
+		//If duplicate the database will throw a exception
+		if(($iCountryIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
 		{
-			//Check if POST data are numeric, if false then throw a exception
-			if(ME_MultyCheckNumericType($_POST['Country'], $_POST['Access']))
+			if(CountyDataAddParser($InrConn, $InrLogHandle, $sTitle, $fTax, $fInterestRate, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
 			{
-				//take strings as is
-				$sTitle = $_POST['Name'];
+				$iLastIndexCountyData = $InrConn->GetLastInsertID();
 
-				//Convert data to float for logical methematical operations
-				$fTax = (float) $_POST['Tax'];
-				$fInterestRate = (float) $_POST['IR'];
-
-				//variables consindered to be holding ID's
-				$iCountryIndex = (int) $_POST['Country'];
-				$iContentAccessIndex = (int) $_POST['Access'];
-
-				unset($_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Country'], $_POST['Access']);
-
-				//format the string to be compatible with HTML and avoid SQL injection
-				ME_SecDataFilter($sTitle);
-
-				//Limit data to a certain acceptable range
-				//database cannot accept Primary or foreighn keys below 1
-				//If duplicate the database will throw a exception
-				if(($iCountryIndex > 0) && ($iContentAccessIndex > 0))
+				if(CountyAddParser($InrConn, $InrLogHandle, $iLastIndexCountyData, $iCountryIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
 				{
-					CountyDataAddParser($InDBConn, $sTitle, $fTax, $fInterestRate, $iContentAccessIndex, $_ENV['Available']['Show']);
-
-					if($InDBConn->GetLastQueryID())
-						CountyAddParser($InDBConn, $iCountryIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
+					if($InrConn->Commit())
+						return TRUE;
 					else
-						throw new Exception("Failed to get the id of last query");
+					{
+						$InrLogHandle->AddLogMessage("Failed to Commit data", __FILE__, __FUNCTION__, __LINE__);
+
+						if(!$InrConn->RollBack())
+							throw new exception("Failed to rollback data");
+					}
 				}
 				else
-					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+				{
+					$InrLogHandle->AddLogMessage("CountryAddParser did not successfuly inserted the data", __FILE__, __FUNCTION__, __LINE__);
 
-				unset($sTitle, $fTax, $fInterestRate, $sDate, $iCountryIndex, $iContentAccessIndex);					
-				header("Location:.?MenuIndex=".$_ENV['MenuIndex']['County']);
+					if(!$InrConn->RollBack())
+						throw new exception("Failed to rollback data");
+				}
 			}
-			else 
-                throw new Exception("Some POST variables are not considered numeric type");
+			else
+				$InrLogHandle->AddLogMessage("CountryDataAddParser did not successfuly inserted the data", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+			$InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+		$InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

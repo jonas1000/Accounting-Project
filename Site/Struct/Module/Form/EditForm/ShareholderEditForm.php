@@ -1,84 +1,49 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLShareholderEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function HTMLShareholderEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
 {
-    if(isset($_POST['ShareIndex']))
+    if(isset($_POST['ShareIndex']) && !empty($_POST['ShareIndex']))
     {
-        if(!empty($_POST['ShareIndex']))
+        $iShareholderIndex = (int) $_POST['ShareIndex'];
+
+        if($iShareholderIndex > 0)
         {
-            $iShareholderIndex = (int) $_POST['ShareIndex'];
+            $rResult = ShareholderSpecificRetriever($InrConn, $InrLogHandle, $iShareholderIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
 
-            unset($_POST['ShareIndex']);
-
-            if($iShareholderIndex > 0)
+            if(!empty($rResult) && ($rResult->num_rows == 1))
             {
-                ShareholderSpecificRetriever($InDBConn, $iShareholderIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
+                $aDataRow = $rResult->fetch_assoc();
 
-                $aShareholderRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-                $iShareholderNumRows = $InDBConn->GetResultNumRows();
+                print("<div class='Form'><form method='POST'><div>");
 
-                if(!empty($aShareholderRow) && ($iShareholderNumRows > 0 && $iShareholderNumRows < 2))
-                {
-                    $iShareholderAccessIndex = (int) $aShareholderRow['SHARE_ACCESS'];
-                    $iEmployeeIndex = (int) $aShareholderRow['EMP_ID'];
+                //Title
+                print("<div id='FormTitle'><h3>Edit Shareholder</h3></div>");
 
-                    print("<div class='Form'>");
-                    print("<form method='POST'>");
-                    print("<div>");
+                //Input Row - employee list
+                print("<div><label>Employee");
+                RenderEmployeeSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], (int) $aDataRow['EMP_ID']);
+                print("</label></div>");
 
-                    //Title
-                    print("<div id='FormTitle'>");
-                    print("<h3>Edit Shareholder</h3>");
-                    print("</div>");
+                //Input Row - access list
+                print("<div><label>Access");
+                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], (int) $aDataRow['SHARE_ACCESS']);
+                print("</label></div></div>");
 
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Employee</h5>");
-                    print("</div>");
+                printf("<div><input type='hidden' value='%s' name='ShareIndex' required>", $aDataRow['SHARE_ID']);
+                printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>", $GLOBALS['MENU_INDEX']['Shareholder'], $GLOBALS['MODULE']['Edit']);
+                printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['Shareholfer']);
 
-                    print("<div>");
-                    RenderEmployeeSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iEmployeeIndex);
-                    print("</div>");
-                    print("</div>");
+                print("</form></div>");
 
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Access</ph5>");
-                    print("</div>");
-
-                    print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iShareholderAccessIndex);
-                    print("</div>");
-                    print("</div>");
-
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input type='hidden' value='%s' name='ShareIndex' required>", $aShareholderRow['SHARE_ID']);
-                    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>", $_GET['MenuIndex'], $_GET['Module']);
-                    printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_GET['MenuIndex']);
-                    print("</div>");
-
-                    print("</form>");
-
-                    print("</div>");
-
-                    unset($iShareholderAccessIndex, $iEmployeeIndex);
-                }
-                else
-                    throw new Exception("Query did not return any row");
-
-                unset($aShareholderRow, $iShareholderIndex, $iShareholderNumRows);
+                $rResult->free();
             }
             else
-                throw new Exception("POST data could not be converted to required format");
+                $InrLogHandle->AddLogMessage("Query did not return any row", __FILE__, __FUNCTION__, __LINE__);
         }
         else
-			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+            $InrLogHandle->AddLogMessage("POST data could not be converted to required format", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+        $InrLogHandle->AddLogMessage("Some POST data are not initialized", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

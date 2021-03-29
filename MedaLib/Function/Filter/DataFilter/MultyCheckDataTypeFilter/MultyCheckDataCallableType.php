@@ -4,14 +4,14 @@
 //Return false the first key it finds is not Callable
 function ME_MultyCheckCallableType(...$InaVar) : bool
 {
-  $iArrayLenght = count($InaVar);
+    $iArrayLenght = count($InaVar);
 
-  for($I=0; $iArrayLenght > $I; $I++)
-  {
-    if(!is_callable($InaVar[$I]))
-      return FALSE;
-  }
+    for($I=0; $iArrayLenght > $I; $I++)
+    {
+        if(!is_callable($InaVar[$I]))
+            return FALSE;
+    }
 
-  return TRUE;
+    return TRUE;
 }
 ?>

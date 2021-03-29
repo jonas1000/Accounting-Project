@@ -1,35 +1,25 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProDelShareholder(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function ProDelShareholder(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
 {
-	if(isset($_POST['ShareIndex']))
+	if(isset($_POST['ShareIndex']) && !empty($_POST['ShareIndex']) && is_numeric($_POST['ShareIndex']))
 	{
-		if(!empty($_POST['ShareIndex']))
+		//variables consindered to be holding ID
+		$iShareholderIndex = (int) $_POST['ShareIndex'];
+
+		if(($iShareholderIndex > 0) && CheckAccessRange($IniUserAccess))
 		{
-			if(is_numeric($_POST['ShareIndex']))
-			{
-				//variables consindered to be holding ID
-				$iShareholderIndex = (int) $_POST['ShareIndex'];
-
-				unset($_POST['ShareIndex']);
-
-				//database cannot accept Primary or foreign keys below 1
-				//If duplicate the database will throw a exception
-				if(($iShareholderIndex > 0) && ($IniUserAccessLevel > 0))
-					ShareholderVisParser($InDBConn, $iShareholderIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
-				else
-					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
-
-				unset($iShareholderIndex);
-				header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Shareholder']);
-			}
-			else 
-                throw new Exception("Some POST variables are not considered numeric type");
+			if(ShareholderVisParser($InrConn, $InrLogHandle, $iShareholderIndex, $GLOBALS['AVAILABLE']['Hide']))
+				$InrConn->Commit();
+			else
+				$InrConn->RollBack();
 		}
 		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+			$InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
+
+		header("Location:Index.php?MenuIndex=" . $GLOBALS['MENU_INDEX']['Shareholder']);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+		$InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

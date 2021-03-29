@@ -1,344 +1,700 @@
 <?php
-print("<br><h1>DEMO DATA</h1><br>");
+function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstallationErrorLog, string &$InsPrefix)
+{
+    /*--------<INSERT DATA TO TABLE COUNTRY_DATA>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."COUNTRY_DATA
+    (COUNTRY_DATA_TITLE,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?, ?, ?);";
 
-/*--------<INSERT DATA TO TABLE COUNTRY_DATA>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."COUNTRY_DATA
-(COUNTRY_DATA_Title,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(\"Greece\", 2, 2);";
+    $rStatement = $InrConn->CreateStatement($sQuery);
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    $sCountryDataTitle = "Greece";
+    $iAccessLevelID = 2;
+    $iAvailableID = 2;
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> COUNTRY_DATA", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 1 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $rStatement->bind_param("sii", $sCountryDataTitle, $iAccessLevelID, $iAvailableID);
 
-/*--------<INSERT DATA TO TABLE COUNTRY>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."COUNTRY
-(COUNTRY_DATA_ID,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(1, 2, 2);";
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    $InrConn->Commit();
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> COUNTRY", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 2 %s %s", $DBInsErrorMsg, $DBConn->GetError());
 
-/*--------<INSERT DATA TO TABLE COUNTY_DATA>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."COUNTY_DATA
-(COUNTY_DATA_Title,
-COUNTY_DATA_Tax,
-COUNTY_DATA_InterestRate,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(\"Chios\", 7, 2, 2, 2);";
+    /*--------<INSERT DATA TO TABLE COUNTRY>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."COUNTRY
+    (COUNTRY_DATA_ID,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?, ?, ?);";
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    $rStatement->prepare($sQuery);
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> COUNTY_DATA", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 3 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $iCountryDataID = 1;
 
-/*--------<INSERT DATA TO TABLE COUNTY>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."COUNTY
-(COUNTRY_ID,
-COUNTY_DATA_ID,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(1, 1, 2, 2);";
+    $rStatement->bind_param("iii", $iCountryDataID, $iAccessLevelID, $iAvailableID);
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> COUNTY", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 4 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $InrConn->Commit();
 
-/*--------<INSERT DATA TO TABLE COMPANY_DATA>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."COMPANY_DATA
-(COMPANY_DATA_Title,
-COMPANY_DATA_Date,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(\"Demo Studio\",\"1995-1-1\",2,2);";
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    /*--------<INSERT DATA TO TABLE COUNTY_DATA>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."COUNTY_DATA
+    (COUNTY_DATA_TITLE,
+    COUNTY_DATA_TAX,
+    COUNTY_DATA_INTEREST_RATE,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?, ?, ?, ?, ?);";
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> COMPANY_DATA", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 5 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $rStatement->prepare($sQuery);
 
-/*--------<INSERT DATA TO TABLE COMPANY>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."COMPANY
-(COMPANY_DATA_ID,
-COUNTY_ID,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(1,1,2,2);";
+    $sCountyDataTitle = "Chios";
+    $iCountyDataTax = 7;
+    $iCountyDataIR = 2;
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    $rStatement->bind_param("siiii", $sCountyDataTitle, $iCountyDataTax, $iCountyDataIR, $iAccessLevelID, $iAvailableID);
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> COMPANY", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 6 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
 
-/*--------<INSERT DATA TO TABLE EMPLOYEE_POSITION>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."EMPLOYEE_POSITION
-(EMPLOYEE_POSITION_Title,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(\"CEO\",2,2),
-(\"COO\",2,2),
-(\"CFO\",2,2),
-(\"CIO\",2,2),
-(\"CBO\",2,2),
-(\"CMO\",2,2),
-(\"Video Editor\",2,2),
-(\"Server Admin\",2,2),
-(\"Game Developer\",2,2),
-(\"Producer\",2,2),
-(\"Manager\",2,2),
-(\"Developer\",2,2),
-(\"Game Designer\",2,2),
-(\"Artist\",2,2),
-(\"3D Artist\",2,2),
-(\"Level Game Designer\",2,2),
-(\"Marketeer\",2,2),
-(\"Human Resources\",2,2),
-(\"Programmer\",2,2),
-(\"Software Enginner\",2,2);";
+    $InrConn->Commit();
 
-$DBConn->ExecQuery($DBQuery, TRUE);
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> EMPLOYEE_POSITION", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 7 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    /*--------<INSERT DATA TO TABLE COUNTY>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."COUNTY
+    (COUNTRY_ID,
+    COUNTY_DATA_ID,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?, ?, ?, ?);";
 
-/*--------<INSERT DATA TO TABLE EMPLOYEE_DATA>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."EMPLOYEE_DATA
-(EMPLOYEE_DATA_Salary,
-EMPLOYEE_DATA_BDay,
-EMPLOYEE_DATA_Name,
-EMPLOYEE_DATA_Surname,
-EMPLOYEE_DATA_PN,
-EMPLOYEE_DATA_Email,
-EMPLOYEE_DATA_PassWord,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(0,\"1970-1-1\",\"Server\",\"Admin\", 6767676767,\"Adm@email.com\",\"" . password_hash("AdminPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",1,2),
-(0,\"1970-1-1\",\"Μενέλαος\",\"Μπρούνζης\", 6868686868,\"Men@email.com\",\"" . password_hash("MenPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",2,2),
-(0,\"1970-1-1\",\"Μιχαήλ\",\"Καλογιάννης\", 6969696969,\"Mix@email.com\",\"" . password_hash("MixPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",3,2),
-(0,\"1970-1-1\",\"Καληγούλα\",\"Κακογιάννης\", 7070707070,\"kal@email.com\",\"" . password_hash("calPass", PASSWORD_BCRYPT, ["cost" => 10]) . "\",3,2);";
+    $rStatement->prepare($sQuery);
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    $iCountryID = 1;
+    $iCountyDataID = 1;
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> EMPLOYEE_DATA", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 8 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $rStatement->bind_param("iiii", $iCountryID, $iCountyDataID, $iAccessLevelID, $iAvailableID);
 
-/*--------<INSERT DATA TO TABLE EMPLOYEE>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."EMPLOYEE
-(EMPLOYEE_POSITION_ID,
-EMPLOYEE_DATA_ID,
-COMPANY_ID,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(8,1,1,1,2),
-(7,2,1,2,2),
-(1,3,1,3,2),
-(20,4,1,3,2);";
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    $InrConn->Commit();
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> EMPLOYEE", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 9 %s %s", $DBInsErrorMsg, $DBConn->GetError());
 
-/*--------<INSERT DATA TO TABLE SHAREHOLDER>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."SHAREHOLDER
-(EMPLOYEE_ID,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(2,2,2),
-(1,2,2);";
+    /*--------<INSERT DATA TO TABLE COMPANY_DATA>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."COMPANY_DATA
+    (COMPANY_DATA_TITLE,
+    COMPANY_DATA_DATE,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?,?);";
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    $rStatement->prepare($sQuery);
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> SHAREHOLDER", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 10 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $sCompanyDataTitle = "Demo Studio";
+    $sCompanyDataDate = "1995-1-1";
 
-/*--------<INSERT DATA TO TABLE CUSTOMER_DATA>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."CUSTOMER_DATA
-(
-	CUSTOMER_DATA_Name,
-	CUSTOMER_DATA_Surname,
-	CUSTOMER_DATA_VAT,
-	CUSTOMER_DATA_PN,
-	CUSTOMER_DATA_SN,
-	CUSTOMER_DATA_Email,
-	CUSTOMER_DATA_ADDR,
-	AVAILABLE_ID,
-	ACCESS_LEVEL_ID
-)
-VALUES
-(\"John\",\"Marchal\",\"000000000\",\"6767676768\",\"2271023333\",\"JohnM@Email.com\",\"ST. Luther Street 32\", 2, 2),
-(\"Maria\",\"Minerva\",\"000000001\",\"6767676767\",\"2271023333\",\"MariaM@Email.com\",\"ST. Luther Street 33\", 2, 2);";
+    $rStatement->bind_param("ssii", $sCompanyDataTitle, $sCompanyDataDate, $iAccessLevelID, $iAvailableID);
 
-$DBConn->ExecQuery($DBQuery);
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> CUSTOMER_DATA", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 11 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $InrConn->Commit();
 
-/*--------<INSERT DATA TO TABLE CUSTOMER>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."CUSTOMER
-(
-	CUSTOMER_DATA_ID,
-	AVAILABLE_ID,
-	ACCESS_LEVEL_ID
-)
-VALUES
-(1,2,2),
-(2,2,2);";
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    /*--------<INSERT DATA TO TABLE COMPANY>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."COMPANY
+    (COMPANY_DATA_ID,
+    COUNTY_ID,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?,?);";
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> CUSTOMER", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 12 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $rStatement->prepare($sQuery);
 
-/*--------<INSERT DATA TO TABLE JOB_INCOME>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."JOB_INCOME
-(JOB_INCOME_Price,
-JOB_INCOME_PIA,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(3000,1200,2,2),
-(5000,2000,2,2);";
+    $iCompanyDataID = 1;
+    $iCountyID = 1;
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    $rStatement->bind_param("iiii", $iCompanyDataID, $iCountyID, $iAccessLevelID, $iAvailableID);
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> JOB_INCOME", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 13 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
 
-/*--------<INSERT DATA TO TABLE JOB_OUTCOME>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."JOB_OUTCOME
-(JOB_OUTCOME_Expenses,
-JOB_OUTCOME_Damage,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(-500,-1200,2,2),
-(-1000,-700,2,2);";
+    $InrConn->Commit();
 
-$DBConn->ExecQuery($DBQuery, TRUE);
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> JOB_OUTCOME", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 14 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    /*--------<INSERT DATA TO TABLE EMPLOYEE_POSITION>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."EMPLOYEE_POSITION
+    (EMPLOYEE_POSITION_TITLE,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?);";
 
-/*--------<INSERT DATA TO TABLE JOB_DATA>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."JOB_DATA
-(JOB_DATA_Title,
-JOB_DATA_Date,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(\"Video Editing\",\"1970-1-1\",2,2),
-(\"Recording Studio\",\"1970-1-1\",2,2);";
+    $rStatement->prepare($sQuery);
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    $sEmployeePositionTitle = "CEO";
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> JOB_DATA", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 15 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $rStatement->bind_param("sii", $sEmployeePositionTitle, $iAccessLevelID, $iAvailableID);
 
-/*--------<INSERT DATA TO TABLE JOB>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."JOB
-(JOB_DATA_ID,
-COMPANY_ID,
-JOB_INCOME_ID,
-JOB_OUTCOME_ID,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(1,1,1,1,2,2),
-(2,1,2,2,2,2);";
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
 
-$DBConn->ExecQuery($DBQuery, TRUE);
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> JOB", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 16 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $sEmployeePositionTitle = "COO";
 
-/*--------<INSERT DATA TO TABLE JOB_ASSIGMENT>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."JOB_ASSIGMENT
-(EMPLOYEE_ID,
-COUNTY_ID,
-JOB_ID,
-CUSTOMER_ID,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(1,1,1,1,2,2),
-(2,1,2,2,2,2);";
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
 
-$DBConn->ExecQuery($DBQuery, TRUE);
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> JOB_ASSIGMENT", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 17 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $sEmployeePositionTitle = "CFO";
 
-/*--------<INSERT DATA TO TABLE JOB_INCOME_TIME>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."JOB_INCOME_TIME
-(JOB_INCOME_TIME_PIT,
-JOB_INCOME_TIME_Date,
-JOB_ID,
-ACCESS_LEVEL_ID,
-AVAILABLE_ID)
-VALUES
-(600,\"1970-2-1\",1,2,2),
-(200,\"1970-3-1\",1,2,2),
-(400,\"1970-2-1\",2,2,2),
-(700,\"1970-3-1\",2,2,2);";
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
 
-$DBConn->ExecQuery($DBQuery, TRUE);
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> JOB_INCOME_TIME", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 18 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $sEmployeePositionTitle = "CIO";
 
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "CBO";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "CMO";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Video Editor";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Server Admin";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Game Developer";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Producer";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Manager";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Developer";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Game Designer";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Artist";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "3D Artist";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Game Level Designer";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Marketeer";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Human Resource";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Programmer";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sEmployeePositionTitle = "Software Enginner";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+    $InrConn->Commit();
+
+    /*--------<INSERT DATA TO TABLE EMPLOYEE_DATA>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."EMPLOYEE_DATA
+    (EMPLOYEE_DATA_SALARY,
+    EMPLOYEE_DATA_BDAY,
+    EMPLOYEE_DATA_NAME,
+    EMPLOYEE_DATA_SURNAME,
+    EMPLOYEE_DATA_PN,
+    EMPLOYEE_DATA_EMAIL,
+    EMPLOYEE_DATA_PASSWORD,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?,?,?,?,?,?,?);";
+
+    $rStatement->prepare($sQuery);
+
+    $fEmployeeDataSalary = 0;
+    $sEmployeeDataBDay = "1970-1-1";
+    $sEmployeeDataName = "Server";
+    $sEmployeeDataSurname = "Admin";
+    $sEmployeeDataPN = "6767676767";
+    $sEmployeeDataEmail = "Adm@email.com";
+    $sEmployeeDataPassword = password_hash("AdminPass", PASSWORD_BCRYPT, ["cost" => 10]);
+    $iAccessLevelID = 1;
+    $iAvailableID = 2;
+
+    $rStatement->bind_param("dssssssii", $fEmployeeDataSalary, $sEmployeeDataBDay, $sEmployeeDataName, $sEmployeeDataSurname, $sEmployeeDataPN, $sEmployeeDataEmail, $sEmployeeDataPassword, $iAccessLevelID, $iAvailableID);
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $fEmployeeDataSalary = 0;
+    $sEmployeeDataBDay = "1970-1-1";
+    $sEmployeeDataName = "Μενελαος";
+    $sEmployeeDataSurname = "Μπρουνζης";
+    $sEmployeeDataPN = "6868686868";
+    $sEmployeeDataEmail = "Men@email.com";
+    $sEmployeeDataPassword = password_hash("MenPass", PASSWORD_BCRYPT, ["cost" => 10]);
+    $iAccessLevelID = 2;
+    $iAvailableID = 2;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+    $fEmployeeDataSalary = 0;
+    $sEmployeeDataBDay = "1970-1-1";
+    $sEmployeeDataName = "Μιχαηλ";
+    $sEmployeeDataSurname = "Καλογιανης";
+    $sEmployeeDataPN = "6969696969";
+    $sEmployeeDataEmail = "Mix@email.com";
+    $sEmployeeDataPassword = password_hash("MixPass", PASSWORD_BCRYPT, ["cost" => 10]);
+    $iAccessLevelID = 3;
+    $iAvailableID = 2;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $fEmployeeDataSalary = 0;
+    $sEmployeeDataBDay = "1970-1-1";
+    $sEmployeeDataName = "Καληγουλα";
+    $sEmployeeDataSurname = "Κακογιανης";
+    $sEmployeeDataPN = "7070707070";
+    $sEmployeeDataEmail = "Kal@email.com";
+    $sEmployeeDataPassword = password_hash("KalPass", PASSWORD_BCRYPT, ["cost" => 10]);
+    $iAccessLevelID = 3;
+    $iAvailableID = 2;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+    $InrConn->Commit();
+
+    /*--------<INSERT DATA TO TABLE EMPLOYEE>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."EMPLOYEE
+    (EMPLOYEE_POSITION_ID,
+    EMPLOYEE_DATA_ID,
+    COMPANY_ID,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?,?,?);";
+
+    $rStatement->prepare($sQuery);
+
+    $iEmployeePositionID = 8;
+    $iEmployeeDataID = 1;
+    $iCompanyID = 1;
+    $iAccessLevelID = 1;
+    $iAvailableID = 2;
+
+    $rStatement->bind_param("iiiii", $iEmployeePositionID, $iEmployeeDataID, $iCompanyID, $iAccessLevelID, $iAvailableID);
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $iEmployeePositionID = 7;
+    $iEmployeeDataID = 2;
+    $iCompanyID = 1;
+    $iAccessLevelID = 2;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $iEmployeePositionID = 1;
+    $iEmployeeDataID = 3;
+    $iCompanyID = 1;
+    $iAccessLevelID = 3;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $iEmployeePositionID = 20;
+    $iEmployeeDataID = 4;
+    $iCompanyID = 1;
+    $iAccessLevelID = 3;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $InrConn->Commit();
+
+    /*--------<INSERT DATA TO TABLE SHAREHOLDER>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."SHAREHOLDER
+    (EMPLOYEE_ID,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?);";
+
+    $rStatement->prepare($sQuery);
+
+    $iEmployeeID = 2;
+    $iAccessLevelID = 2;
+
+    $rStatement->bind_param("iii", $iEmployeeID, $iAccessLevelID, $iAvailableID);
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $iEmployeeID = 1;
+    $iAccessLevelID = 2;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+    $InrConn->Commit();
+
+    unset($iEmployeeID);
+
+
+    /*--------<INSERT DATA TO TABLE CUSTOMER_DATA>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."CUSTOMER_DATA
+    (CUSTOMER_DATA_NAME,
+    CUSTOMER_DATA_SURNAME,
+    CUSTOMER_DATA_VAT,
+    CUSTOMER_DATA_PN,
+    CUSTOMER_DATA_SN,
+    CUSTOMER_DATA_EMAIL,
+    CUSTOMER_DATA_ADDR,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?,?,?,?,?,?,?);";
+
+    $rStatement->prepare($sQuery);
+
+    $sCustomerDataName = "John";
+    $sCustomerDataSurname = "Marchel";
+    $sCustomerDataVAT = "000000000";
+    $sCustomerDataPN = "6767676768";
+    $sCustomerDataSN = "2271023333";
+    $sCustomerDataEmail = "JohnM@Email.com";
+    $sCustomerDataAddr = "ST. Luther Street 32";
+    $iAccessLevelID = 2;
+    $iAvailableID = 2;
+
+    $rStatement->bind_param("sssssssii", $sCustomerDataName, $sCustomerDataSurname, $sCustomerDataVAT, $sCustomerDataPN, $sCustomerDataSN, $sCustomerDataEmail, $sCustomerDataAddr, $iAccessLevelID, $iAvailableID);
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sCustomerDataName = "Maria";
+    $sCustomerDataSurname = "Minerva";
+    $sCustomerDataVAT = "000000001";
+    $sCustomerDataPN = "6767676767";
+    $sCustomerDataSN = "2271023333";
+    $sCustomerDataEmail = "MariaM@Email.com";
+    $sCustomerDataAddr = "ST. Luther Street 33";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+    $InrConn->Commit();
+
+    /*--------<INSERT DATA TO TABLE CUSTOMER>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."CUSTOMER
+    (CUSTOMER_DATA_ID,
+    AVAILABLE_ID,
+    ACCESS_LEVEL_ID)
+    VALUES
+    (?,?,?);";
+
+    $rStatement->prepare($sQuery);
+
+    $iCustomerDataID = 1;
+
+    $rStatement->bind_param("iii", $iCustomerDataID, $iAccessLevelID, $iAvailableID);
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $iCustomerDataID = 2;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+    $InrConn->Commit();
+
+    /*--------<INSERT DATA TO TABLE JOB_INCOME>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."JOB_INCOME
+    (JOB_INCOME_PRICE,
+    JOB_INCOME_PIA,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?,?);";
+
+    $rStatement->prepare($sQuery);
+
+    $fJobIncomePrice = 3000;
+    $fJobIncomePIA = 1200;
+
+    $rStatement->bind_param("ddii", $fJobIncomePrice, $fJobIncomePIA, $iAccessLevelID, $iAvailableID);
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $fJobIncomePrice = 5000;
+    $fJobIncomePIA = 2000;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+    $InrConn->Commit();
+
+    /*--------<INSERT DATA TO TABLE JOB_OUTCOME>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."JOB_OUTCOME
+    (JOB_OUTCOME_EXPENSES,
+    JOB_OUTCOME_DAMAGE,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?,?);";
+
+    $rStatement->prepare($sQuery);
+
+    $fJobOutcomeExpenses = -500;
+    $fJobOutcomeDamage = -1200;
+
+    $rStatement->bind_param("ddii", $fJobOutcomeExpenses, $fJobOutcomeDamage, $iAccessLevelID, $iAvailableID);
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $fJobOutcomeExpenses = -1000;
+    $fJobOutcomeDamage = -700;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $InrConn->Commit();
+
+    /*--------<INSERT DATA TO TABLE JOB_DATA>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."JOB_DATA
+    (JOB_DATA_TITLE,
+    JOB_DATA_DATE,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?,?);";
+
+    $rStatement->prepare($sQuery);
+
+    $sJobDataTitle = "Video Editing";
+    $sJobDataDate = "1970-1-1";
+
+    $rStatement->bind_param("ssii", $sJobDataTitle, $sJobDataDate, $iAccessLevelID, $iAvailableID);
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $sJobDataTitle = "Recording Studio";
+    $sJobDataDate = "1970-1-1";
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+    $InrConn->Commit();
+
+    /*--------<INSERT DATA TO TABLE JOB>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."JOB
+    (JOB_DATA_ID,
+    COMPANY_ID,
+    JOB_INCOME_ID,
+    JOB_OUTCOME_ID,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?,?,?,?);";
+
+    $rStatement->prepare($sQuery);
+
+    $iJobDataID = 1;
+    $iCompanyID = 1;
+    $iJobIncomeID = 1;
+    $iJobOutcomeID = 1;
+
+    $rStatement->bind_param("iiiiii", $iJobDataID, $iCompanyID, $iJobIncomeID, $iJobOutcomeID, $iAccessLevelID, $iAvailableID);
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $iJobDataID = 2;
+    $iCompanyID = 1;
+    $iJobIncomeID = 2;
+    $iJobOutcomeID = 2;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+    $InrConn->Commit();
+
+    /*--------<INSERT DATA TO TABLE JOB_ASSIGMENT>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."JOB_ASSIGMENT
+    (EMPLOYEE_ID,
+    COUNTY_ID,
+    JOB_ID,
+    CUSTOMER_ID,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?,?,?,?);";
+
+    $rStatement->prepare($sQuery);
+
+    $iEmployeeID = 1;
+    $iCountyID = 1;
+    $iJobID = 1;
+    $iCustomerID = 1;
+
+    $rStatement->bind_param("iiiiii", $iEmployeeID, $iCountyID, $iJobID, $iCustomerID, $iAccessLevelID, $iAvailableID);
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $iEmployeeID = 2;
+    $iCountyID = 1;
+    $iJobID = 2;
+    $iCustomerID = 2;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+    $InrConn->Commit();
+
+
+
+    /*--------<INSERT DATA TO TABLE JOB_INCOME_TIME>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."JOB_INCOME_TIME
+    (JOB_INCOME_TIME_PIT,
+    JOB_INCOME_TIME_DATE,
+    JOB_ID,
+    ACCESS_LEVEL_ID,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?,?,?);";
+
+    $rStatement->prepare($sQuery);
+
+    $fJobIncomeTimePIT = 600;
+    $sJobIncomeTimeDate = "1970-2-1";
+    $iJobID = 1;
+
+    $rStatement->bind_param("dsiii", $fJobIncomeTimePIT, $sJobIncomeTimeDate, $iJobID, $iAccessLevelID, $iAvailableID);
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $fJobIncomeTimePIT = 200;
+    $sJobIncomeTimeDate = "1970-3-1";
+    $iJobID = 1;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $fJobIncomeTimePIT = 400;
+    $sJobIncomeTimeDate = "1970-2-1";
+    $iJobID = 2;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+
+    $fJobIncomeTimePIT = 700;
+    $sJobIncomeTimeDate = "1970-3-1";
+    $iJobID = 2;
+
+    if(!$rStatement->execute())
+        $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
+
+    $InrConn->Commit();
+
+    $rStatement->close();
+}
 ?>

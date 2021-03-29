@@ -1,48 +1,24 @@
 <?php
-//-------------<FUNCTION>-------------//
-function HTMLEmployeePositionAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function HTMLEmployeePositionAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
 {
-  //-------------<PHP-HTML>-------------//
-  print("<div class='Form'>");
-  print("<form method='POST'>");
-  print("<div>");
+    //-------------<PHP-HTML>-------------//
+    print("<div class='Form'><form method='POST'><div>");
 
-  //Title
-  print("<div id='FormTitle'>");
-  print("<h3>New Employee Position</h3>");
-  print("</div>");
+    //Title
+    print("<div id='FormTitle'><h3>New Employee Position</h3></div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Title*</h5>");
-  print("</div>");
+    //Input Row - position title
+    print("<div><label>Title*<input type='text' name='Name' placeholder='title position' required></label></div>");
 
-  print("<div>");
-  print("<input type='text' name='Name' placeholder='title position' required>");
-  print("</div>");
-  print("</div>");
+    //get rows and render <select> element with data
+    print("<div><label>Access");
+    RenderAccessSelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+    print("</label></div></div>");
 
-  //get rows and render <select> element with data
-  print("<div>");
-  print("<div>");
-  print("<h5>Access</h5>");
-  print("</div>");
+    //Button Input
+    printf("<div><input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $GLOBALS['MENU_INDEX']['EmployeePosition'], $GLOBALS['MODULE']['Add']);
+    printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['EmployeePosition']);
 
-  print("<div>");
-  RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
-  print("</div>");
-  print("</div>");
-
-  print("</div>");
-
-  //Button Input
-  print("<div>");
-  printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $_GET['MenuIndex'], $_GET['Module']);
-  printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['EmployeePosition']);
-  print("</div>");
-
-  print("</form>");
-  print("</div>");
+    print("</form></div>");
 }
 ?>

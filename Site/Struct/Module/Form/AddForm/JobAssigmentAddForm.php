@@ -1,104 +1,42 @@
 <?php
-//-------------<FUNCTION>-------------//
-function HTMLJobAssigmentAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function HTMLJobAssigmentAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
 {
-  require_once("Struct/Element/Function/Select/DBSelectRender.php");
+    require_once("Struct/Element/Function/Select/DBSelectRender.php");
 
-  //-------------<PHP-HTML>-------------//
-  print("<div class='Form'>");
-  print("<form method='POST'>");
-  print("<div>");
+    //-------------<PHP-HTML>-------------//
+    print("<div class='Form'><form method='POST'><div>");
 
-  //Title
-  print("<div id='FormTitle'>");
-  print("<h3>New Job Assigment</h3>");
-  print("</div>");
+    //Title
+    print("<div id='FormTitle'><h3>New Job Assigment</h3></div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Name</h5>");
-  print("</div>");
+    //Input Row - name
+    print("<div><label>Name<input name='Name' type='text' placeholder='Job name' required></label></div>");
 
-  print("<div>");
-  print("<input name='Name' type='text' placeholder='Job name' required>");
-  print("</div>");
-  print("</div>");
+    //Input Row - price
+    print("<div><label>Price<input name='Price' type='number' placeholder='Job price' required></label></div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Price</h5>");
-  print("</div>");
+    //Input Row - PIA
+    print("<div><label>Payment in advance<input name='PIA' type='number' placeholder='Job Payment in advance'></label></div>");
 
-  print("<div>");
-  print("<input name='Price' type='number' placeholder='Job price' required>");
-  print("</div>");
-  print("</div>");
+    //Input Row - expenses
+    print("<div><label>Expenses<input name='Expenses' type='number' placeholder='Job expensess'></label></div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Payment in advance</h5>");
-  print("</div>");
+    //Input Row - damage
+    print("<div><label>Damage<input name='Damage' type='number' placeholder='Job Damage expensess'></label></div>");
 
-  print("<div>");
-  print("<input name='PIA' type='number' placeholder='Job Payment in advance'>");
-  print("</div>");
-  print("</div>");
+    //Input Row - company list
+    print("<div><label>Company");
+    RenderCompanySelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+    print("</label></div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Expenses</h5>");
-  print("</div>");
+    //Input Row - access list
+    print("<div><label>Access");
+    RenderAccessSelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+    print("</label></div></div>");
 
-  print("<div>");
-  print("<input name='Expenses' type='number' placeholder='Job expensess'>");
-  print("</div>");
-  print("</div>");
+    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&%d&ProAdd'></div>", $GLOBALS['MENU_INDEX']['JobAssigment'], $GLOBALS['MODULE']['Add']);
+    printf("<div><a href='.?MenuIndex=%d'><div class='Button-Left'><h5>Cancel</h5></div></a>", $GLOBALS['MENU_INDEX']['JobAssigment']);
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Damage</h5>");
-  print("</div>");
-
-  print("<div>");
-  print("<input name='Damage' type='number' placeholder='Job Damage expensess'>");
-  print("</div>");
-  print("</div>");
-
-  //get rows and render <select> element with data
-  print("<div>");
-  print("<div>");
-  print("<h5>Company</h5>");
-  print("</div>");
-
-  print("<div>");
-  RenderCompanySelectRow();
-  print("</div>");
-  print("</div>");
-
-  //get rows and render <select> element with data
-  print("<div>");
-  print("<div>");
-  print("<h5>Access</h5>");
-  print("</div>");
-
-  print("<div>");
-  RenderAccessSelectRow();
-  print("</div>");
-  print("</div>");
-
-  print("</div>");
-
-  print("<div>");
-  printf("<a href='.?MenuIndex=".$_ENV['MenuIndex']['JobAssigment']."'><div class='Button-Left'><h5>Cancel</h5></div></a>");
-  printf("<input type='submit' value='Save' formaction='.?MenuIndex=".$_GET['MenuIndex']."&Module=".$_GET['Module']."&ProAdd'>");
-  print("</div>");
-
-  print("</form>");
-  print("</div>");
+    print("</form></div>");
 }
 ?>

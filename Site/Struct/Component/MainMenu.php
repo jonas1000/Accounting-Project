@@ -1,27 +1,18 @@
-<?php
 
-print("<div class='MenuWindow'>");
-print("<div class='MainMenu' id='MainMenu'>");
-print("<div>");
+<div class='MenuWindow'><div class='MainMenu' id='MainMenu'>
+    <div>
 
-foreach($_ENV['MenuIndex'] as $Row => $RowData)
-{
-    if($RowData > -1)
+    <?php
+    foreach($GLOBALS['MENU_INDEX'] as $Row => $RowData)
     {
-        printf("<a href='.?MenuIndex=%s'>", $RowData);
-        print("<div class='MainMenuButton'>");
-        printf("<p>%s Overview</p>", $Row);
-        print("</div>");
-        print("</a>");
+        if($RowData > -1)
+            printf("<a href='.?MenuIndex=%s'><div class='MainMenuButton'><p>%s Overview</p></div></a>", $RowData, $Row);
     }
-}
+    ?>
 
-print("</div>");
-print("</div>");
+    </div>
+</div>
 
-print("<div class='MenuButton' onclick='RenderMenuDisplay()'>");
-print("</div>");
-
-print("</div>");
-
-?>
+    <div class='MenuButton' onclick='RenderMenuDisplay()'>
+    </div>
+</div>

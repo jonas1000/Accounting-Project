@@ -1,60 +1,41 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProDelEmployee(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function ProDelEmployee(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
 {
-	if(isset($_POST['EmpIndex']))
+	if(isset($_POST['EmpIndex']) && !empty($_POST['EmpIndex']) && is_numeric($_POST['EmpIndex']))
 	{
-		if(!empty($_POST['EmpIndex']))
+		//variables consindered to be holding ID
+		$iEmployeeIndex = (int) $_POST['EmpIndex'];
+
+		if(($iEmployeeIndex > 0) && CheckAccessRange($IniUserAccess))
 		{
-			if(is_numeric($_POST['EmpIndex']))
+			$rResult = EmployeeSpecificRetriever($InrConn, $InrLogHandle, $iEmployeeIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+
+			if(!empty($rResult) && ($rResult->num_rows == 1))
 			{
-				//variables consindered to be holding ID
-				$iEmployeeIndex = (int) $_POST['EmpIndex'];
+				$aDataRow = $rResult->fetch_assoc();
 
-				unset($_POST['EmpIndex']);
-
-				//database cannot accept Primary or foreign keys below 1
-				//If duplicate the database will throw a exception
-				if(($iEmployeeIndex > 0) && ($IniUserAccessLevel > 0))
-				{
-					EmployeeSpecificRetriever($InDBConn, $iEmployeeIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
-
-					$aEmployeeRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-					$iEmployeeNumRows = $InDBConn->GetResultNumRows();
-
-					if(!empty($aEmployeeRow) && ($iEmployeeNumRows > 0 && $iEmployeeNumRows < 2))
-					{
-						$iEmployeeDataIndex = (int) $aEmployeeRow['EMP_DATA_ID'];
-
-						if($iEmployeeDataIndex > 0)
-						{
-							EmployeeVisParser($InDBConn, $iEmployeeIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
-
-							EmployeeDataVisParser($InDBConn, $iEmployeeDataIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
-						}
-						else
-							throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
-
-						unset($iEmployeeDataIndex);
-					}
-					else
-						throw new Exception("Could not fetch Table result");
-
-					unset($aEmployeeRow, $iEmployeeNumRows);
-				}
+				if(EmployeeVisParser($InrConn, $InrLogHandle, (int) $aDataRow['EMP_ID'], $GLOBALS['AVAILABLE']['Hide']))
+					$InrConn->Commit();
 				else
-					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+					$InrConn->RollBack();
 
-				unset($iEmployeeIndex);
-				header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Employee']);
+				if(EmployeeDataVisParser($InrConn, $InrLogHandle, (int) $aDataRow['EMP_DATA_ID'], $GLOBALS['AVAILABLE']['Hide']))
+					$InrConn->Commit();
+				else
+					$InrConn->RollBack();
+
+				$rResult->free();
 			}
-			else 
-                throw new Exception("Some POST variables are not considered numeric type");
+			else
+				$InrLogHandle->AddLogMessage("Could not fetch Table result", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+			$InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
+
+		header("Location:Index.php?MenuIndex=" . $GLOBALS['MENU_INDEX']['Employee']);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+		$InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

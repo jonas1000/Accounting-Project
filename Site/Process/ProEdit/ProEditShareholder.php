@@ -1,59 +1,48 @@
 <?php
-function ProEditShareholder(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel)
+function ProEditShareholder(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
 {
-    if(isset($_POST['ShareIndex'], $_POST['Employee'], $_POST['Access']))
+    if(isset($_POST['ShareIndex'], $_POST['Employee'], $_POST['Access']) 
+    && !ME_MultyCheckEmptyType($_POST['ShareIndex'], $_POST['Employee'], $_POST['Access']) 
+    && ME_MultyCheckNumericType($_POST['ShareIndex'], $_POST['Employee'], $_POST['Access']))
     {
-        if(!ME_MultyCheckEmptyType($_POST['ShareIndex'], $_POST['Employee'], $_POST['Access']))
+        $iShareholderIndex = (int)$_POST['ShareIndex'];
+        $iEmployeeIndex = (int)$_POST['Employee'];
+        $iContentAccess = (int)$_POST['Access'];
+
+        if(($iShareholderIndex > 0) && ($iEmployeeIndex > 0) && CheckAccessRange($IniUserAccess))
         {
-            if(ME_MultyCheckNumericType($_POST['ShareIndex'], $_POST['Employee'], $_POST['Access']))
+            $rResult = ShareholderSpecificRetriever($InrConn, $InrLogHandle, $iShareholderIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']);
+
+            if(!empty($rResult) && ($rResult->num_rows == 1))
             {
-                $iShareholderIndex = (int) $_POST['ShareIndex'];
-                $iEmployeeIndex = (int) $_POST['Employee'];
-                $iContentAccessIndex = (int) $_POST['Access'];
+                $aDataRow = $rResult->fetch_assoc();
 
-                if(($iShareholderIndex > 0) && ($iEmployeeIndex > 0) && ($iContentAccessIndex > 0) && ($IniUserAccessLevel > 0))
+                $iShareholderAccess = (int) $aDataRow['SHARE_ACCESS'];
+
+                if(CheckAccessRange($iShareholderAccess))
                 {
-                    ShareholderSpecificRetriever($InDBConn, $iShareholderIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
-
-                    $aShareholderRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-                    $iShareholderNumRows = $InDBConn->GetResultNumRows();
-
-                    if(!empty($aShareholderRow) && ($iShareholderNumRows > 0 && $iShareholderNumRows < 2))
-                    {
-                        $iShareholderAccessLevel = (int) $aShareholderRow['SHARE_ACCESS'];
-
-                        if($iShareholderAccessLevel > 0)
-                        {
-                            if($iShareholderAccessLevel > ($IniUserAccessLevel - 1))
-                            {
-                                ShareholderEditParser($InDBConn, $iShareholderIndex, $iEmployeeIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
-                            }
-                            else
-                                throw new Exception("insufficient privilage to access content");
-                        }
-                        else
-							throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
-
-                        unset($iShareholderAccessLevel);
-                    }
+                    if(ShareholderEditParser($InrConn, $InrLogHandle, $iShareholderIndex, $iEmployeeIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                        $InrConn->Commit();
                     else
-                        throw new Exception("Could not fetch Table result");
-
-                    unset($aShareholderRow, $iShareholderNumRows);
+                    {
+                        $InrConn->RollBack();
+                        $InrLogHandle->AddLogMessage("Failed to edit table", __FILE__, __FUNCTION__, __LINE__);
+                    }
                 }
                 else
-                    throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+                    $InrLogHandle->AddLogMessage("Query returned empty, did not find any ID (Possible data corruption)", __FILE__, __FUNCTION__, __LINE__);
 
-                unset($iShareholderIndex, $iEmployeeIndex, $iContentAccessIndex);
-                header("Location:.?MenuIndex=".$_ENV['MenuIndex']['Shareholder']);
+                $rResult->free();
             }
-            else 
-                throw new Exception("Some POST variables are not considered numeric type");
-		}
-		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+            else
+                $InrLogHandle->AddLogMessage("Could not fetch Table result", __FILE__, __FUNCTION__, __LINE__);
+        }
+        else
+            $InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
+
+        header("Location:.?MenuIndex=".$GLOBALS['MENU_INDEX']['Shareholder']);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+        $InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

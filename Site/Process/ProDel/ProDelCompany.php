@@ -1,60 +1,38 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProDelCompany(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function ProDelCompany(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
 {
-	if(isset($_POST['CompIndex']))
+	if(isset($_POST['CompIndex']) && !empty($_POST['CompIndex']) &&	is_numeric($_POST['CompIndex']))
 	{
-		if(!empty($_POST['CompIndex']))
+		//variables consindered to be holding ID
+		$iCompanyIndex = (int) $_POST['CompIndex'];
+
+		if(($iCompanyIndex > 0) && CheckAccessRange($IniUserAccess))
 		{
-			if(is_numeric($_POST['CompIndex']))
+			$rResult = CompanySpecificRetriever($InrConn, $InrLogHandle, $iCompanyIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+
+			if(!empty($rResult) && ($rResult->num_rows == 1))
 			{
-				//variables consindered to be holding ID
-				$iCompanyIndex = (int) $_POST['CompIndex'];
+				$aDataRow = $rResult->fetch_assoc();
 
-				unset($_POST['CompIndex']);
-
-				//database cannot accept Primary or foreign keys below 1
-				//If duplicate the database will throw a exception
-				if(($iCompanyIndex > 0) && ($IniUserAccessLevel > 0))
-				{
-					CompanySpecificRetriever($InDBConn, $iCompanyIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
-
-					$aCompanyRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-					$iCompanyNumRows = $InDBConn->GetResultNumRows(); 
-
-					if(!empty($aCompanyRow) && ($iCompanyNumRows > 0 && $iCompanyNumRows < 2))
-					{
-						$iCompanyDataIndex = (int) $aCompanyRow['COMP_DATA_ID'];
-
-						if($iCompanyDataIndex > 0)
-						{
-							CompanyVisParser($InDBConn, $iCompanyIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
-
-							CompanyDataVisParser($InDBConn, $iCompanyDataIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
-						}
-						else
-							throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
-
-						unset($iCompanyDataIndex);
-					}
-					else
-						throw new Exception("Could not fetch Table result");
-
-					unset($aCompanyRow, $iCompanyNumRows);
-				}
+				if(CompanyVisParser($InrConn, $InrLogHandle, (int) $aDataRow['COMP_ID'], $GLOBALS['AVAILABLE']['Hide']) &&
+				CompanyDataVisParser($InrConn, $InrLogHandle, (int) $aDataRow['COMP_DATA_ID'], $GLOBALS['AVAILABLE']['Hide']))
+					$InrConn->Commit();
 				else
-					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+				{
+					$InrConn->RollBack();
+					$InrLogHandle->AddLogMessage("Failed to update tables", __FILE__, __FUNCTION__, __LINE__);
+				}
 
-				unset($iCompanyIndex);
-				header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['Company']);
+				$rResult->free();
 			}
-			else 
-                throw new Exception("Some POST variables are not considered numeric type");
+			else
+				$InrLogHandle->AddLogMessage("Could not fetch Table result", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+			$InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+		$InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

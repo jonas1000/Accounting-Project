@@ -1,47 +1,100 @@
 <?php
-function ShareholderRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function ShareholderSearchConstructor(string &$InsSearchTypeQuery, string &$IniSearchType) : void
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	switch($IniSearchType)
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
-
-		$sDBQuery = "SELECT
-		".$sPrefix."VIEW_SHAREHOLDER.SHARE_ID,
-		".$sPrefix."VIEW_SHAREHOLDER.EMP_ID,
-		".$sPrefix."VIEW_SHAREHOLDER.SHARE_ACCESS
-		FROM
-		".$sPrefix."VIEW_SHAREHOLDER
-		WHERE
-		(".$sPrefix."VIEW_SHAREHOLDER.SHARE_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_SHAREHOLDER.SHARE_ACCESS > ".($IniUserAccessLevel- 1).")
-		ORDER BY SHARE_ID DESC;";
-
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		case $GLOBALS['SHAREHOLDER_SEARCH_TYPE']['Shareholder_Name']["name"]:
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			$InsSearchTypeQuery = "EMP_DATA_NAME";
+			break;
 		}
-		else
-			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery, $sPrefix);
+		case $GLOBALS['SHAREHOLDER_SEARCH_TYPE']['Shareholder_Surname']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_SURNAME";
+			break;
+		}
+
+		case $GLOBALS['SHAREHOLDER_SEARCH_TYPE']['Shareholder_Email']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_EMAIL";
+			break;
+		}
+
+		case $GLOBALS['SHAREHOLDER_SEARCH_TYPE']['Shareholder_BDay']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_BDAY";
+			break;
+		}
+
+		case $GLOBALS['SHAREHOLDER_SEARCH_TYPE']['Shareholder_PosTitle']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_POS_TITLE";
+			break;
+		}
+
+		case $GLOBALS['SHAREHOLDER_SEARCH_TYPE']['Shareholder_Salary']["name"]:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_SALARY";
+			break;
+		}
+
+		default:
+		{
+			$InsSearchTypeQuery = "EMP_DATA_NAME";
+			break;
+		}
 	}
-		else
-			throw new Exception("Input parameters do not meet requirements range");
 }
 
-function ShareholderOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function ShareholderRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
+		$sQuery = "SELECT
+		SHARE_ID,
+		EMP_ID,
+		SHARE_ACCESS
+		FROM ".$InrConn->GetPrefix()."VIEW_SHAREHOLDER
+		WHERE (SHARE_AVAIL = ?)
+		AND (SHARE_ACCESS >= ?)
+		ORDER BY SHARE_ID DESC;";
+
+		if($rStatement = $InrConn->CreateStatement($sQuery))
+		{
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("ii", $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
+		}
+		else
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
+	}
+	else
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
+}
+
+function ShareholderOverviewRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail, string &$InsSearchType="", string &$InsSearchQuery="")
+{
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
+	{
+		$sSearchConstruction = "";
+		$sSearchQuery = ME_SecDataFilter($InsSearchQuery);
+
+		$rStatement = 0;
+
+		ShareholderSearchConstructor($sSearchConstruction, $InsSearchType);
+
+		SearchQueryConstructor($sSearchQuery);
+
+		$sQuery = "SELECT
 		SHARE_ID,
 		EMP_DATA_ACCESS,
 		EMP_DATA_SALARY,
@@ -50,31 +103,28 @@ function ShareholderOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUse
 		EMP_DATA_SURNAME,
 		EMP_DATA_EMAIL,
 		EMP_POS_TITLE
-		FROM
-		".$sPrefix."VIEW_SHAREHOLDER_OVERVIEW
-		WHERE
-		(".$sPrefix."VIEW_SHAREHOLDER_OVERVIEW.SHARE_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_SHAREHOLDER_OVERVIEW.EMP_DATA_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_SHAREHOLDER_OVERVIEW.EMP_POS_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_SHAREHOLDER_OVERVIEW.SHARE_ACCESS > ".($IniUserAccessLevel - 1).")
+		FROM ".$InrConn->GetPrefix()."VIEW_SHAREHOLDER_OVERVIEW
+		WHERE (SHARE_AVAIL = ?
+		AND EMP_DATA_AVAIL = ?
+		AND EMP_POS_AVAIL = ?)
+		AND (SHARE_ACCESS >= ?)
+		AND (".$sSearchConstruction." LIKE ?)
 		ORDER BY SHARE_ID DESC;";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iiiis", $IniAvail, $IniAvail, $IniAvail, $IniUserAccess, $sSearchQuery))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
-		else
-			throw new Exception("Input parameters do not meet requirements range");
+	else
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

@@ -1,79 +1,79 @@
 <?php
 //-------------<FUNCTION>-------------//
-function CustomerEditParser(ME_CDBConnManager &$InDBConn, int &$IniCustomerIndex, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CustomerEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniCustomerIndex, int $IniContentAccess, int $IniAvail)
 {
-	if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniContentAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$sQuery = "UPDATE ".$InrConn->GetPrefix()."CUSTOMER_EDIT
+		SET 
+		CUST_ACCESS_ID = ?,
+		CUST_AVAIL_ID = ?
+		WHERE 
+		CUST_ID = ?;";
 
-		$sDBQuery = "UPDATE
-		".$sPrefix."VIEW_CUSTOMER_EDIT
-		SET
-		".$sPrefix."VIEW_CUSTOMER_EDIT.CUST_ACCESS_ID = ".$IniContentAccessLevelIndex."
-		WHERE
-		(".$sPrefix."VIEW_CUSTOMER_EDIT.CUST_AVAIL_ID = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_CUSTOMER_EDIT.CUST_ID = ".$IniCustomerIndex.");";
-
-		$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-		if(!$InDBConn->HasError())
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception("warning detected: " . $InDBConn->GetWarning());
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("iii", $IniContentAccess, $IniAvail, $IniCustomerIndex))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function CustomerDataEditParser(ME_CDBConnManager &$InDBConn, int &$IniCustomerDataIndex, string &$InsName, string &$InsSurname, string &$InsPhoneNumber, string &$InsStableNumber, string &$InsEmail, string &$InsVAT, string &$InsAddr, string &$InsNote, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CustomerDataEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniCustomerDataIndex, string &$InsName, string &$InsSurname, string &$InsPhoneNumber, string &$InsStableNumber, string &$InsEmail, string &$InsVAT, string &$InsAddr, string &$InsNote, int $IniContentAccess, int $IniAvail)
 {
-	if(!empty($InsPhoneNumber))
+	if(!empty($InsPhoneNumber) &&
+	CheckAccessRange($IniContentAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		$sName = (empty($InsName) ? "None" : $InsName);
+		$sSurname = (empty($InsSurname) ? "None" : $InsSurname);
+		$sStableNumber = (empty($InsStableNumber) ? "None" : $InsStableNumber);
+		$sEmail = (empty($InsEmail) ? "null" : $InsEmail);
+		$sVAT = (empty($InsVAT) ? "null" : $InsVAT);
+		$sAddr = (empty($InsAddr) ? "None" : $InsAddr);
+		$sNote = (empty($InsNote) ? "None" : $InsNote);
+
+		$sQuery = "UPDATE ".$InrConn->GetPrefix()."CUSTOMER_DATA_EDIT
+		SET 
+		CUST_DATA_NAME = ?,
+		CUST_DATA_SURNAME = ?,
+		CUST_DATA_PN = ?,
+		CUST_DATA_SN = ?,
+		CUST_DATA_EMAIL = ?,
+		CUST_DATA_VAT = ?,
+		CUST_DATA_ADDR = ?,
+		CUST_DATA_NOTE = ?,
+		CUST_DATA_ACCESS_ID = ?,
+		CUST_DATA_AVAIL_ID = ?
+		WHERE
+		CUST_DATA_ID = ?;";
+
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			$sDBQuery = "";
-			$sPrefix = $InDBConn->GetPrefix();
-
-			$sDBQuery = "UPDATE
-			".$sPrefix."VIEW_CUSTOMER_DATA_EDIT
-			SET
-			".$sPrefix."VIEW_CUSTOMER_DATA_EDIT.CUST_DATA_NAME = \"".(empty($InsName) ? "None" : $InsName)."\",
-			".$sPrefix."VIEW_CUSTOMER_DATA_EDIT.CUST_DATA_SURNAME = \"".(empty($InsSurname) ? "None" : $InsSurname)."\",
-			".$sPrefix."VIEW_CUSTOMER_DATA_EDIT.CUST_DATA_PN = ".$InsPhoneNumber.",
-			".$sPrefix."VIEW_CUSTOMER_DATA_EDIT.CUST_DATA_SN = \"".(empty($InsStableNumber) ? "None" : $InsStableNumber)."\",
-			".$sPrefix."VIEW_CUSTOMER_DATA_EDIT.CUST_DATA_EMAIL = ".(empty($InsEmail) ? "null" : "\"".$InsEmail."\"").",
-			".$sPrefix."VIEW_CUSTOMER_DATA_EDIT.CUST_DATA_VAT = ".(empty($InsVAT) ? "null" : "\"".$InsVAT."\"").",
-			".$sPrefix."VIEW_CUSTOMER_DATA_EDIT.CUST_DATA_ADDR = \"".(empty($InsAddr) ? "None" : $InsAddr)."\",
-			".$sPrefix."VIEW_CUSTOMER_DATA_EDIT.CUST_DATA_NOTE = \"".(empty($InsNote) ? "None" : $InsNote)."\",
-			".$sPrefix."VIEW_CUSTOMER_DATA_EDIT.CUST_DATA_ACCESS_ID = ".$IniContentAccessLevelIndex."
-			WHERE
-			(".$sPrefix."VIEW_CUSTOMER_DATA_EDIT.CUST_DATA_AVAIL_ID = ".$IniIsAvailIndex.")
-			AND
-			(".$sPrefix."VIEW_CUSTOMER_DATA_EDIT.CUST_DATA_ID = ".$IniCustomerDataIndex.");";
-
-			$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-			if(!$InDBConn->HasError())
-			{
-				if($InDBConn->HasWarning())
-					throw new Exception($InDBConn->GetWarning());
-			}
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("ssssssssiii", $sName, $sSurname, $InsPhoneNumber, $sStableNumber, $sEmail, $sVAT, $sAddr, $sNote, $IniContentAccess, $IniAvail, $IniCustomerDataIndex))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
 			else
-				throw new Exception($InDBConn->GetError());
-
-			unset($sDBQuery, $sPrefix);
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

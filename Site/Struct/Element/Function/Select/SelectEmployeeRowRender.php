@@ -1,33 +1,47 @@
 <?php
 //Render element <select> with the Employee array result from query
-function RenderEmployeeSelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function RenderEmployeeSelectRow(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniIsAvail) : void
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) && ($IniIsAvail > 0 && $IniIsAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']))
 	{
-		EmployeeSelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
+		$rResult = EmployeeSelectElemRetriever($InrConn, $InrLogHandle, $IniUserAccess, $IniIsAvail);
 
-		print("<select name='Employee'>");
+		if(!empty($rResult) && ($rResult->num_rows > 0))
+		{
+			print("<select name='Employee'>");
+			foreach($rResult->fetch_all((MYSQLI_ASSOC)) as $aDataRow)
+				printf("<option value='%s'>%s</option>", $aDataRow['EMP_ID'], $aDataRow['EMP_DATA_NAME']);
+			print("</select>");
 
-		foreach($InDBConn->GetResult() as $EmpRow => $EmpData)
-			printf("<option value='%s'>%s</option>", $EmpData['EMP_ID'], $EmpData['EMP_DATA_NAME']);
-
-		print("</select>");
-	}
+			$rResult->free();
+		}
+		else
+            $InrLogHandle->AddLogMessage("result cannot return empty list", __FILE__, __FUNCTION__, __LINE__);
+    }
+    else
+        $InrLogHandle->AddLogMessage("One or more of the input parameters are out of range", __FILE__, __FUNCTION__, __LINE__);
 }
 
 //Render element <select> with the Employee array result from query
-function RenderEmployeeSelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex, int &$IniSelected) : void
+function RenderEmployeeSelectRowCheck(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniIsAvail, int $IniSelected = 0) : void
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)) && ($IniSelected > 0))
+	if(CheckAccessRange($IniUserAccess) && ($IniIsAvail > 0 && $IniIsAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']) && ($IniSelected > 0))
 	{
-		EmployeeSelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
+		$rResult = EmployeeSelectElemRetriever($InrConn, $InrLogHandle, $IniUserAccess, $IniIsAvail);
 
-		print("<select name='Employee'>");
+		if(!empty($rResult) && ($rResult->num_rows > 0))
+		{
+			print("<select name='Employee'>");
+			foreach($rResult->fetch_all(MYSQLI_ASSOC) as $aDataRow)
+				printf("<option value='%s' %s>%s</option>", $aDataRow['EMP_ID'], ($IniSelected == (int) $aDataRow['EMP_ID'] ? "selected" : ""), $aDataRow['EMP_DATA_NAME']);
+			print("</select>");
 
-		foreach($InDBConn->GetResult() as $EmpRow => $EmpData)
-			printf("<option value='%s' %s>%s</option>", $EmpData['EMP_ID'], ($IniSelected == (int) $EmpData['EMP_ID'] ? "selected" : ""), $EmpData['EMP_DATA_NAME']);
-
-		print("</select>");
-	}
+			$rResult->free();
+		}
+		else
+            $InrLogHandle->AddLogMessage("result cannot return empty list", __FILE__, __FUNCTION__, __LINE__);
+    }
+    else
+        $InrLogHandle->AddLogMessage("One or more of the input parameters are out of range", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

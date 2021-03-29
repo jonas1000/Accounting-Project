@@ -4,14 +4,14 @@
 //Return false the first key it finds is not a String
 function ME_MultyCheckStringType(...$InaVar) : bool
 {
-  $iArrayLenght = count($InaVar);
+    $iArrayLenght = count($InaVar);
 
-  for($I=0; $iArrayLenght > $I; $I++)
-  {
-    if(!is_string($InaVar[$I]))
-      return FALSE;
-  }
+    for($I=0; $iArrayLenght > $I; $I++)
+    {
+        if(!is_string($InaVar[$I]))
+            return FALSE;
+    }
 
-  return TRUE;
+    return TRUE;
 }
 ?>

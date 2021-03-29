@@ -1,149 +1,67 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLJobEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevel) : void
+function HTMLJobEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
 {
-    if(isset($_POST['JobIndex']))
+    if(isset($_POST['JobIndex']) && !empty($_POST['JobIndex']))
     {
-        if(!empty($_POST['JobIndex']))
+        $iJobIndex = (int) $_POST['JobIndex'];
+
+        if($iJobIndex > 0)
         {
-            $iJobIndex = (int) $_POST['JobIndex'];
+            $rResult = JobGeneralSpecificRetriever($InrConn, $InrLogHandle, $iJobIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
 
-            unset($_POST['JobIndex']);
-
-            if($iJobIndex > 0)
+            if(!empty($rResult) && ($rResult->num_rows == 1))
             {
-                JobGeneralSpecificRetriever($InDBConn, $iJobIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
+                $aDataRow = $rResult->fetch_assoc();
 
-                $aJobRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-                $iJobNumRows = $InDBConn->GetResultNumRows();
+                //-------------<PHP-HTML>-------------//
+                print("<div class='Form'><form method='POST'><div>");
 
-                if(!empty($aJobRow) && ($iJobNumRows > 0 && $iJobNumRows < 2))
-                {
-                    $iCompIndex = (int) $aJobRow['COMP_ID'];
-                    $iJobAccessIndex = (int) $aJobRow['JOB_ACCESS'];
+                printf("<div id='FormTitle'><h3>Edit Job</h3><h4>%s</h4></div>", $aDataRow['JOB_DATA_TITLE']);
 
-                    //-------------<PHP-HTML>-------------//
-                    print("<div class='Form'>");
-                    print("<form method='POST'>");
-                    print("<div>");
+                //Input Row - name
+                printf("<div><label>Name*<input name='Name' type='text' placeholder='Job name' value='%s' required></label></div>", $aDataRow['JOB_DATA_TITLE']);
 
-                    print("<div id='FormTitle'>");
-                    print("<h3>Edit Job</h3>");
-                    printf("<h4>%s</h4>", $aJobRow['JOB_DATA_TITLE']);
-                    print("</div>");
+                //Input Row - price
+                printf("<div><label>Price<input name='Price' step='0.01' min='0.0' type='number' placeholder='Job price' value='%s'></label></div>", $aDataRow['JOB_INC_PRICE']);
 
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Name*</h5>");
-                    print("</div>");
+                //Input Row - payment in advance (PIA)
+                printf("<div><label>Payment in advance<input name='PIA' type='number' step='0.01' min='0.0' placeholder='Job Payment in advance' value='%s'></label></div>", $aDataRow['JOB_INC_PIA']);
 
-                    print("<div>");
-                    printf("<input name='Name' type='text' placeholder='Job name' value='%s' required>", $aJobRow['JOB_DATA_TITLE']);
-                    print("</div>");
-                    print("</div>");
+                //Input Row - expenses
+                printf("<div><label>Expenses<input name='Expenses' type='number' step='0.01' min='0.0' placeholder='Job expensess' value='%s'></label></div>", abs($aDataRow['JOB_OUT_EXPENSES']));
 
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Price</h5>");
-                    print("</div>");
+                //Input Row - damage
+                printf("<div><label>Damage<input name='Damage' type='number' step='0.01' min='0.0' placeholder='Job Damage expensess' value='%s'></label></div>", abs($aDataRow['JOB_OUT_DAMAGE']));
 
-                    print("<div>");
-                    printf("<input name='Price' step='0.01' min='0.0' type='number' placeholder='Job price' value='%s'>", $aJobRow['JOB_INC_PRICE']);
-                    print("</div>");
-                    print("</div>");
+                //Input Row - date
+                printf("<div><label>Date*<input name='Date' type='Date' value='%s' required></label></div>", $aDataRow['JOB_DATA_DATE']);
 
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Payment in advance</h5>");
-                    print("</div>");
+                //Input Row - company list
+                print("<div><label>Company");
+                RenderCompanySelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], (int) $aDataRow['COMP_ID']);
+                print("</label></div>");
 
-                    print("<div>");
-                    printf("<input name='PIA' type='number' step='0.01' min='0.0' placeholder='Job Payment in advance' value='%s'>", $aJobRow['JOB_INC_PIA']);
-                    print("</div>");
-                    print("</div>");
+                //Input Row - access list
+                print("<div><label>Access");
+                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], (int) $aDataRow['JOB_ACCESS']);
+                print("</label></div></div>");
 
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Expenses</h5>");
-                    print("</div>");
+                printf("<div><input type='hidden' name='JobIndex' value='%s' required>", $aDataRow['JOB_ID']);
+                printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>", $GLOBALS['MENU_INDEX']['Job'], $GLOBALS['MODULE']['Edit']);
+                printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['Job']);
 
-                    print("<div>");
-                    printf("<input name='Expenses' type='number' step='0.01' min='0.0' placeholder='Job expensess' value='%s'>", abs($aJobRow['JOB_OUT_EXPENSES']));
-                    print("</div>");
-                    print("</div>");
+                print("</form></div>");
 
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Damage</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input name='Damage' type='number' step='0.01' min='0.0' placeholder='Job Damage expensess' value='%s'>", abs($aJobRow['JOB_OUT_DAMAGE']));
-                    print("</div>");
-                    print("</div>");
-
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Date*</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input name='Date' type='Date' value='%s' required>", $aJobRow['JOB_DATA_DATE']);
-                    print("</div>");
-                    print("</div>");
-
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Company</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    RenderCompanySelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCompIndex);
-                    print("</div>");
-                    print("</div>");
-
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Access</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iJobAccessIndex);
-                    print("</div>");
-                    print("</div>");
-
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input type='hidden' name='JobIndex' value='%s' required>", $aJobRow['JOB_ID']);
-                    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>", $_GET['MenuIndex'], $_GET['Module']);
-                    printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['Job']);
-                    print("</div>");
-
-                    print("</form>");
-                    print("</div>");
-
-                    unset($iJobAccessIndex, $iCompIndex);
-                }
-                else
-                    throw new Exception("Query did not return any row");
-
-                unset($aJobRow, $iJobIndex, $iJobNumRows);
+                $rResult->free();
             }
             else
-                throw new Exception("POST data could not be converted to required format");
+                $InrLogHandle->AddLogMessage("Query did not return any row", __FILE__, __FUNCTION__, __LINE__);
         }
         else
-			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+            $InrLogHandle->AddLogMessage("POST data could not be converted to required format", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+        $InrLogHandle->AddLogMessage("Some POST data are not initialized", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

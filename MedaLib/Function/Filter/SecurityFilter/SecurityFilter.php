@@ -1,57 +1,37 @@
 <?php
-function ME_SecFilterFunctionCallback(string $InFunctionCallback, int $IniUserAccessLevel, int $IniContentAccessLevel, string $InsRequestMethod = "GET") : void
+function ME_SecFilterFunctionCallback(ME_CLogHandle &$InrLogHandle, string &$InFunctionCallback, int $IniUserAccessLevel, int $IniContentAccessLevel, string $InsRequestMethod = "GET") : bool
 {
-	if(!empty($InFunctionCallback))
-	{
-		if(!empty($IniUserAccessLevel))
-		{
-			if(is_callable($InFunctionCallback))
-			{
-				if((($IniUserAccessLevel - 1) < $IniContentAccessLevel) && ($_SERVER['REQUEST_METHOD'] == $InsRequestMethod))
-					$InFunctionCallback();
-				else
-					throw new Exception("Function: " . $InFunctionCallback . " access error, User Access Level: " . $IniUserAccessLevel . ", requested access to content: " . $IniContentAccessLevel . ", Access Method: " . $InsRequestMethod . ", Server Request: " . $_SERVER['REQUEST_METHOD'] . ", User IP: " . $_SERVER["REMOTE_ADDR"] . "\n");
-			}
-			else
-				throw new Exception("Function callback: " . $InFunctionCallback . " is uncallable");
-		}
-		else
-			throw new Exception("User access ID is NULL, User access ID must never be NULL");
-	}
-	else
-		throw new Exception("No Function Callback detected");
+    if(!empty($InFunctionCallback) && is_callable($InFunctionCallback))
+    {
+        if((($IniUserAccessLevel - 1) < $IniContentAccessLevel) && ($_SERVER['REQUEST_METHOD'] == $InsRequestMethod))
+            $InFunctionCallback($InrLogHandle);
+        else
+            $InrLogHandle->AddLogMessage("Function: " . $InFunctionCallback . " access error, User Access Level: " . $IniUserAccessLevel . ", requested access to content: " . $IniContentAccessLevel . ", Access Method: " . $InsRequestMethod . ", Server Request Method: " . $_SERVER['REQUEST_METHOD'] . ", User IP: " . $_SERVER["REMOTE_ADDR"] . "\n",__FILE__, __FUNCTION__, __LINE__);
+    }
+    else
+        $InrLogHandle->AddLogMessage("No Function singature detected", __FILE__, __FUNCTION__, __LINE__);
+
+    return FALSE;
 }
 
-function ME_SecFilterQueryFunctionCallback(ME_CDBConnManager &$InDBConn, string $InFunctionCallback, int $IniUserAccessLevel, int $IniContentAccessLevel, string $InsRequestMethod = "GET") : void
+function ME_SecFilterQueryFunctionCallback(ME_CDBConnManager &$InConn, ME_CLogHandle &$InrLogHandle, string &$InFunctionCallback, int $IniUserAccessLevel, int $IniContentAccessLevel, string $InsRequestMethod = "GET") : bool
 {
-	if(!empty($InFunctionCallback))
-	{
-		if(!empty($IniUserAccessLevel))
-		{
-			if(is_callable($InFunctionCallback))
-			{
-				if(!empty($InDBConn))
-				{
-					if(($InDBConn instanceof ME_CDBConnManager))
-					{
-						if((($IniUserAccessLevel - 1) < $IniContentAccessLevel) && ($_SERVER['REQUEST_METHOD'] == $InsRequestMethod))
-							$InFunctionCallback($InDBConn, $IniUserAccessLevel);
-						else
-							throw new Exception("Function: " . $InFunctionCallback . " access error, User Access Level: " . $IniUserAccessLevel . ", requested access to content: " . $IniContentAccessLevel . ", Access Method: " . $InsRequestMethod . ", Server Request: " . $_SERVER['REQUEST_METHOD'] . ", User IP: " . $_SERVER["REMOTE_ADDR"] . "\n");
-					}
-					else
-						throw new Exception("Object Type is not an instance of ME_CDBConnManager");
-				}
-				else
-					throw new Exception("Object of database connection type cannot be NULL");
-			}
-			else
-				throw new Exception("Function callback: " . $InFunctionCallback . " is uncallable");
-		}
-		else
-			throw new Exception("User access ID is NULL, User access ID must never be NULL");
-	}
-	else
-		throw new Exception("No Function Callback detected");
+    if(!empty($InFunctionCallback) && is_callable($InFunctionCallback))
+    {
+        if(!empty($InConn) && ($InConn instanceof ME_CDBConnManager))
+        {
+            if((($IniUserAccessLevel - 1) < $IniContentAccessLevel) && ($_SERVER['REQUEST_METHOD'] == $InsRequestMethod))
+                $InFunctionCallback($InConn, $InrLogHandle, $IniUserAccessLevel);
+
+            else
+                $InrLogHandle->AddLogMessage("Function: " . $InFunctionCallback . " access error, User Access Level: " . $IniUserAccessLevel . ", requested access to content: " . $IniContentAccessLevel . ", Access Method: " . $InsRequestMethod . ", Server Request Method: " . $_SERVER['REQUEST_METHOD'] . ", User IP: " . $_SERVER["REMOTE_ADDR"] . "\n", __FILE__, __FUNCTION__, __LINE__);
+        }
+        else
+            $InrLogHandle->AddLogMessage("Object of database connection type cannot be NULL", __FILE__, __FUNCTION__, __LINE__);
+    }		
+    else
+        $InrLogHandle->AddLogMessage("No Function singature detected", __FILE__, __FUNCTION__, __LINE__);
+
+    return FALSE;
 }
 ?>

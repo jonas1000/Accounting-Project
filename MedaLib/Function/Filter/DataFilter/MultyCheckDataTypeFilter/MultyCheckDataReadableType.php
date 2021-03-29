@@ -4,14 +4,14 @@
 //Return false the first key it finds is not Readable
 function ME_MultyCheckReadableType(string ...$InsaVar) : bool
 {
-  $iArrayLenght = count($InsaVar);
+    $iArrayLenght = count($InsaVar);
 
-  for($I=0; $iArrayLenght > $I; $I++)
-  {
-    if(!is_readable($InsaVar[$I]))
-      return FALSE;
-  }
+    for($I=0; $iArrayLenght > $I; $I++)
+    {
+        if(!is_readable($InsaVar[$I]))
+            return FALSE;
+    }
 
-  return TRUE;
+    return TRUE;
 }
 ?>

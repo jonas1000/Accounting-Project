@@ -1,82 +1,78 @@
 <?php
-function EmployeeEditParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeeIndex, int &$IniEmployeePositionIndex, int &$IniCompanyIndex, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function EmployeeEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniEmployeeIndex, int $IniEmployeePositionIndex, int $IniCompanyIndex, int $IniContentAccess, int $IniAvail)
 {
-	if(($IniEmployeePositionIndex > 0) && ($IniCompanyIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && ($IniIsAvailIndex < (count($_ENV['Available']) + 1))))
+	if(($IniEmployeePositionIndex > 0) &&
+	($IniCompanyIndex > 0) &&
+	CheckAccessRange($IniContentAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
-		
-		$sDBQuery = "UPDATE
-        ".$sPrefix."VIEW_EMPLOYEE_EDIT
-		SET
-		".$sPrefix."VIEW_EMPLOYEE_EDIT.EMP_POS_ID = ".$IniEmployeePositionIndex.",
-		".$sPrefix."VIEW_EMPLOYEE_EDIT.COMP_ID = ".$IniCompanyIndex.",
-		".$sPrefix."VIEW_EMPLOYEE_EDIT.EMP_ACCESS_ID = ".$IniContentAccessLevelIndex."
-		WHERE
-		(".$sPrefix."VIEW_EMPLOYEE_EDIT.EMP_AVAIL_ID = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_EMPLOYEE_EDIT.EMP_ID = ".$IniEmployeeIndex.");";
+		$sQuery = "UPDATE ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_EDIT
+		SET 
+		EMP_POS_ID = ?,
+		COMP_ID = ?,
+		EMP_ACCESS_ID = ?,
+		EMP_AVAIL_ID = ?
+		WHERE 
+		EMP_ID = ?;";
 
-		$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-		//detect and print if any error has been detected in query
-		if(!$InDBConn->HasError())
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("iiiii", $IniEmployeePositionIndex, $IniCompanyIndex, $IniContentAccess, $IniAvail, $IniEmployeeIndex))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function EmployeeDataEditParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeeDataIndex, string &$InsName, string &$InsSurname, string &$InsEmail, float &$InfSalary, string &$InsBDay, string &$InsPhoneNumber, string &$InsStableNumber, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function EmployeeDataEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniEmployeeDataIndex, string &$InsName, string &$InsSurname, string &$InsEmail, float $InfSalary, string &$InsBDay, string &$InsPhoneNumber, string &$InsStableNumber, int $IniContentAccess, int $IniAvail)
 {
-	if(!ME_MultyCheckEmptyType($InsName, $InsSurname, $InsPhoneNumber, $InsBDay))
+	if(!ME_MultyCheckEmptyType($InsName, $InsSurname, $InsPhoneNumber, $InsBDay) &&
+	($IniEmployeeDataIndex > 0) &&
+	CheckAccessRange($IniContentAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		if(($IniEmployeeDataIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && ($IniIsAvailIndex < count($_ENV['Available']) + 1)))
+		$sStableNumber = (empty($InsStableNumber) ? "None" : $InsStableNumber);
+		$sEmail = (empty($InsEmail) ? "null" : $InsEmail);
+		
+		//database Query
+		$sQuery = "UPDATE ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_DATA_EDIT
+		SET
+		EMP_DATA_SALARY = ?,
+		EMP_DATA_BDAY = ?,
+		EMP_DATA_PN = ?,
+		EMP_DATA_SN = ?,
+		EMP_DATA_EMAIL = ?,
+		EMP_DATA_NAME = ?,
+		EMP_DATA_SURNAME = ?,
+		EMP_DATA_ACCESS_ID = ?,
+		EMP_DATA_AVAIL_ID = ?
+		WHERE 
+		EMP_DATA_ID = ?;";
+
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			$sDBQuery = "";
-			$sPrefix = $InDBConn->GetPrefix();
-			
-			//database Query
-			$sDBQuery = "UPDATE
-            ".$sPrefix."VIEW_EMPLOYEE_DATA_EDIT
-			SET
-			".$sPrefix."VIEW_EMPLOYEE_DATA_EDIT.EMP_DATA_SALARY = ".$InfSalary.",
-			".$sPrefix."VIEW_EMPLOYEE_DATA_EDIT.EMP_DATA_BDAY = \"".$InsBDay."\",
-			".$sPrefix."VIEW_EMPLOYEE_DATA_EDIT.EMP_DATA_PN = \"".$InsPhoneNumber."\",
-			".$sPrefix."VIEW_EMPLOYEE_DATA_EDIT.EMP_DATA_SN = \"".(empty($InsStableNumber) ? "None" : $InsStableNumber)."\",
-			".$sPrefix."VIEW_EMPLOYEE_DATA_EDIT.EMP_DATA_EMAIL = ".(empty($InsEmail) ? "null" : "\"".$InsEmail."\"").",
-			".$sPrefix."VIEW_EMPLOYEE_DATA_EDIT.EMP_DATA_NAME = \"".$InsName."\",
-			".$sPrefix."VIEW_EMPLOYEE_DATA_EDIT.EMP_DATA_SURNAME = \"".$InsSurname."\",
-			".$sPrefix."VIEW_EMPLOYEE_DATA_EDIT.EMP_DATA_ACCESS_ID = ".$IniContentAccessLevelIndex."
-			WHERE
-			(".$sPrefix."VIEW_EMPLOYEE_DATA_EDIT.EMP_DATA_AVAIL_ID = ".$IniIsAvailIndex.")
-			AND
-			(".$sPrefix."VIEW_EMPLOYEE_DATA_EDIT.EMP_DATA_ID = ".$IniEmployeeDataIndex.");";
-
-			$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-			//detect and throw if any error has been detected in query
-			if(!$InDBConn->HasError())
-			{
-				if($InDBConn->HasWarning())
-					throw new Exception($InDBConn->GetWarning());
-			}
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("dssssssiii", $InfSalary, $InsBDay, $InsPhoneNumber, $sStableNumber, $sEmail, $InsName, $InsSurname, $IniContentAccess, $IniAvail, $IniEmployeeDataIndex))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
 			else
-				throw new Exception($InDBConn->GetError());
-
-			unset($sDBQuery, $sPrefix);
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

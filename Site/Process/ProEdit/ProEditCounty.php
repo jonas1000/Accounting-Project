@@ -1,80 +1,69 @@
 <?php
-//-------------<FUNCTION>-------------//
-function ProEditCounty(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel)
+function ProEditCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
 {
-    if(isset($_POST['CountyIndex'], $_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Country'], $_POST['Access']))
+    if(isset($_POST['CountyIndex'], $_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Country'], $_POST['Access']) 
+    && !ME_MultyCheckEmptyType($_POST['CountyIndex'], $_POST['Name'], $_POST['Country'], $_POST['Access']) 
+    && ME_MultyCheckNumericType($_POST['CountyIndex'], $_POST['Country'], $_POST['Access']))
     {
-        if(!ME_MultyCheckEmptyType($_POST['CountyIndex'], $_POST['Name'], $_POST['Country'], $_POST['Access']))
+        //format the string to be compatible with HTML and avoid SQL injection
+        $sName = ME_SecDataFilter($_POST['Name']);
+
+        //Convert data to float for logical methematical operations
+        $fTax = (float)$_POST['Tax'];
+        $fIR = (float)$_POST['IR'];
+
+        //variables consindered to be holding ID's
+        $iCountyIndex = (int)$_POST['CountyIndex'];
+        $iCountryIndex = (int)$_POST['Country'];
+        $iContentAccess = (int)$_POST['Access'];
+
+        //database cannot accept Primary or foreighn keys below 1
+        //If duplicate the database will throw a exception
+        if(($fTax > -1 && $fTax < 101) && ($fIR > -1 && $fIR < 101) && ($iCountryIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
         {
-            if(ME_MultyCheckNumericType($_POST['CountyIndex'], $_POST['Country'], $_POST['Access']))
+            //Get the information of the row to be able to modifie references
+            $rResult = CountySpecificRetriever($InrConn, $InrLogHandle, $iCountyIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+
+            //Check result returns one row and it's not empty 
+            if(!empty($rResult) && ($rResult->num_rows == 1))
             {
-                //take strings as is
-                $sName = $_POST['Name'];
+                $aDataRow = $rResult->fetch_assoc();
 
-                //Convert data to float for logical methematical operations
-                $fTax = (float) $_POST['Tax'];
-                $fIR = (float) $_POST['IR'];
+                $iCountyDataIndex = (int) $aDataRow['COU_DATA_ID'];
+                $iCountyAccessLevel = (int) $aDataRow['COU_ACCESS'];
 
-                //variables consindered to be holding ID's
-                $iCountyIndex = (int) $_POST['CountyIndex'];
-                $iCountryIndex = (int) $_POST['Country'];
-                $iContentAccessIndex = (int) $_POST['Access'];
-
-                unset($_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Country'], $_POST['Access']);
-
-                //format the string to be compatible with HTML and avoid SQL injection
-                ME_SecDataFilter($sName);
-
-                //database cannot accept Primary or foreighn keys below 1
-				//If duplicate the database will throw a exception
-                if(($fTax > -1 && $fTax < 101) && ($fIR > -1 && $fIR < 101) && ($iCountryIndex > 0) && ($iContentAccessIndex > 0) && ($IniUserAccessLevel > 0))
+                if(($iCountyDataIndex > 0) && ($iCountyAccessLevel > 0))
                 {
-                    //Get the information of the row to be able to modifie references
-                    CountySpecificRetriever($InDBConn, $iCountyIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
-
-                    $aCountyRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-                    $iCountyNumRows = $InDBConn->GetResultNumRows();
-
-                    //Check result returns one row and it's not empty 
-                    if(!empty($aCountyRow) && ($iCountyNumRows > 0 && $iCountyNumRows < 2))
+                    if(CountyEditParser($InrConn, $InrLogHandle, $iCountyIndex, $iCountryIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
                     {
-                        $iCountyDataIndex = (int) $aCountyRow['COU_DATA_ID'];
-                        $iCountyAccessLevel = (int) $aCountyRow['COU_ACCESS'];
-
-                        if(($iCountyDataIndex > 0) && ($iCountyAccessLevel > 0))
-                        {
-                            if($iCountyAccessLevel > ($IniUserAccessLevel - 1))
-                            {
-                                CountyEditParser($InDBConn, $iCountyIndex, $iCountryIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
-
-                                CountyDataEditParser($InDBConn, $iCountyDataIndex, $sName, $fTax, $fIR, $iContentAccessIndex, $_ENV['Available']['Show']);
-                            }
-                            else
-                                throw new Exception("insufficient privilage to access content");
-                        }
+                        if(CountyDataEditParser($InrConn, $InrLogHandle, $iCountyDataIndex, $sName, $fTax, $fIR, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                            $InrConn->Commit();
                         else
-							throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
-
-                        unset($iCountyDataIndex, $iCountyAccessLevel);
+                        {
+                            $InrConn->RollBack();
+                            $InrLogHandle->AddLogMessage("Failed to edit data table", __FILE__, __FUNCTION__, __LINE__);
+                        }
                     }
                     else
-                        throw new Exception("Could not fetch Table result");
-
-                    unset($aCountyRow, $iCountyNumRows);
+                    {
+                        $InrConn->RollBack();
+                        $InrLogHandle->AddLogMessage("Failed to edit table", __FILE__, __FUNCTION__, __LINE__);
+                    }
                 }
                 else
-                    throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+                    $InrLogHandle->AddLogMessage("Query returned empty, did not find any ID (Possible data corruption)", __FILE__, __FUNCTION__, __LINE__);
 
-                 unset($sName, $sDate, $fTax, $fIR, $iCountyDataIndex, $iCountryIndex, $iContentAccessIndex);
-                 header("Location:.?MenuIndex=".$_ENV['MenuIndex']['County']);
+                $rResult->free();
             }
-            else 
-                throw new Exception("Some POST variables are not considered numeric type");
-		}
-		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+            else
+                $InrLogHandle->AddLogMessage("Could not fetch Table result", __FILE__, __FUNCTION__, __LINE__);
+        }
+        else
+            $InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
+
+        header("Location:.?MenuIndex=".$GLOBALS['MENU_INDEX']['County']);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+        $InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

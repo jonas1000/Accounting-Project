@@ -4,14 +4,14 @@
 //Return false the first key it finds is not a Directory
 function ME_MultyCheckDirType(string ...$InsaVar) : bool
 {
-  $iArrayLenght = count($InsaVar);
+    $iArrayLenght = count($InsaVar);
 
-  for($I=0; $iArrayLenght > $I; $I++)
-  {
-    if(!is_dir($InsaVar[$I]))
-      return FALSE;
-  }
+    for($I=0; $iArrayLenght > $I; $I++)
+    {
+        if(!is_dir($InsaVar[$I]))
+            return FALSE;
+    }
 
-  return TRUE;
+    return TRUE;
 }
 ?>

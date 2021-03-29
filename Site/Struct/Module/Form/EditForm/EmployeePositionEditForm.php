@@ -1,85 +1,49 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLEmployeePositionEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function HTMLEmployeePositionEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
 {
-    if(isset($_POST['EmpPosIndex']))
+    if(isset($_POST['EmpPosIndex']) && !empty($_POST['EmpPosIndex']))
     {
-        if(!empty($_POST['EmpPosIndex']))
+        $iEmployeePositionIndex = (int) $_POST['EmpPosIndex'];
+
+        if($iEmployeePositionIndex > 0)
         {
-            $iEmployeePositionIndex = (int) $_POST['EmpPosIndex'];
+            $rResult = EmployeePositionSpecificRetriever($InrConn, $InrLogHandle, $iEmployeePositionIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
 
-            unset($_POST['EmpPosIndex']);
-
-            if($iEmployeePositionIndex > 0)
+            if(!empty($rResult) && ($rResult->num_rows == 1))
             {
-                EmployeePositionSpecificRetriever($InDBConn, $iEmployeePositionIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
+                $aDataRow = $rResult->fetch_assoc();
 
-                $aEmployeePositionRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-                $iEmployeePositionNumRows = $InDBConn->GetResultNumRows();
+                //-------------<PHP-HTML>-------------//
+                print("<div class='Form'><form method='POST'><div>");
 
-                if(!empty($aEmployeePositionRow) && ($iEmployeePositionNumRows > 0 && $iEmployeePositionNumRows < 2))
-                {
-                    $iEmployeePositionAccessIndex = (int) $aEmployeePositionRow['EMP_POS_ACCESS'];
+                //Title
+                printf("<div id='FormTitle'><h3>Edit Employee Position</h3><br><h4>%s</h4></div>", $aDataRow['EMP_POS_TITLE']);
 
-                    //-------------<PHP-HTML>-------------//
-                    print("<div class='Form'>");
-                    print("<form method='POST'>");
-                    print("<div>");
+                //Input Row
+                printf("<div><label>Title*<input type='text' name='Name' placeholder='title position' value='%s' required></label></div>", $aDataRow['EMP_POS_TITLE']);
 
-                    //Title
-                    print("<div id='FormTitle'>");
-                    print("<h3>Edit Employee Position</h3>");
-                    printf("<br><h4>%s</h4>", $aEmployeePositionRow['EMP_POS_TITLE']);
-                    print("</div>");
+                //get rows and render <select> element with data
+                print("<div><label>Access");
+                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], $aDataRow['EMP_POS_ACCESS']);
+                print("</label></div></div>");
 
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Title*</h5>");
-                    print("</div>");
+                //Button Input
+                printf("<div><input type='hidden' value='%s' name='EmpPosIndex'>", $aDataRow['EMP_POS_ID']);
+                printf("<input type='submit' value='Save' formaction='.?MenuIndex=%s&Module=%s&ProEdit'>", $GLOBALS['MENU_INDEX']['EmployeePosition'], $GLOBALS['MODULE']['Edit']);
+                printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['EmployeePosition']);
 
-                    print("<div>");
-                    printf("<input type='text' name='Name' placeholder='title position' value='%s' required>", $aEmployeePositionRow['EMP_POS_TITLE']);
-                    print("</div>");
-                    print("</div>");
+                print("</form></div>");
 
-                    //get rows and render <select> element with data
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Access</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iEmployeePositionAccessIndex);
-                    print("</div>");
-                    print("</div>");
-
-                    print("</div>");
-
-                    //Button Input
-                    print("<div>");
-                    printf("<input type='hidden' value='%s' name='EmpPosIndex'>", $aEmployeePositionRow['EMP_POS_ID']);
-                    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%s&Module=%s&ProEdit'>", $_GET['MenuIndex'], $_GET['Module']);
-                    printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['EmployeePosition']);
-                    print("</div>");
-
-                    print("</form>");
-                    print("</div>");
-
-                    unset($iEmployeePositionAccessIndex);
-                }
-                else
-                    throw new Exception("Query did not return any row");
-
-                unset($aEmployeePositionRow, $iEmployeePositionIndex, $iEmployeePositionNumRows);
+                $rResult->free();
             }
             else
-                throw new Exception("POST data could not be converted to required format");
+                $InrLogHandle->AddLogMessage("Query did not return any row", __FILE__, __FUNCTION__, __LINE__);
         }
         else
-			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+            $InrLogHandle->AddLogMessage("POST data could not be converted to required format", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+        $InrLogHandle->AddLogMessage("Some POST data are not initialized", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

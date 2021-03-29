@@ -1,36 +1,40 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProAddShareholder(ME_CDBConnManager &$InDBConn)
+function ProAddShareholder(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : bool
 {
-	if(isset($_POST['Employee'], $_POST['Access']))
+	if(isset($_POST['Employee'], $_POST['Access']) &&
+	!ME_MultyCheckEmptyType($_POST['Employee'], $_POST['Access']) &&
+	is_numeric($_POST['Employee'], $_POST['Access']))
 	{
-		if(!ME_MultyCheckEmptyType($_POST['Employee'], $_POST['Access']))
+		//variables consindered to be holding ID
+		$iEmployeeIndex = (int)$_POST['Employee'];
+		$iContentAccess = (int)$_POST['Access'];
+
+		//database cannot accept Primary or foreighn keys below 1
+		//If duplicate the database will throw a exception
+		if(($iEmployeeIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
 		{
-			if(is_numeric($_POST['Access']))
+			if(ShareholderAddParser($InrConn, $InrLogHandle, $iEmployeeIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
 			{
-				//variables consindered to be holding ID's
-				$iEmployeeIndex = (int) $_POST['Employee'];
-				$iContentAccessIndex = (int) $_POST['Access'];
-
-				unset($_POST['Employee'], $_POST['Access']);
-
-				//database cannot accept Primary or foreighn keys below 1
-				//If duplicate the database will throw a exception
-				if(($iEmployeeIndex > 0 && $iContentAccessIndex > 0))
-					ShareholderAddParser($InDBConn, $iEmployeeIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
+				if($InrConn->Commit())
+					return TRUE;
 				else
-					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
-					
-				unset($iEmployeeIndex, $iContentAccessIndex);
-				header("Location:Index.php?MenuIndex=".$_ENV['MenuIndex']['Shareholder']);
+				{
+					$InrLogHandle->AddLogMessage("Failed to Commit data", __FILE__, __FUNCTION__, __LINE__);
+
+					if(!$InrConn->RollBack())
+						throw new exception("Failed to rollback data");
+				}
 			}
-			else 
-                throw new Exception("Some POST variables are not considered numeric type");
+			else
+				$InrLogHandle->AddLogMessage("ShareholderAddParser did not successfuly inserted the data", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+			$InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+		$InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

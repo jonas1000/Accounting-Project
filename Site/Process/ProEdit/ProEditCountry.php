@@ -1,75 +1,62 @@
 <?php
-//-------------<FUNCTION>-------------//
-function ProEditCountry(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel)
+function ProEditCountry(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
 {
-    if(isset($_POST['CounIndex'], $_POST['Name'], $_POST['Access']))
+    if(isset($_POST['CounIndex'], $_POST['Name'], $_POST['Access']) 
+    && !ME_MultyCheckEmptyType($_POST['CounIndex'], $_POST['Name'], $_POST['Access']) 
+    && ME_MultyCheckNumericType($_POST['CounIndex'], $_POST['Access']))
     {
-        if(!ME_MultyCheckEmptyType($_POST['CounIndex'], $_POST['Name'], $_POST['Access']))
+        //format the string to be compatible with HTML and avoid SQL injection
+        $sName = ME_SecDataFilter($_POST['Name']);
+
+        //variables consindered to be holding ID's
+        $iContentAccess = (int)$_POST['Access'];
+        $iCountryIndex = (int)$_POST['CounIndex'];
+
+        //database cannot accept Primary or foreighn keys below 1
+        //If duplicate the database will throw a exception
+        if(CheckAccessRange($iContentAccess) && ($iCountryIndex > 0) && CheckAccessRange($IniUserAccess))
         {
-            if(ME_MultyCheckNumericType($_POST['CounIndex'], $_POST['Access']))
+            //Get the information of the row to be able to modifie references
+            $rResult = CountrySpecificRetriever($InrConn, $InrLogHandle, $iCountryIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+
+            //Check result returns one row and it's not empty 
+            if(!empty($rResult) && ($rResult->num_rows == 1))
             {
-                //take strings as is
-                $sName = $_POST['Name'];
+                $aDataRow = $rResult->fetch_assoc();
 
-                //variables consindered to be holding ID's
-                $iContentAccessIndex = (int) $_POST['Access'];
-                $iCountryIndex = (int) $_POST['CounIndex'];
+                $iCountryDataIndex = (int) $aDataRow['COUN_DATA_ID'];
+                $iCountryAccess = (int) $aDataRow['COUN_ACCESS'];
 
-                unset($_POST['CounIndex'], $_POST['Name'], $_POST['Access']);
-
-                //format the string to be compatible with HTML and avoid SQL injection
-                ME_SecDataFilter($sName);
-
-                //database cannot accept Primary or foreighn keys below 1
-				//If duplicate the database will throw a exception
-                if(($iContentAccessIndex > 0) && ($iCountryIndex > 0) && ($IniUserAccessLevel > 0))
+                if(($iCountryDataIndex > 0) && CheckAccessRange($iCountryAccess))
                 {
-                    //Get the information of the row to be able to modifie references
-                    CountrySpecificRetriever($InDBConn, $iCountryIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
-
-                    $aCountryRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-                    $iCountryNumRow = $InDBConn->GetResultNumRows();
-
-                    //Check result returns one row and it's not empty 
-                    if(!empty($aCountryRow) && ($iCountryNumRow > 0) && ($iCountryNumRow < 2))
+                    if(CountryEditParser($InrConn, $InrLogHandle, $iCountryIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
                     {
-                        $iCountryDataIndex = (int) $aCountryRow['COUN_DATA_ID'];
-                        $iCountryAccessLevel = (int) $aCountryRow['COUN_ACCESS'];
-
-                        if(($iCountryDataIndex > 0) && ($iCountryAccessLevel > 0))
-                        {
-                            if($iCountryAccessLevel > ($IniUserAccessLevel - 1))
-                            {
-                                CountryEditParser($InDBConn, $iCountryIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
-
-                                CountryDataEditParser($InDBConn,  $iCountryDataIndex, $sName, $iContentAccessIndex, $_ENV['Available']['Show']);
-                            }
-                            else
-                                throw new Exception("insufficient privilage to access content");
-                        }
+                        if(CountryDataEditParser($InrConn, $InrLogHandle,  $iCountryDataIndex, $sName, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                            $InrConn->Commit();
                         else
-							throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
-
-                        unset($iCountryDataIndex, $iCountryAccessLevel);
+                        {
+                            $InrConn->RollBack();
+                            $InrLogHandle->AddLogMessage("Failed to edit data table", __FILE__, __FUNCTION__, __LINE__);
+                        }
                     }
                     else
-                        throw new Exception("Could not fetch Table result");
-
-                    unset($aCountryRow, $iCountryNumRow);
+                    {
+                        $InrConn->RollBack();
+                        $InrLogHandle->AddLogMessage("Failed to edit table", __FILE__, __FUNCTION__, __LINE__);
+                    }
                 }
                 else
-                    throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+                    $InrLogHandle->AddLogMessage("Query returned empty, did not find any ID (Possible data corruption)", __FILE__, __FUNCTION__, __LINE__);
 
-                unset($sName, $sDate, $iContentAccessIndex, $iCountryIndex);
-                header("Location:.?MenuIndex=".$_ENV['MenuIndex']['Country']);
+                $rResult->free();
             }
-            else 
-                throw new Exception("Some POST variables are not considered numeric type");
-		}
-		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+            else
+                $InrLogHandle->AddLogMessage("Could not fetch Table result", __FILE__, __FUNCTION__, __LINE__);
+        }
+        else
+            $InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+        $InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

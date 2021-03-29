@@ -1,180 +1,69 @@
 <?php
  //-------------<FUNCTION>-------------//
-function HTMLCustomerEditForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function HTMLCustomerEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
 {
-    if(isset($_POST['CustIndex']))
+    if(isset($_POST['CustIndex']) && !empty($_POST['CustIndex']))
     {
-        if(!empty($_POST['CustIndex']))
+        $iCustomerIndex = (int) $_POST['CustIndex'];
+
+        if($iCustomerIndex > 0)
         {
-            $iCustomerIndex = (int) $_POST['CustIndex'];
+            $rResult = CustomerGeneralSpecificRetriever($InrConn, $InrLogHandle, $iCustomerIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
 
-            unset($_POST['CustIndex']);
-
-            if($iCustomerIndex > 0)
+            if(!empty($rResult) && ($rResult->num_rows == 1)) 
             {
-                CustomerGeneralSpecificRetriever($InDBConn, $iCustomerIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
+                $aDataRow = $rResult->fetch_assoc();
 
-                $aCustomerRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-                $iCustomerNumRows = $InDBConn->GetResultNumRows();
+                //-------------<PHP-HTML>-------------//
+                print("<div class='Form'><form method='POST'><div>");
 
-                if(!empty($aCustomerRow) && ($iCustomerNumRows > 0 && $iCustomerNumRows < 2)) 
-                {
-                    $iCustomerAccessIndex = $aCustomerRow['CUST_DATA_ACCESS'];
+                //Title
+                printf("<div id='FormTitle'><h3>Edit Customer</h3><br><h4>%s</h4></div>", $aDataRow['CUST_DATA_NAME']);
 
-                    //-------------<PHP-HTML>-------------//
-                    print("<div class='Form'>");
+                //Input Row - name
+                printf("<div><label>Name*<input type='text' maxlength='64' placeholder='Name' name='Name' value='%s' required></label></div>", $aDataRow['CUST_DATA_NAME']);
 
-                    print("<form method='POST'>");
-                    print("<div>");
+                //Input Row - surname
+                printf("<div><label>Surname*<input type='text' maxlength='64' placeholder='Surname' name='Surname' value='%s' required></label></div>", $aDataRow['CUST_DATA_SURNAME']);
 
-                    //Title
-                    print("<div id='FormTitle'>");
-                    print("<h3>Edit Customer</h3>");
-                    printf("<br><h4>%s</h4>", $aCustomerRow['CUST_DATA_NAME']);
-                    print("</div>");
+                //Input Row - phone number
+                printf("<div><label>Phone number*<input type='tel' maxlength='16' placeholder='cell phone' name='PhoneNumber' value='%s' required></label></div>", $aDataRow['CUST_DATA_PN']);
 
-                    //Input Row
-                    print("<div>");
+                //Input Row - stable number
+                printf("<div><label>Stable number<input type='tel' maxlength='16' placeholder='Stable number(house or bussiness)' name='StableNumber' value='%s'></label></div>", $aDataRow['CUST_DATA_SN']);
 
-                    print("<div>");
-                    print("<h5>Name*</h5>");
-                    print("</div>");
+                //Input Row - email
+                printf("<div><label>Email<input type='email' maxlength='64' placeholder='customer@email.com' name='Email' value='%s'></label></div>", $aDataRow['CUST_DATA_EMAIL']);
 
-                    print("<div>");
-                    printf("<input type='text' maxlength='64' placeholder='Name' name='Name' value='%s' required>", $aCustomerRow['CUST_DATA_NAME']);
-                    print("</div>");
+                //Input Row - VAT
+                printf("<div><label>VAT<input type='text' maxlength='32' placeholder='GR123456789' name='VAT' value='%s'></label></div>", $aDataRow['CUST_DATA_VAT']);
 
-                    print("</div>");
+                //Input Row - address
+                printf("<div><label>Address<textarea placeholder='Description' spellcheck='true' rows='5' cols='10' maxlegnth='128' name='Addr' value='%s'></textarea></label></div>", $aDataRow['CUST_DATA_ADDR']);
 
-                    //Input Row
-                    print("<div>");
+                //Input Row
+                printf("<div><label>Note<textarea placeholder='Note' spellcheck='true' rows='5' 'cols='10' maxlegnth='256' name='Note' value='%s'></textarea></label></div>", $aDataRow['CUST_DATA_NOTE']);
 
-                    print("<div>");
-                    print("<h5>Surname*</h5>");
-                    print("</div>");
+                //get rows and render <select> element with data
+                print("<div><label>Access");
+                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], $aDataRow['CUST_DATA_ACCESS']);
+                print("</label></div></div>");
 
-                    print("<div>");
-                    printf("<input type='text' maxlength='64' placeholder='Surname' name='Surname' value='%s' required>", $aCustomerRow['CUST_DATA_SURNAME']);
-                    print("</div>");
+                printf("<div><input type='hidden' value='%s' name='CustIndex'>", $aDataRow['CUST_ID']);
+                printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>", $GLOBALS['MENU_INDEX']['Customer'], $GLOBALS['MODULE']['Edit']);
+                printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['Customer']);
 
-                    print("</div>");
+                print("</form></div>");
 
-                    //Input Row
-                    print("<div>");
-
-                    print("<div>");
-                    print("<h5>Phone number*</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input type='tel' maxlength='16' placeholder='cell phone' name='PhoneNumber' value='%s' required>", $aCustomerRow['CUST_DATA_PN']);
-                    print("</div>");
-
-                    print("</div>");
-
-                    //Input Row
-                    print("<div>");
-
-                    print("<div>");
-                    print("<h5>Stable number</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input type='tel' maxlength='16' placeholder='Stable number(house or bussiness)' name='StableNumber' value='%s'>", $aCustomerRow['CUST_DATA_SN']);
-                    print("</div>");
-
-                    print("</div>");
-
-                    //Input Row
-                    print("<div>");
-
-                    print("<div>");
-                    print("<h5>Email</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input type='email' maxlength='64' placeholder='customer@email.com' name='Email' value='%s'>", $aCustomerRow['CUST_DATA_EMAIL']);
-                    print("</div>");
-
-                    print("</div>");
-
-                    //Input Row
-                    print("<div>");
-
-                    print("<div>");
-                    print("<h5>VAT</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input type='text' maxlength='32' placeholder='GR123456789' name='VAT' value='%s'>", $aCustomerRow['CUST_DATA_VAT']);
-                    print("</div>");
-
-                    print("</div>");
-
-                    //Input Row
-                    print("<div>");
-
-                    print("<div>");
-                    print("<h5>Address</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<textarea placeholder='Description' spellcheck='true' rows='5' cols='10' maxlegnth='128' name='Addr' value='%s'></textarea>", $aCustomerRow['CUST_DATA_ADDR']);
-                    print("</div>");
-
-                    print("</div>");
-
-                    //Input Row
-                    print("<div>");
-
-                    print("<div>");
-                    print("<h5>Note</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<textarea placeholder='Note' spellcheck='true' rows='5' 'cols='10' maxlegnth='256' name='Note' value='%s'></textarea>", $aCustomerRow['CUST_DATA_NOTE']);
-                    print("</div>");
-
-                    print("</div>");
-
-                    //get rows and render <select> element with data
-                    print("<div>");
-
-                    print("<div>");
-                    print("<h5>Access</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCustomerAccessIndex);
-                    print("</div>");
-
-                    print("</div>");
-
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input type='hidden' value='%s' name='CustIndex'>", $aCustomerRow['CUST_ID']);
-                    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%s&Module=%s&ProEdit'>", $_GET['MenuIndex'], $_GET['Module']);
-                    printf("<a href='.?MenuIndex=%s'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['Customer']);
-                    print("</div>");
-                    print("</form>");
-
-                    print("</div>");
-
-                    unset($iCustomerAccessIndex);
-                }
-                else
-                    throw new Exception("Query did not return any row");
-
-                unset($iCustomerIndex, $aCustomerRow, $iCustomerNumRows);
+                $rResult->free();
             }
             else
-                throw new Exception("POST data could not be converted to required format");
+                $InrLogHandle->AddLogMessage("empty or too many rows returned, expected 1 result", __FILE__, __FUNCTION__, __LINE__);
         }
         else
-			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+            $InrLogHandle->AddLogMessage("ID expected to be greater than 0, instead value was lesser", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+        $InrLogHandle->AddLogMessage("ID was not set or returned empty", __FILE__, __FUNCTION__, __LINE__);
 }
  

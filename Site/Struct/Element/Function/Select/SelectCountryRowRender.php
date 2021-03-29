@@ -1,33 +1,47 @@
 <?php
  //Render element <select> with the Country array result from query
-function RenderCountrySelectRow(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function RenderCountrySelectRow(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniIsAvail) : void
 {
-    if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1))) 
+    if(CheckAccessRange($IniUserAccess) && ($IniIsAvail > 0 && $IniIsAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE'])) 
     {
-        CountrySelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
+        $rResult = CountrySelectElemRetriever($InrConn, $InrLogHandle, $IniUserAccess, $IniIsAvail);
 
-        print("<select name='Country'>");
+        if(!empty($rResult) && ($rResult->num_rows > 0))
+        {
+            print("<select name='Country'>");
+            foreach($rResult->fetch_all(MYSQLI_ASSOC) as $aDataRow)
+                printf("<option value='%s'>%s</option>", $aDataRow['COUN_ID'], $aDataRow['COUN_DATA_TITLE']);
+            print("</select>");
 
-        foreach($InDBConn->GetResult() as $CountryRow => $CountryData)
-            printf("<option value='%s'>%s</option>", $CountryData['COUN_ID'], $CountryData['COUN_DATA_TITLE']);
-
-        print("</select>");
+            $rResult->free();
+        }
+        else
+            $InrLogHandle->AddLogMessage("result cannot return empty list", __FILE__, __FUNCTION__, __LINE__);
     }
+    else
+        $InrLogHandle->AddLogMessage("One or more of the input parameters are out of range", __FILE__, __FUNCTION__, __LINE__);
 }
 
  //Render element <select> with the Country array result from query
-function RenderCountrySelectRowCheck(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex, int &$IniSelected) : void
+function RenderCountrySelectRowCheck(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniIsAvail, int $IniSelected = 0) : void
 {
-    if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)) && ($IniSelected > 0)) 
+    if(($IniUserAccess > 0) && ($IniIsAvail > 0 && $IniIsAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']) && ($IniSelected > 0)) 
     {
-        CountrySelectElemRetriever($InDBConn, $IniUserAccessLevel, $IniIsAvailIndex);
+        $rResult = CountrySelectElemRetriever($InrConn, $InrLogHandle, $IniUserAccess, $IniIsAvail);
 
-        print("<select name='Country'>");
+        if(!empty($rResult) && ($rResult->num_rows > 0))
+        {
+            print("<select name='Country'>");
+            foreach($rResult->fetch_all(MYSQLI_ASSOC) as $aDataRow)
+                printf("<option value='%s' %s>%s</option>", $aDataRow['COUN_ID'], ($IniSelected == (int) $aDataRow['COUN_ID'] ? "selected" : ""), $aDataRow['COUN_DATA_TITLE']);
+            print("</select>");
 
-        foreach($InDBConn->GetResult() as $CountryRow => $CountryData)
-            printf("<option value='%s' %s>%s</option>", $CountryData['COUN_ID'], ($IniSelected == (int) $CountryData['COUN_ID'] ? "selected" : ""), $CountryData['COUN_DATA_TITLE']);
-
-        print("</select>");
+            $rResult->free();
+        }
+        else
+            $InrLogHandle->AddLogMessage("result cannot return empty list", __FILE__, __FUNCTION__, __LINE__);
     }
+    else
+        $InrLogHandle->AddLogMessage("One or more of the input parameters are out of range", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

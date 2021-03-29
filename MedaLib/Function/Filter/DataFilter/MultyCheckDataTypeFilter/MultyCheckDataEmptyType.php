@@ -4,14 +4,14 @@
 //Return false the first key it finds it is not Empty
 function ME_MultyCheckEmptyType(...$InaVar) : bool
 {
-  $iArrayLenght = count($InaVar);
+    $iArrayLenght = count($InaVar);
 
-  for($I=0; $iArrayLenght > $I; $I++)
-  {
-    if(empty($InaVar[$I]))
-      return TRUE;
-  }
+    for($I=0; $iArrayLenght > $I; $I++)
+    {
+        if(empty($InaVar[$I]))
+            return TRUE;
+    }
 
-  return FALSE;
+    return FALSE;
 }
 ?>

@@ -4,14 +4,14 @@
 //Return false the first key it finds is not an Executable
 function ME_MultyCheckExecutableType(string ...$InsaVar) : bool
 {
-  $iArrayLenght = count($InsaVar);
+    $iArrayLenght = count($InsaVar);
 
-  for($I=0; $iArrayLenght > $I; $I++)
-  {
-    if(!is_executable($InsaVar[$I]))
-      return FALSE;
-  }
+    for($I=0; $iArrayLenght > $I; $I++)
+    {
+        if(!is_executable($InsaVar[$I]))
+            return FALSE;
+    }
 
-  return TRUE;
+    return TRUE;
 }
 ?>

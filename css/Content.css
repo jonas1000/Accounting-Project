@@ -17,7 +17,7 @@
 
 .ContentToolBar
 {
-	background-color:rgba(120, 128, 142, 1);
+	background-color:var(--MiddleGreyWarmTemp);
 	border-bottom-width:0.1875em;
 	border-bottom-color:rgba(50,52,48,1);
 	border-bottom-style:solid;

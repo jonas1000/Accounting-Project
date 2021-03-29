@@ -1,80 +1,58 @@
 <?php
-function ProEditEmployee(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel)
+function ProEditEmployee(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
 {
-    if(isset($_POST['EmployeeIndex'], $_POST['Name'], $_POST['Surname'], $_POST['Email'], $_POST['Salary'], $_POST['BDay'], $_POST['PN'], $_POST['SN'], $_POST['Company'], $_POST['EmployeePosition'], $_POST['Access']))
+    if(isset($_POST['EmployeeIndex'], $_POST['Name'], $_POST['Surname'], $_POST['Email'], $_POST['Salary'], $_POST['BDay'], $_POST['PN'], $_POST['SN'], $_POST['Company'], $_POST['EmployeePosition'], $_POST['Access']) 
+    && !ME_MultyCheckEmptyType($_POST['EmployeeIndex'], $_POST['Name'], $_POST['Surname'], $_POST['PN']) 
+    && ME_MultyCheckNumericType($_POST['EmployeeIndex'], $_POST['Company'], $_POST['EmployeePosition'], $_POST['Access'], $_POST['Salary']))
     {
-        if(!ME_MultyCheckEmptyType($_POST['EmployeeIndex'], $_POST['Name'], $_POST['Surname'], $_POST['PN']))
+        $sName = ME_SecDataFilter($_POST['Name']);
+        $sSurname = ME_SecDataFilter($_POST['Surname']);
+        $sEmail = ME_SecDataFilter($_POST['Email']);
+        $sPhoneNumber = ME_SecDataFilter($_POST['PN']);
+        $sStableNumber = ME_SecDataFilter($_POST['SN']);
+        $sBDay = ME_SecDataFilter($_POST['BDay']);
+
+        $fSalary = (float)$_POST['Salary'];
+
+        $iEmployeeIndex = (int)$_POST['EmployeeIndex'];
+        $iCompanyIndex = (int)$_POST['Company'];
+        $iEmployeePositionIndex = (int)$_POST['EmployeePosition'];
+        $iContentAccess = (int)$_POST['Access'];
+
+        if(($fSalary > -1) && ($iEmployeeIndex > 0) && ($iCompanyIndex > 0) && ($iEmployeePositionIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
         {
-            if(ME_MultyCheckNumericType($_POST['EmployeeIndex'], $_POST['Company'], $_POST['EmployeePosition'], $_POST['Access']))
+            $rResult = EmployeeSpecificRetriever($InrConn, $InrLogHandle, $iEmployeeIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+
+            if(!empty($rResult) && ($rResult->num_rows == 1))
             {
-                $sName = $_POST['Name'];
-                $sSurname = $_POST['Surname'];
-                $sEmail = $_POST['Email'];
-                $sPhoneNumber = $_POST['PN'];
-                $sStableNumber = $_POST['SN'];
-                $sBDay = $_POST['BDay'];
+                $aDataRow = $rResult->fetch_assoc();
 
-                $fSalary = (float) $_POST['Salary'];
-                $iEmployeeIndex = (int) $_POST['EmployeeIndex'];
-                $iCompanyIndex = (int) $_POST['Company'];
-                $iEmployeePositionIndex = (int) $_POST['EmployeePosition'];
-                $iContentAccessIndex = (int) $_POST['Access'];
+                $iEmployeeDataIndex = (int) $aDataRow['EMP_DATA_ID'];
+                $iEmployeeAccess = (int) $aDataRow['EMP_ACCESS'];
 
-                unset($_POST['EmpIndex'], $_POST['Name'], $_POST['Surname'], $_POST['Email'], $_POST['Salary'], $_POST['BDay'], $_POST['PN'], $_POST['SN'], $_POST['Company'], $_POST['EmployeePosition'], $_POST['Access']);
-
-                ME_SecDataFilter($sName);
-                ME_SecDataFilter($sSurname);
-                ME_SecDataFilter($sEmail);
-                ME_SecDataFilter($sPhoneNumber);
-                ME_SecDataFilter($sStableNumber);
-                ME_SecDataFilter($sBDay);
-
-                if(($fSalary > -1) && ($iEmployeeIndex > 0) && ($iCompanyIndex > 0) && ($iEmployeePositionIndex > 0) && ($iContentAccessIndex > 0) && ($IniUserAccessLevel > 0))
+                if(($iEmployeeDataIndex > 0) && CheckAccessRange($iEmployeeAccess))
                 {
-                    EmployeeSpecificRetriever($InDBConn, $iEmployeeIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
-
-                    $aEmployeeRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-                    $iEmployeeNumRows = $InDBConn->GetResultNumRows();
-
-                    if(!empty($aEmployeeRow) && ($iEmployeeNumRows > 0 && $iEmployeeNumRows < 2))
-                    {
-                        $iEmployeeDataIndex = (int) $aEmployeeRow['EMP_DATA_ID'];
-                        $iEmployeeAccessLevel = (int) $aEmployeeRow['EMP_ACCESS'];
-
-                        if(($iEmployeeDataIndex > 0) && ($iEmployeeAccessLevel > 0))
-                        {
-                            if($iEmployeeAccessLevel > ($IniUserAccessLevel - 1))
-                            {
-                                EmployeeEditParser($InDBConn, $iEmployeeIndex, $iEmployeePositionIndex, $iCompanyIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
-
-                                EmployeeDataEditParser($InDBConn, $iEmployeeDataIndex, $sName, $sSurname, $sEmail, $fSalary, $sBDay, $sPhoneNumber, $sStableNumber, $iContentAccessIndex, $_ENV['Available']['Show']);
-                            }
-                            else
-                                throw new Exception("insufficient privilage to access content");
-                        }
-                        else
-							throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
-
-                        unset($iEmployeeDataIndex, $iEmployeeAccessLevel);
-                    }
+                    if(EmployeeEditParser($InrConn, $InrLogHandle, $iEmployeeIndex, $iEmployeePositionIndex, $iCompanyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show'])
+                    && EmployeeDataEditParser($InrConn, $InrLogHandle, $iEmployeeDataIndex, $sName, $sSurname, $sEmail, $fSalary, $sBDay, $sPhoneNumber, $sStableNumber, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                        $InrConn->Commit();
                     else
-                        throw new Exception("Could not fetch Table result");
-
-                    unset($aEmployeeRow, $iEmployeeNumRows);
+                    {
+                        $InrConn->RollBack();
+                        $InrLogHandle->AddLogMessage("Failed to edit tables", __FILE__, __FUNCTION__, __LINE__);
+                    }
                 }
                 else
-                    throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+                    $InrLogHandle->AddLogMessage("Query returned empty, did not find any ID (Possible data corruption)", __FILE__, __FUNCTION__, __LINE__);
 
-                unset($sName, $sSurname, $sEmail, $sPhoneNumber, $sStableNumber, $sBDay, $fSalary, $iEmployeeIndex, $iCompanyIndex, $iEmployeePositionIndex, $iContentAccessIndex);
-                header('Location:.?MenuIndex='.$_ENV['MenuIndex']['Employee']);
+                $rResult->free();
             }
-            else 
-                throw new Exception("Some POST variables are not considered numeric type");
-		}
-		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+            else
+                $InrLogHandle->AddLogMessage("Could not fetch Table result", __FILE__, __FUNCTION__, __LINE__);
+        }
+        else
+            $InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+        $InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

@@ -1,28 +1,66 @@
 <?php
-
 class ME_CDBConnManager
 {
+    public $bFailedToConnect = TRUE;
+
+    private $rDBLogHandle = 0;
+
     //Connection to the database
     private $rDBConnMan = 0;
 
     private $sDBName = "";
 
-    //The errors and warning message of the execution operations
-    private $sDBError = "";
-    private $sDBWarning = "";
-    private $sDBSuccess = "";
-
-    //boolean flags for if there was errors or warning detected
-    private $bHasError = FALSE;
-    private $bHasWarning = FALSE;
-
     //QueryResult is used to get the array that the database returned and used as a reference for the arrays
-    private $QueryResult = 0;
+    //private $rQueryResult = 0;
 
     //The last id number that the database inserted
-    private $iLastIndex = 0;
+    private $iLastInsertIndex = 0;
 
     private $sPrefix = "";
+
+    //Constructor of the class
+    public function __construct(ME_CLogHandle &$InrLogHandle, string &$InsDBName, string &$InsServerName = "localhost", string &$InsDBUserName = "root", string &$InsDBPassword = "", string &$InsPrefix = "", string &$InsEncoding = "utf8")
+    {
+        $this->rDBLogHandle = $InrLogHandle;
+
+        $this->sPrefix = $InsPrefix;
+        $this->sDBName = $InsDBName;
+
+        //Init connection to the database
+        $this->rDBConnMan = new mysqli($InsServerName, $InsDBUserName, $InsDBPassword, $this->sPrefix . $this->sDBName);
+
+        //check if connection was a success
+        if($this->rDBConnMan->connect_error)
+        {
+            $this->bFailedToConnect = true;
+            
+            $this->rDBLogHandle->AddLogMessage($this->rDBConnMan->errno . " - Failed to create connection: " . $this->rDBConnMan->connect_error, __FILE__, __METHOD__, __LINE__);
+        }
+        else
+        {
+            $this->bFailedToConnect = FALSE;
+
+            //disable autocommit method in this connection
+            $this->rDBConnMan->autocommit(false);
+
+            //Set connection encoding type
+            if(!$this->rDBConnMan->set_charset($InsEncoding))
+                $this->rDBLogHandle->AddLogMessage("Failed to encode connection to " . $InsEncoding, __FILE__, __METHOD__, __LINE__);
+
+            //Select the database from the mysql connection to use
+            $this->rDBConnMan->select_db($this->sPrefix . $this->sDBName);
+        }
+    }
+
+    //Called by class out of scope or unset function
+    //Warning:never call this method in your code!
+    public function __destruct()
+    {
+        $this->CloseConn();
+
+        //unset variables for the GC operation to take account of variables destruction
+        unset($this->rDBConnMan, $this->sDBName, $this->iLastInsertIndex, $this->sPrefix);
+    }
 
     //Close the connection of the database
     private function CloseConn() : void
@@ -34,185 +72,51 @@ class ME_CDBConnManager
         }
     }
 
-    //Execute query without transaction method
-    private function QueryNoTrans(string &$InsQuery) : void
+    public function CreateStatement(string &$InsDBQuery)
     {
-        if(!empty($this->QueryResult))
+        $rDBStatement = $this->rDBConnMan->stmt_init();
+
+        if($rDBStatement->prepare($InsDBQuery))
+            return $rDBStatement;
+
+        $this->rDBLogHandle->AddLogMessage("Errorno: " . $this->rDBConnMan->errno . ", Error: " . $this->rDBConnMan->error, __FILE__, __METHOD__, __LINE__);
+
+        return FALSE;
+    }
+
+    public function Commit() : bool
+    {
+        if(!$this->rDBConnMan->commit())
         {
-            if($this->QueryResult instanceof mysqli_result)
-                $this->QueryResult->free();
+            $this->rDBLogHandle->AddLogMessage("Failed to commit, Errorno: " . $this->rDBConnMan->errno . ", Error: " . $this->rDBConnMan->error, __FILE__, __METHOD__, __LINE__);
+
+            return FALSE;
         }
-
-        $this->QueryResult = $this->rDBConnMan->query($InsQuery);
-
-        if($this->QueryResult) 
-            $this->iLastIndex = $this->rDBConnMan->insert_id;
-        else
-            $this->SetError($this->rDBConnMan->errno . " - Failed to execute query: " . $this->rDBConnMan->error);
+        
+        return TRUE;
     }
 
-    //Execute query with transaction method
-    private function QueryTrans(&$InQuery)
+    public function RollBack() : bool
     {
-        $this->rDBConnMan->begin_transaction();
-
-        $this->QueryNoTrans($InQuery);
-
-        if (!$this->bHasError) 
+        if(!$this->rDBConnMan->rollback())
         {
-            if(!$this->rDBConnMan->commit()) 
-                $this->AddError("Failed to commit");
-        } 
-        else 
-        {
-            if(!$this->rDBConnMan->rollback())
-                $this->AddError("Failed to rollback transaction");
+            $this->rDBLogHandle->AddLogMessage("Failed to rollback, Errorno: " . $this->rDBConnMan->errno . ", Error: " . $this->rDBConnMan->error, __FILE__, __METHOD__, __LINE__);
 
-            $this->AddError("Rollback transaction");
+            return FALSE;
         }
-    }
-
-    //Constructor of the class
-    public function __construct(string &$InsServerName = "localhost", string &$InsDBName, string &$InsDBUserName = "root", string &$InsDBPassword = "", string &$InsPrefix = "", string &$InsEncoding = "utf8")
-    {
-        $this->sPrefix = $InsPrefix;
-
-        //Init connection to the database
-        $this->rDBConnMan = new mysqli($InsServerName, $InsDBUserName, $InsDBPassword);
-
-        //disable autocommit method in this connection
-        $this->rDBConnMan->autocommit(false);
-
-        //check if connection was a success
-        if($this->rDBConnMan->connect_error) 
-            $this->SetError($this->rDBConnMan->errno . " - Failed to create connection: " . $this->rDBConnMan->connect_error);
-
-        //Set connection encoding type
-        if(!$this->rDBConnMan->set_charset($InsEncoding))
-            $this->AddError("Failed to encode connection to " . $InsEncoding);
-
-        //Select the database from the mysql connection to use
-        $this->rDBConnMan->select_db($this->sPrefix . $InsDBName);
-
-        $this->sDBName = $InsDBName;
-    }
-
-    //Called by class out of scope or unset function
-    //Warning:never call this method in your code!
-    public function __destruct()
-    {
-        if(!empty($this->QueryResult))
-        { 
-            if($this->QueryResult instanceof mysqli_result)
-                $this->QueryResult->close();
-        }
-
-        $this->CloseConn();
-
-        //unset variables for the GC operation to take account of variables destruction
-        unset($this->rDBConnMan, $this->sDBError, $this->sDBWarning, $this->sDBSuccess);
-        unset($this->bHasFailure, $this->bHasWarning, $this->sDBName);
-        unset($this->QueryResult, $this->iLastIndex);
-    }
-
-    //Execute query, if transaction is false assume it is an operation and not an insert or update
-    //Warning:the transaction method may show errors if your mysql version does not support transaction
-    public function ExecQuery(string &$InsQuery = "", bool $InbIsTransaction = FALSE) : void
-    {
-        $this->ResetFlagsState();
-
-        switch((!empty($InsQuery))) 
-        {
-            case TRUE:
-            {
-                if ($InbIsTransaction)
-                    $this->QueryTrans($InsQuery);
-                else
-                    $this->QueryNoTrans($InsQuery);
-                break;
-            }
-            case FALSE:
-            {
-                $this->AddWarning("Query was empty, abording execution");
-
-                break;
-            }
-            default:
-            {
-                    $this->AddError("Coulnd't get the query status");
-
-                    break;
-            }
-        }
-    }
-
-    private function ResetFlagsState()
-    {
-        $this->SetError("");
-        $this->SetWarning("");
-        $this->SetSuccess("");
-
-        $this->bHasError = FALSE;
-        $this->bHasWarning = FALSE;
+        
+        return TRUE;
     }
 
     //-----------<GET>-----------//
-    public function HasError()
+    public function GetLastInsertID() : int
     {
-        return $this->bHasError;
+        return $this->iLastInsertIndex;
     }
 
-    public function HasWarning()
-    {
-        return $this->bHasWarning;
-    }
-
-    public function GetError()
-    {
-        return $this->sDBError;
-    }
-
-    public function GetWarning()
-    {
-        return $this->sDBWarning;
-    }
-
-    public function GetSuccess()
-    {
-        return $this->sDBSuccess;
-    }
-
-    public function GetLastQueryID()
-    {
-        return $this->iLastIndex;
-    }
-
-    public function GetEncoding()
+    public function GetEncoding() : object
     {
         return $this->rDBConnMan->get_charset();
-    }
-
-    public function GetResultNumRows() : int
-    {
-        return $this->QueryResult->num_rows;
-    }
-
-    public function GetResult()
-    {
-        if(empty($this->QueryResult))
-            $this->AddWarning("Query Result return empty");
-
-        return $this->QueryResult;
-    }
-
-    public function GetResultArray(int $IniResultType) : array
-    {
-        $aQueryRows = (array) $this->QueryResult->fetch_array($IniResultType);
-
-        if(empty($aQueryRows))
-            $this->AddWarning("Array return empty");
-            
-        return $aQueryRows;
     }
 
     public function GetPrefix() : string
@@ -225,35 +129,27 @@ class ME_CDBConnManager
         return $this->sDBName;
     }
 
+    public function GetMySQLI() : mysqli
+    {
+        return $this->rDBConnMan;
+    }
+
     //-----------<SET>-----------//
-    protected function SetError(string $InsError) : void
+    public function SetLastInsertID(int $IniLastIndex) : void
     {
-        $this->bHasError = TRUE;
-
-        $this->sDBError = $InsError;
+        $this->iLastInsertIndex = $IniLastIndex;
     }
 
-    protected function SetWarning(string $InsWarning) : void
-    {
-        $this->bHasWarning = TRUE;
-
-        $this->sDBWarning = $InsWarning;
-    }
-
-    protected function SetSuccess(string $InsSuccess) : void
-    {
-        $this->sDBSuccess = $InsSuccess;
-    }
-
-    public function SetLastQueryID(int $IniLastIndex) : void
-    {
-        $this->iLastIndex = $IniLastIndex;
-    }
-
-    public function SetEncoding(string $InsEncoding) : void
+    public function SetEncoding(string $InsEncoding) : bool
     {
         if (!$this->rDBConnMan->set_charset($InsEncoding))
-            AddWarning("Failed to change the encoding to: " . $InsEncoding);
+        {
+            $this->rDBLogHandle->AddLogMessage("Errorno: " . $this->rDBConnMan->errno . ", Error: " . $this->rDBConnMan->error, __FILE__, __METHOD__, __LINE__);
+
+            return FALSE;
+        }
+
+        return TRUE;
     }
 
     public function SetPrefix(string $InsPrefix = "AT4553_") : void
@@ -261,25 +157,19 @@ class ME_CDBConnManager
         $this->sPrefix = $InsPrefix;
     }
 
-    //-----------<ADD>-----------//
-    protected function AddError(string $InsError) : void
+    public function SetNewDBName(string $InsDBName) : void
     {
-        $this->bHasError = TRUE;
+        $this->sDBName = $InsDBName;
 
-        $this->sDBError .= "\n" . $InsError;
-    }
+        //Select the database from the mysql connection to use
+        if(!$this->rDBConnMan->select_db($this->sPrefix . $this->sDBName))
+        {
+            $this->rDBLogHandle->AddLogMessage("Errorno: " . $this->rDBConnMan->errno . ", Error: " . $this->rDBConnMan->error, __FILE__, __METHOD__, __LINE__);
 
-    protected function AddWarning(string $InsWarning) : void
-    {
-        $this->bHasWarning = TRUE;
-
-        $this->sDBWarning .= "\n" . $InsWarning;
-    }
-
-    protected function AddSuccess(string $InsSuccess) : void
-    {
-        $this->sDBSuccess .= "\n" . $InsSuccess;
+            $this->bFailedToConnect = TRUE;
+        }
+        else
+            $this->bFailedToConnect = FALSE;
     }
 }
-
- 
+ ?>

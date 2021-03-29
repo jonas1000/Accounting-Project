@@ -1,73 +1,68 @@
 <?php
-function CompanyEditParser(ME_CDBConnManager &$InDBConn, int &$IniCompanyIndex, int &$IniCountyIndex, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CompanyEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniCompanyIndex, int $IniCountyIndex, int $IniContentAccess, int $IniAvail)
 {
-    if(($IniCountyIndex > 0) && ($IniCompanyIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+    if(($IniCountyIndex > 0) &&
+    ($IniCompanyIndex > 0) &&
+    CheckAccessRange($IniContentAccess) &&
+    CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
     {
-        $sDBQuery = "";
-        $sPrefix = $InDBConn->GetPrefix();
+        $sQuery = "UPDATE ".$InrConn->GetPrefix()."VIEW_COMPANY_EDIT
+        SET 
+        COU_ID = ?,
+        COMP_ACCESS_ID = ?,
+        COMP_AVAIL_ID = ?
+        WHERE 
+        COMP_ID = ?;";
 
-        $sDBQuery = "UPDATE 
-        ".$sPrefix."VIEW_COMPANY_EDIT
-        SET
-        ".$sPrefix."VIEW_COMPANY_EDIT.COU_ID = ".$IniCountyIndex.",
-        ".$sPrefix."VIEW_COMPANY_EDIT.COMP_ACCESS_ID = ".$IniContentAccessLevelIndex."
-        WHERE
-        (".$sPrefix."VIEW_COMPANY_EDIT.COMP_AVAIL_ID = ".$IniIsAvailIndex.")
-        AND
-        (".$sPrefix."VIEW_COMPANY_EDIT.COMP_ID = ".$IniCompanyIndex.");";
-
-        $InDBConn->ExecQuery($sDBQuery, TRUE);
-
-        if(!$InDBConn->HasError()) 
+		//Create the statement query
+        if($rStatement = $InrConn->CreateStatement($sQuery))
         {
-            if($InDBConn->HasWarning())
-                throw new Exception($InDBConn->GetWarning());
-        } 
-        else
-            throw new Exception($InDBConn->GetError());
-
-        unset($sDBQuery, $sPrefix);
-    } 
-    else
-        throw new Exception("Input parameters do not meet requirements range");
-} 
-
-function CompanyDataEditParser(ME_CDBConnManager &$InDBConn, int &$IniCompanyDataIndex, string &$InsName, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
-{
-    if(!ME_MultyCheckEmptyType($InsName, $InsDate))
-    {
-        if(($IniCompanyDataIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
-        {
-            $sDBQuery = "";
-            $sPrefix = $InDBConn->GetPrefix();
-
-            $sDBQuery = "UPDATE 
-            ".$sPrefix."VIEW_COMPANY_DATA_EDIT
-            SET
-            ".$sPrefix."VIEW_COMPANY_DATA_EDIT.COMP_DATA_TITLE = \"".$InsName."\",
-            ".$sPrefix."VIEW_COMPANY_DATA_EDIT.COMP_DATA_DATE = \"".$InsDate."\",
-            ".$sPrefix."VIEW_COMPANY_DATA_EDIT.COMP_DATA_ACCESS_ID = ".$IniContentAccessLevelIndex."
-            WHERE
-            (".$sPrefix."VIEW_COMPANY_DATA_EDIT.COMP_DATA_AVAIL_ID = ".$IniIsAvailIndex.")
-            AND
-            (".$sPrefix."VIEW_COMPANY_DATA_EDIT.COMP_DATA_ID = ".$IniCompanyDataIndex.");";
-
-            $InDBConn->ExecQuery($sDBQuery, true);
-
-            if(!$InDBConn->HasError()) 
-            {
-                if($InDBConn->HasWarning())
-                    throw new Exception($InDBConn->GetWarning());
-            } 
+            //Check if the statement binded the variables, else add an error
+            if($rStatement->bind_param("iiii", $IniCountyIndex, $IniContentAccess, $IniAvail, $IniCompanyIndex))
+                return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
             else
-                throw new Exception($InDBConn->GetError());
-
-            unset($sDBQuery, $sPrefix);
+                $InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
         }
         else
-            throw new Exception("Input parameters do not meet requirements range");
-    } 
+            $InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
+    }
     else
-        throw new Exception("Input parameters are empty");
+        $InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+    return FALSE;
+} 
+
+function CompanyDataEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniCompanyDataIndex, string &$InsName, string &$InsDate, int $IniContentAccess, int $IniAvail)
+{
+    if(!ME_MultyCheckEmptyType($InsName, $InsDate) &&
+    ($IniCompanyDataIndex > 0) &&
+    CheckAccessRange($IniContentAccess) &&
+    CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
+    {
+        $sQuery = "UPDATE ".$InrConn->GetPrefix()."VIEW_COMPANY_DATA_EDIT 
+        SET 
+        COMP_DATA_TITLE = ?,
+        COMP_DATA_DATE = ?,
+        COMP_DATA_ACCESS_ID = ?,
+        COMP_DATA_AVAIL_ID = ?
+        WHERE 
+        COMP_DATA_ID = ?;";
+
+        //Create the statement query
+        if($rStatement = $InrConn->CreateStatement($sQuery))
+        {
+            //Check if the statement binded the variables, else add an error
+            if($rStatement->bind_param("ssiii", $InsName, $InsDate, $IniContentAccess, $IniAvail, $IniCompanyDataIndex))
+                return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
+            else
+                $InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
+        }
+        else
+            $InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
+    }
+    else
+        $InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+    return FALSE;
 }
 ?>

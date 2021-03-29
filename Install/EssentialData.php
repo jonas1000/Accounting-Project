@@ -1,40 +1,72 @@
 <?php
-print("<br><h1>ESSESTIAL DATA</h1><br>");
+
 
 /*----Data inserted in tables*/
+function InsertEssentialData(ME_CDBConnManager &$InrConn, string &$InsPrefix)
+{
+    /*--------<INSERT DATA TO TABLE AVAILABLE>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."AVAILABLE
+    (AVAILABLE_Deleted)
+    VALUES
+    (?);";
 
-/*--------<INSERT DATA TO TABLE AVAILABLE>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."AVAILABLE
-(AVAILABLE_Deleted)
-VALUES
-(TRUE),
-(FALSE);";
+    $rStatement = $InrConn->CreateStatement($sQuery);
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    $bAvailable = 0;
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> AVAILABLE", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 1 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $rStatement->bind_param("i", $bAvailable);
 
-/*--------<INSERT DATA TO TABLE ACCESS_LEVEL>--------*/
-$DBQuery="INSERT INTO ".$sPrefix."ACCESS_LEVEL
-(ACCESS_LEVEL_Title,
-ACCESS_LEVEL_Clearance,
-AVAILABLE_ID)
-VALUES
-(\"Admin\",1,2),
-(\"CEO\",2,2),
-(\"Employee\",3,2),
-(\"Guest\",4,2);";
+    $rStatement->execute();
 
-$DBConn->ExecQuery($DBQuery, TRUE);
+    $bAvailable = 1;
 
-if(!$DBConn->HasError())
-	printf("<br>%s -> ACCESS_LEVEL", $DBInsSuccMsg);
-else
-	printf("<br>ERROR 2 %s %s", $DBInsErrorMsg, $DBConn->GetError());
+    $rStatement->execute();
 
-require_once("DemoData.php");
+    $InrConn->Commit();
 
+
+    /*--------<INSERT DATA TO TABLE ACCESS_LEVEL>--------*/
+    $sQuery="INSERT INTO ".$InsPrefix."ACCESS_LEVEL
+    (ACCESS_LEVEL_Title,
+    ACCESS_LEVEL_Clearance,
+    AVAILABLE_ID)
+    VALUES
+    (?,?,?);";
+
+
+    $rStatement->prepare($sQuery);
+
+    $sAccessLevelTitle = "Admin";
+    $iAccessLevelClearance = 1;
+    $iAccessLevelAvailableID = 2;
+
+    $rStatement->bind_param("sii", $sAccessLevelTitle, $iAccessLevelClearance, $iAccessLevelAvailableID);
+
+    $rStatement->execute();
+
+
+    $sAccessLevelTitle = "CEO";
+    $iAccessLevelClearance = 2;
+    $iAccessLevelAvailableID = 2;
+
+    $rStatement->execute();
+
+
+    $sAccessLevelTitle = "Employee";
+    $iAccessLevelClearance = 3;
+    $iAccessLevelAvailableID = 2;
+
+    $rStatement->execute();
+
+
+    $sAccessLevelTitle = "Guest";
+    $iAccessLevelClearance = 4;
+    $iAccessLevelAvailableID = 2;
+
+    $rStatement->execute();
+
+    $InrConn->Commit();
+
+    $rStatement->close();
+}
 ?>

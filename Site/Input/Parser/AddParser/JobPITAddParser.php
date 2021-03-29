@@ -1,46 +1,31 @@
 <?php
-function JobPITAddParser(ME_CDBConnManager &$InDBConn, int &$IniJobIndex, float &$InfPIT, string &$InsDate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function JobPITAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniJobIndex, float $InfPIT, string &$InsDate, int $IniContentAccess, int $IniAvail) : bool
 {
-	if(!empty($InsDate))
+	if(!empty($InsDate) &&
+	($IniJobIndex > 0) &&
+	CheckAccessRange($IniContentAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		if(($IniJobIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		$fPIT = round((empty($InfPIT) ? 0 : $InfPIT), $GLOBALS['CURRENCY_DECIMAL_PRECISION']);
+
+		$sQuery="INSERT INTO ".$InrConn->GetPrefix()."VIEW_JOB_INCOME_TIME_ADD(JOB_ID, JOB_PIT_PAYMENT, JOB_PIT_DATE, JOB_PIT_ACCESS_ID, JOB_PIT_AVAIL_ID) 
+		VALUES(?, ?, ?, ?, ?);";
+
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			$sDBQuery = "";
-
-			$sDBQuery="INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_JOB_INCOME_TIME_ADD
-			(
-			JOB_ID,
-			JOB_PIT_PAYMENT,
-			JOB_PIT_DATE,
-			JOB_PIT_ACCESS_ID,
-			JOB_PIT_AVAIL_ID
-			)
-			VALUES
-			(
-			".$IniJobIndex.",
-			".$InfPIT.",
-			\"".$InsDate."\",
-			".$IniContentAccessLevelIndex.",
-			".$IniIsAvailIndex."
-			);";
-
-			$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-			if(!$InDBConn->HasError())
-			{
-				if($InDBConn->HasWarning())
-					throw new Exception($InDBConn->GetWarning());
-			}
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("iisii", $IniJobIndex, $fPIT, $InsDate, $IniContentAccess, $IniAvail))				
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
 			else
-				throw new Exception($InDBConn->GetError());
-
-			unset($sDBQuery);
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

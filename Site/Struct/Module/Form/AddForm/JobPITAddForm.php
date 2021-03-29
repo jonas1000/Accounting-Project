@@ -1,59 +1,33 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLJobPITAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function HTMLJobPITAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
 {
-  //-------------<PHP-HTML>-------------//
-  print("<div class='Form'>");
-  print("<form method='POST'>");
-  print("<div>");
+  if(isset($_POST['JobIndex']) && !empty($_POST['JobIndex']))
+  {
+    $iJobIndex = (int) $_POST['JobIndex'];
 
-  //Title
-  print("<div id='FormTitle'>");
-  print("<h3>New Payment</h3>");
-  print("</div>");
+    //-------------<PHP-HTML>-------------//
+    print("<div class='Form'><form method='POST'><div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Payment</h5>");
-  print("</div>");
+    //Title
+    print("<div id='FormTitle'><h3>New Payment</h3></div>");
 
-  print("<div>");
-  print("<input type='number' name='PIT'>");
-  print("</div>");
-  print("</div>");
+    //Input Row - payment
+    print("<div><label>Payment<input type='number' name='PIT'></label></div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Date*</h5>");
-  print("</div>");
+    //Input Row - date
+    print("<div><label>Date*<input type='date' name='Date' required></label></div>");
 
-  print("<div>");
-  print("<input type='date' name='Date' required>");
-  print("</div>");
-  print("</div>");
+    //Input Row - access list
+    print("<div><label>Access");
+    RenderAccessSelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+    print("</label></div></div>");
 
-	//get rows and render <select> element with data
-  print("<div>");
-  print("<div>");
-  print("<h5>Access</h5>");
-  print("</div>");
+    printf("<div><input type='hidden' name='JobIndex' value='%d'>", $iJobIndex);
+    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&SubModule=%d&ProAdd'>", $GLOBALS['MENU_INDEX']['Job'], $GLOBALS['MODULE']['Extend'], $GLOBALS['MODULE']['Add']);
+    printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['Job']);
 
-  print("<div>");
-  RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
-  print("</div>");
-  print("</div>");
-
-  print("</div>");
-
-  print("<div>");
-  printf("<input type='hidden' name='JobIndex' value='%d'>", $_POST['JobIndex']);
-  printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['Job']);
-  printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&SubModule=%d&ProAdd'>", $_GET['MenuIndex'], $_GET['Module'], $_GET['SubModule']);
-  print("</div>");
-  print("</form>");
-
-  print("</div>");
+    print("</form></div>");
+  }
 }
 ?>

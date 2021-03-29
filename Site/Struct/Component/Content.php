@@ -1,59 +1,61 @@
+
+<div class='Content'>
 <?php
-require_once("Data/HeaderData/HeaderData.php");
-require_once("Data/ConnData/DBSessionToken.php");
-
-require_once("../MedaLib/Class/Log/LogSystem.php");
-require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFilter.php");
-
-print("<div class='Content'>");
-
 //If $_GET['MenuIndex'] is set
 if(isset($_GET["MenuIndex"]))
 {
 	//Get the index and load the required menu item
 	switch($_GET["MenuIndex"])
 	{
-		case 0:
+		case $GLOBALS['MENU_INDEX']['Company']:
 		{
-			require_once("Struct/Module/Overview/CompanyOverview.php");
+			require_once("Struct/Module/Overview/HTMLModule/HTMLModuleCompanyOverview.php");
+			require_once("Struct/Module/Overview/Module/ModuleCompanyOverview.php");
 			break;
 		}
-		case 1:
+		case $GLOBALS['MENU_INDEX']['Country']:
 		{
-			require_once("Struct/Module/Overview/CountryOverview.php");
+			require_once("Struct/Module/Overview/HTMLModule/HTMLModuleCountryOverview.php");
+			require_once("Struct/Module/Overview/Module/ModuleCountryOverview.php");
 			break;
 		}
-		case 2:
+		case $GLOBALS['MENU_INDEX']['Employee']:
 		{
-			require_once("Struct/Module/Overview/EmployeeOverview.php");
+			require_once("Struct/Module/Overview/HTMLModule/HTMLModuleEmployeeOverview.php");
+			require_once("Struct/Module/Overview/Module/ModuleEmployeeOverview.php");
 			break;
 		}
-		case 3:
+		case $GLOBALS['MENU_INDEX']['EmployeePosition']:
 		{
-			require_once("Struct/Module/Overview/EmployeePositionOverview.php");
+			require_once("Struct/Module/Overview/HTMLModule/HTMLModuleEmployeePositionOverview.php");
+			require_once("Struct/Module/Overview/Module/ModuleEmployeePositionOverview.php");
 			break;
 		}
-		case 4:
+		case $GLOBALS['MENU_INDEX']['Job']:
 		{
-			require_once("Struct/Module/Overview/JobOverview.php");
+			require_once("Struct/Module/Overview/HTMLModule/HTMLModuleJobOverview.php");
+			require_once("Struct/Module/Overview/Module/ModuleJobOverview.php");
 			break;
 		}
-		case 5:
+		case $GLOBALS['MENU_INDEX']['Shareholder']:
 		{
-			require_once("Struct/Module/Overview/ShareholderOverview.php");
+			require_once("Struct/Module/Overview/HTMLModule/HTMLModuleShareholderOverview.php");
+			require_once("Struct/Module/Overview/Module/ModuleShareholderOverview.php");
 			break;
 		}
-		case 6:
+		case $GLOBALS['MENU_INDEX']['Customer']:
 		{
-			require_once("Struct/Module/Overview/CustomerOverview.php");
+			require_once("Struct/Module/Overview/HTMLModule/HTMLModuleCustomerOverview.php");
+			require_once("Struct/Module/Overview/Module/ModuleCustomerOverview.php");
 			break;
 		}
-		case 7:
+		case $GLOBALS['MENU_INDEX']['County']:
 		{
-			require_once("Struct/Module/Overview/CountyOverview.php");
+			require_once("Struct/Module/Overview/HTMLModule/HTMLModuleCountyOverview.php");
+			require_once("Struct/Module/Overview/Module/ModuleCountyOverview.php");
 			break;
 		}
-		case -1:
+		case $GLOBALS['MENU_INDEX']['AccessError']:
 		{
 			require_once("Struct/Module/AccessError.php");
 			break;
@@ -66,6 +68,6 @@ if(isset($_GET["MenuIndex"]))
 }
 else
 	require_once("Struct/Module/Home.php");
-
-print("</div>");
 ?>
+
+</div>

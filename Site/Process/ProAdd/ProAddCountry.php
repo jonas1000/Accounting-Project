@@ -1,51 +1,55 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProAddCountry(ME_CDBConnManager &$InDBConn)
+function ProAddCountry(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : bool
 {
-	//Check if POST data exists, if not then throw a exception
-	if(isset($_POST['Name'], $_POST['Access']))
+	if(isset($_POST['Name'], $_POST['Access']) &&
+	!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Access']) &&
+	is_numeric($_POST['Access']))
 	{
-		//Check if POST data are NOT empty, if false then throw a exception
-		if(!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Access']))
+		//format the string to be compatible with HTML and avoid SQL injection
+		$sTitle = ME_SecDataFilter($_POST['Name']);
+
+		//variables consindered to be holding ID
+		$iContentAccess = (int)$_POST['Access'];
+
+		//database cannot accept Primary or foreighn keys below 1
+		//If duplicate the database will throw a exception
+		if(CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
 		{
-			//Check if POST data are numeric, if false then throw a exception
-			if(is_numeric($_POST['Access']))
+			//if the function failed to insert data, then do not continue as the rest of the block will not work
+			if(CountryDataAddParser($InrConn, $InrLogHandle, $sTitle, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
 			{
-				//take strings as is
-				$sTitle = $_POST['Name'];
+				$iCountryDataLastIndex = $InrConn->GetLastInsertID();
 
-				//variables consindered to be holding ID's
-				$iContentAccessIndex = (int) $_POST['Access'];
-
-				unset($_POST['Name'], $_POST['Access']);
-
-				//format the string to be compatible with HTML and avoid SQL injection
-				ME_SecDataFilter($sTitle);
-
-				//database cannot accept Primary or foreighn keys below 1
-				//If duplicate the database will throw a exception
-				if($iContentAccessIndex > 0)
+				if(CountryAddParser($InrConn, $InrLogHandle, $iCountryDataLastIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
 				{
-					CountryDataAddParser($InDBConn, $sTitle, $iContentAccessIndex, $_ENV['Available']['Show']);
-
-					if($InDBConn->GetLastQueryID())
-						CountryAddParser($InDBConn, $iContentAccessIndex, $_ENV['Available']['Show']);
+					if($InrConn->Commit())
+						return TRUE;
 					else
-						throw new Exception("Error: Failed to get the id of last query");
+					{
+						$InrLogHandle->AddLogMessage("Failed to Commit data", __FILE__, __FUNCTION__, __LINE__);
+
+						if(!$InrConn->RollBack())
+							throw new exception("Failed to rollback data");
+					}
 				}
 				else
-					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
-					
-				unset($sTitle, $iContentAccessIndex);
-				header("Location:.?MenuIndex=".$_ENV['MenuIndex']['Country']);
+				{
+					$InrLogHandle->AddLogMessage("CountryAddParser did not successfuly inserted the data", __FILE__, __FUNCTION__, __LINE__);
+
+					if(!$InrConn->RollBack())
+						throw new exception("Failed to rollback data");
+				}
 			}
-			else 
-                throw new Exception("Some POST variables are not considered numeric type");
+			else
+				$InrLogHandle->AddLogMessage("CountryDataAddParser did not successfuly inserted the data", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+			$InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+		$InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

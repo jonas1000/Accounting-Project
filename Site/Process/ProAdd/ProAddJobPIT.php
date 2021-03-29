@@ -1,45 +1,45 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProAddJobPIT(ME_CDBConnManager &$InDBConn)
+function ProAddJobPIT(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : bool
 {
-	if(isset($_POST['JobIndex'], $_POST['PIT'], $_POST['Date'], $_POST['Access']))
+	if(isset($_POST['JobIndex'], $_POST['PIT'], $_POST['Date'], $_POST['Access']) &&
+	!ME_MultyCheckEmptyType($_POST['JobIndex'], $_POST['Date'], $_POST['Access']) &&
+	ME_MultyCheckNumericType($_POST['JobIndex'], $_POST['Access'], $_POST['PIT']))
 	{
-		if(!ME_MultyCheckEmptyType($_POST['JobIndex'], $_POST['Date'], $_POST['Access']))
+		//format the string to be compatible with HTML and avoid SQL injection
+		$sDate = ME_SecDataFilter($_POST['Date']);
+
+		$fPayment = (float)$_POST['PIT'];
+
+		//variables consindered to be holding ID
+		$iJobIndex = (int)$_POST['JobIndex'];
+		$iContentAccess = (int)$_POST['Access'];
+
+		//database cannot accept Primary or foreighn keys below 1
+		//If duplicate the database will throw a exception
+		if(($iJobIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
 		{
-			if(ME_MultyCheckNumericType($_POST['JobIndex'], $_POST['Access']))
+			if(JobPitAddParser($InrConn, $InrLogHandle, $iJobIndex, $fPayment, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
 			{
-				//take strings as is
-				$sDate = $_POST['Date'];
-
-				//Convert data to float for logical methematical operations
-				$fPayment = (float) $_POST['PIT'];
-
-				//variables consindered to be holding ID's
-				$iJobIndex = (int) $_POST['JobIndex'];
-				$iContentAccessIndex = (int) $_POST['Access'];
-
-				unset($_POST['JobIndex'], $_POST['PIT'], $_POST['Date'], $_POST['Access']);
-
-				//format the string to be compatible with HTML and avoid SQL injection
-				ME_SecDataFilter($sDate);
-
-				//database cannot accept Primary or foreighn keys below 1
-				//If duplicate the database will throw a exception
-				if(($iJobIndex > 0) && ($iContentAccessIndex > 0))
-					JobPitAddParser($InDBConn, $iJobIndex, $fPayment, $sDate, $iContentAccessIndex, $_ENV['Available']['Show']);
+				if($InrConn->Commit())
+					return TRUE;
 				else
-					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
-					
-				unset($iJobIndex, $fPayment, $sDate, $iContentAccessIndex);
-				header("Location:Index.php?MenuIndex=".$_ENV['MenuIndex']['Job']);
+				{
+					$InrLogHandle->AddLogMessage("Failed to Commit data", __FILE__, __FUNCTION__, __LINE__);
+
+					if(!$InrConn->RollBack())
+						throw new exception("Failed to rollback data");
+				}
 			}
-			else 
-                throw new Exception("Some POST variables are not considered numeric type");
+			else
+				$InrLogHandle->AddLogMessage("JobPitAddParser did not successfuly inserted the data", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+			$InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+		$InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

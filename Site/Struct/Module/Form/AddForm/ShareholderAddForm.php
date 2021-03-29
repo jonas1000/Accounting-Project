@@ -1,48 +1,26 @@
 <?php
 //-------------<FUNCTION>-------------//
-function HTMLShareholderAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function HTMLShareholderAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
 {
   	//-------------<PHP-HTML>-------------//
-	print("<div class='Form'>");
-	print("<form method='POST'>");
-	print("<div>");
+	print("<div class='Form'><form method='POST'><div>");
 
 	//Title
-	print("<div id='FormTitle'>");
-	print("<h3>New Shareholder</h3>");
-	print("</div>");
+	print("<div id='FormTitle'><h3>New Shareholder</h3></div>");
 
 	//Input Row
-	print("<div>");
-	print("<div>");
-	print("<h5>Employee</h5>");
-	print("</div>");
-
-	print("<div>");
-	RenderEmployeeSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
-	print("</div>");
-	print("</div>");
+	print("<div><label>Employee");
+	RenderEmployeeSelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+	print("</label></div>");
 
 	//Input Row
-	print("<div>");
-	print("<div>");
-	print("<h5>Access</ph5>");
-	print("</div>");
+	print("<div><label>Access");
+	RenderAccessSelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+	print("</label></div></div>");
 
-	print("<div>");
-	RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
-	print("</div>");
-	print("</div>");
+	printf("<div><input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $GLOBALS['MENU_INDEX']['Shareholder'], $GLOBALS['MODULE']['Add']);
+	printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['Shareholder']);
 
-	print("</div>");
-
-	print("<div>");
-	printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $_GET['MenuIndex'], $_GET['Module']);
-	printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_GET['MenuIndex']);
-	print("</div>");
-
-	print("</form>");
-
-	print("</div>");
+	print("</form></div>");
 }
 ?>

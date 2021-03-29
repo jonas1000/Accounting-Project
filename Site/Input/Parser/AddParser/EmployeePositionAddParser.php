@@ -1,42 +1,28 @@
 <?php
-function EmployeePositionAddParser(ME_CDBConnManager &$InDBConn, string &$InsName, int $IniContentAccessLevelIndex, int $IniIsAvailIndex) : void
+function EmployeePositionAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, string &$InsName, int $IniContentAccess, int $IniAvail) : bool
 {
-	if(!empty($InsName))
+	if(!empty($InsName) &&
+	CheckAccessRange($IniContentAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_POSITION_ADD(EMP_POS_TITLE, EMP_POS_ACCESS_ID, EMP_POS_AVAIL_ID) 
+		VALUES(?, ?, ?);";
+
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			$sDBQuery = "";
-			
-			$$sDBQuery = "INSERT INTO
-			".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION_ADD
-			(
-			EMP_POS_TITLE,
-			EMP_POS_ACCESS_ID,
-			EMP_POS_AVAIL_ID
-			)
-			VALUES
-			(
-			\"".$InsName."\",
-			".$IniContentAccessLevelIndex.",
-			".$IniIsAvailIndex."
-			);";
-
-			$InDBConn->ExecQuery($$sDBQuery, TRUE);
-
-			if(!$InDBConn->HasError())
-			{
-				if($InDBConn->HasWarning())
-					throw new Exception($InDBConn->GetWarning());
-			}
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("sii", $InsName, $IniContentAccess, $IniAvail))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
 			else
-				throw new Exception($InDBConn->GetError());
-
-			unset($$sDBQuery);
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

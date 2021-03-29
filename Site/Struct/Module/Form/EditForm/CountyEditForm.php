@@ -1,120 +1,59 @@
 <?php
  //-------------<FUNCTION>-------------//
-function HTMLCountyEditForm(ME_CDBConnManager &$InDBConn, &$IniUserAccessLevel) : void
+function HTMLCountyEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, $IniUserAccess) : void
 {
-    if(isset($_POST['CouIndex']))
+    if(isset($_POST['CouIndex']) && !empty($_POST['CouIndex']))
     {
-        if(!empty($_POST['CouIndex']))
+        $iCountyIndex = (int) $_POST['CouIndex'];
+
+        if($iCountyIndex > 0)
         {
-            $iCountyIndex = (int) $_POST['CouIndex'];
+            $rResult = CountyEditFormSpecificRetriever($InrConn, $InrLogHandle, $iCountyIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
 
-            unset($_POST['CouIndex']);
-
-            if($iCountyIndex > 0)
+            if(!empty($rResult) && ($rResult->num_rows == 1)) 
             {
-                CountyEditFormSpecificRetriever($InDBConn, $iCountyIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
+                $aDataRow = $rResult->fetch_assoc();
 
-                $aCountyRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-                $iCountyNumRows = $InDBConn->GetResultNumRows();
+                //-------------<PHP-HTML>-------------//
+                print("<div class='Form'><form method='POST'><div>");
 
-                if(!empty($aCountyRow) && ($iCountyNumRows > 0 && $iCountyNumRows < 2)) 
-                {
-                    $iCountyAccessIndex = (int) $aCountyRow['COU_DATA_ACCESS'];
-                    $iCountryIndex = (int) $aCountyRow['COUN_ID'];
+                //Title
+                printf("<div id='FormTitle'><h3>New County</h3><br><h4>%s</h4></div>", $aDataRow['COU_DATA_TITLE']);
 
-                    //-------------<PHP-HTML>-------------//
-                    print("<div class='Form'>");
+                //Input Row - name
+                printf("<div><label>Name*<input type='text' placeholder='County name' name='Name' value='%s' required></label></div>", $aDataRow['COU_DATA_TITLE']);
 
-                    print("<form method='POST'>");
-                    print("<div>");
+                //Input Row - tax
+                printf("<div><label>Tax<input type='number' placeholder='County Tax' name='Tax' value='%s' step='0.01' min='0.00' max='100.00'></label></div>", $aDataRow['COU_DATA_TAX']);
 
-                    //Title
-                    print("<div id='FormTitle'>");
-                    print("<h3>New County</h3>");
-                    printf("<br><h4>%s</h4>", $aCountyRow['COU_DATA_TITLE']);
-                    print("</div>");
+                //Input Row - interest rate
+                printf("<div><label>Interest Rate<input type='number' placeholder='County Interest Rate' name='IR' value='%s' step='0.01' min='0.00' max='100.00'></label></div>", $aDataRow['COU_DATA_IR']);
 
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Name*</h5>");
-                    print("</div>");
+                //get rows and render <select> element with data
+                print("<div><label>Country");
+                RenderCountrySelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], $aDataRow['COUN_ID']);
+                print("</label></div>");
 
-                    print("<div>");
-                    printf("<input type='text' placeholder='County name' name='Name' value='%s' required>", $aCountyRow['COU_DATA_TITLE']);
-                    print("</div>");
-                    print("</div>");
+                //get rows and render <select> element with data
+                print("<div><label>Access");
+                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], $aDataRow['COU_DATA_ACCESS']);
+                print("</label></div></div>");
 
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Tax</h5>");
-                    print("</div>");
+                printf("<div><input type='hidden' name='CountyIndex' value='%s' required>", $aDataRow['COU_ID']);
+                printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>", $GLOBALS['MENU_INDEX']['County'], $GLOBALS['MODULE']['Edit']);
+                printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['County']);
 
-                    print("<div>");
-                    printf("<input type='number' placeholder='County Tax' name='Tax' value='%s' step='0.01' min='0.00' max='100.00'>", $aCountyRow['COU_DATA_TAX']);
-                    print("</div>");
-                    print("</div>");
+                print("</form></div>");
 
-                    //Input Row
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Interest Rate</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input type='number' placeholder='County Interest Rate' name='IR' value='%s' step='0.01' min='0.00' max='100.00'>", $aCountyRow['COU_DATA_IR']);
-                    print("</div>");
-                    print("</div>");
-
-                    //get rows and render <select> element with data
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Country</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    RenderCountrySelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCountryIndex);
-                    print("</div>");
-                    print("</div>");
-
-                    //get rows and render <select> element with data
-                    print("<div>");
-                    print("<div>");
-                    print("<h5>Access</h5>");
-                    print("</div>");
-
-                    print("<div>");
-                    RenderAccessSelectRowCheck($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show'], $iCountyAccessIndex);
-                    print("</div>");
-                    print("</div>");
-
-                    print("</div>");
-
-                    print("<div>");
-                    printf("<input type='hidden' name='CountyIndex' value='%s' required>", $aCountyRow['COU_ID']);
-                    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%s&Module=%s&ProEdit'>", $_GET['MenuIndex'], $_GET['Module']);
-                    printf("<a href='.?MenuIndex=%s'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['County']);
-                    print("</div>");
-
-                    print("</form>");
-
-                    print("</div>");
-
-                    unset($iCountryIndex, $iCountyAccessIndex);
-                }
-                else
-                    throw new Exception("Query did not return any row");
-
-                unset($aCountyRow, $iCountyNumRows);
+                $rResult->free();
             }
             else
-                throw new Exception("POST data could not be converted to required format");
+                $InrLogHandle->AddLogMessage("empty or too many rows returned, expected 1 result", __FILE__, __FUNCTION__, __LINE__);
         }
         else
-			throw new Exception("Some POST data are empty, Those POST cannot be empty");
+            $InrLogHandle->AddLogMessage("ID expected to be greater than 0, instead value was lesser", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Some POST data are not initialized");
+        $InrLogHandle->AddLogMessage("ID was not set or returned empty", __FILE__, __FUNCTION__, __LINE__);
 }
  

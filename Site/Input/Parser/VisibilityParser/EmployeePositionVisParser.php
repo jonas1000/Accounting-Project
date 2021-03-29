@@ -1,32 +1,33 @@
 <?php
-function EmployeePositionVisParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeePositionIndex, int &$IniUserAccessLevelIndex, int &$IniIsAvailIndex) : void
+function EmployeePositionVisParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniEmployeePositionIndex, int $IniAvail)
 {
-	if(($IniEmployeePositionIndex > 0) && ($IniUserAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniEmployeePositionIndex > 0) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
+		$sPrefix = $InrConn->GetPrefix();
 
-		$sDBQuery="UPDATE
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION
+		$sQuery="UPDATE
+		".$sPrefix."VIEW_EMPLOYEE_POSITION
 		SET
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION.EMP_POS_AVAIL = ".$IniIsAvailIndex."
+		".$sPrefix."VIEW_EMPLOYEE_POSITION.EMP_POS_AVAIL = ?
 		WHERE
-		(".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION.EMP_POS_ACCESS > ".($IniUserAccessLevelIndex - 1)."
-		AND
-		".$InDBConn->GetPrefix()."VIEW_EMPLOYEE_POSITION.EMP_POS_ID = ".$IniEmployeePositionIndex.");";
+		(".$sPrefix."VIEW_EMPLOYEE_POSITION.EMP_POS_ID = ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-		if(!$InDBConn->HasError())
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("ii", $IniAvail, $IniEmployeePositionIndex))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

@@ -1,6 +1,6 @@
 .DataBlock
 {
-	background-color:rgba(255,255,255,1);
+	background-color:var(--FullWhite);
 	width:23%;
 	min-width:20em;
 	height:auto;
@@ -21,7 +21,7 @@
 
 .DataBlock div input
 {
-	color:rgba(255,255,255,1);
+	color:var(--FullWhite);
 	text-shadow:none;
 	font-size:100%;
 	width:6em;
@@ -34,7 +34,7 @@
 
 .DataBlock div input[type="submit"]
 {
-	background-color:rgba(120, 140, 255, 1);
+	background-color:var(--MainButtonColor);
 	float:left;
 	margin:2%;
 	transition:transform 0.25s, background-color 0.25s, text-shadow 0.25s;
@@ -42,56 +42,56 @@
 
 .DataBlock div input[type="submit"]:disabled
 {
-	background-color:rgba(140, 140, 140, 1);
+	background-color:var(--MiddleGreyNeutral);
 	float:left;
 	margin:2%;
 }
 
 .DataBlock div input[type="submit"]:disabled:hover
 {
-	background-color:rgba(140, 140, 140, 1);
+	background-color:var(--MiddleGreyNeutral);
 	cursor:initial;
-	text-shadow:0px 0px 0px rgba(255,255,255,0);
+	text-shadow:0px 0px 0px var(--FullBlack);
 	transform:scale(1);
 }
 
 .DataBlock div input[type="submit"]:hover
 {
 	background-color:rgba(235, 120, 120);
-	text-shadow:0px 0px 4px rgba(255,255,255,1);
+	text-shadow:0px 0px 4px var(--FullWhite);
 	transform:scale(1.1);
 }
 
 .DataBlock div input[type="submit"]:last-child
 {
-	background-color:rgba(120, 140, 255, 1);
+	background-color:var(--MainButtonColor);
 	float:right;
 }
 
 .DataBlock div input[type="submit"]:last-child:disabled
 {
-	background-color:rgba(140, 140, 140, 1);
+	background-color:var(--MiddleGreyNeutral);
 }
 
 .DataBlock div input[type="submit"]:last-child:hover
 {
 	background-color:rgba(235, 225, 120, 1);
-	text-shadow:0px 0px 4px rgba(255,255,255,1);
+	text-shadow:0px 0px 4px var(--FullWhite);
 	transform:scale(1.1);
 }
 
 .DataBlock div input[type="submit"]:last-child:disabled:hover
 {
-	background-color:rgba(140, 140, 140, 1);
+	background-color:var(--MiddleGreyNeutral);
 	cursor:initial;
-	text-shadow:0px 0px 0px rgba(255,255,255,0);
+	text-shadow:0px 0px 0px var(--FullBlack);
 	transform:scale(1);
 }
 
 .DataBlock div > div
 {
-	background-color:rgba(120, 140, 255, 1);
-	color:rgba(255,255,255,1);
+	background-color:var(--MainButtonColor);
+	color:var(--FullWhite);
 	width:86%;
 	margin:0.25% 5%;
 	padding:2%;
@@ -109,7 +109,7 @@
 
 .DataBlock div div > div:first-child
 {
-	background-color:rgba(0, 0, 0, 0);
+	background-color:var(--FullBlack);
 	width:40%;
 	text-align:left;
 	float:left;

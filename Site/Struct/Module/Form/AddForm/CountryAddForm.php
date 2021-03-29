@@ -1,52 +1,23 @@
 <?php
-//-------------<FUNCTION>-------------//
-function HTMLCountryAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function HTMLCountryAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
 {
-  //-------------<PHP-HTML>-------------//
-  print("<div class='Form'>");
+    //-------------<PHP-HTML>-------------//
+    print("<div class='Form'><form method='POST'><div>");
 
-  print("<form method='POST'>");
-  print("<div>");
+    //Title
+    print("<div id='FormTitle'><h3>New Country</h3></div>");
 
-  //Title
-  print("<div id='FormTitle'>");
-  print("<h3>New Country</h3>");
-  print("</div>");
+    //Input Row - name
+    print("<div><label>Name*<input type='text' placeholder='Country name' name='Name' required></label></div>");
 
-  //Input Row
-  print("<div>");
+    //get rows and render <select> element with data
+    print("<div><label>Access");
+    RenderAccessSelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+    print("</label></div>");
 
-  print("<div>");
-  print("<h5>Name*</h5>");
-  print("</div>");
+    printf("<div><input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $GLOBALS['MENU_INDEX']['Country'], $GLOBALS['MODULE']['Add']);
+    printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['Country']);
 
-  print("<div>");
-  print("<input type='text' placeholder='Country name' name='Name' required>");
-  print("</div>");
-
-  print("</div>");
-
-  //get rows and render <select> element with data
-  print("<div>");
-
-  print("<div>");
-  print("<h5>Access</h5>");
-  print("</div>");
-
-  print("<div>");
-  RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
-  print("</div>");
-
-  print("</div>");
-
-  print("</div>");
-
-  print("<div>");
-  printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $_GET['MenuIndex'], $_GET['Module']);
-  printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['Country']);
-  print("</div>");
-  print("</form>");
-
-  print("</div>");
+    print("</form></div>");
 }
 ?>

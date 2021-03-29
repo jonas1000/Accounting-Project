@@ -1,73 +1,69 @@
 <?php
-function AccessSelectElemRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function AccessSelectElemRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
+		$sQuery = "SELECT
 		ACCESS_ID,
 		ACCESS_TITLE,
 		ACCESS_LEVEL
 		FROM
-		".$sPrefix."VIEW_ACCESS
-		WHERE
-		".$sPrefix."VIEW_ACCESS.ACCESS_AVAIL = " . $IniIsAvailIndex . "
-		AND
-		".$sPrefix."VIEW_ACCESS.ACCESS_LEVEL > ".($IniUserAccessLevel - 1)."
-		ORDER BY
-		".$sPrefix."VIEW_ACCESS.ACCESS_LEVEL ASC;";
+		".$InrConn->GetPrefix()."VIEW_ACCESS
+		WHERE (ACCESS_AVAIL = ?)
+		AND	(ACCESS_LEVEL >= ?)
+		ORDER BY ACCESS_LEVEL ASC;";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("ii", $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function AccessSelectFormRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function AccessSelectFormRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	($IniAvail > 0 && ($IniAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE'])))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
+		$sQuery = "SELECT
 		ACCESS_ID,
 		ACCESS_TITLE,
 		ACCESS_LEVEL
 		FROM
-		".$sPrefix."VIEW_ACCESS
-		WHERE
-		".$sPrefix."VIEW_ACCESS.ACCESS_AVAIL = " . $IniIsAvailIndex . "
-		AND
-		".$sPrefix."VIEW_ACCESS.ACCESS_LEVEL > ".($IniUserAccessLevel - 1)."
-		ORDER BY
-		".$sPrefix."VIEW_ACCESS.ACCESS_LEVEL ASC;";
+		".$InrConn->GetPrefix()."VIEW_ACCESS
+		WHERE (ACCESS_AVAIL = ?)
+		AND	(ACCESS_LEVEL >= ?)
+		ORDER BY ACCESS_LEVEL ASC;";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("ii", $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

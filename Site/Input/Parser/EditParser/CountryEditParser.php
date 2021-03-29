@@ -1,72 +1,66 @@
 <?php
 //-------------<FUNCTION>-------------//
-function CountryEditParser(ME_CDBConnManager &$InDBConn, int &$IniCountryIndex, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CountryEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniCountryIndex, int $IniContentAccess, int $IniAvail)
 {
-	if(($IniContentAccessLevelIndex > 0) && ($IniCountryIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniCountryIndex > 0) &&
+	CheckAccessRange($IniContentAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
-
-		$sDBQuery = "UPDATE
-		".$sPrefix."VIEW_COUNTRY_EDIT
+		$sQuery = "UPDATE ".$InrConn->GetPrefix()."VIEW_COUNTRY_EDIT
 		SET
-		".$sPrefix."VIEW_COUNTRY_EDIT.COUN_ACCESS_ID = ".$IniContentAccessLevelIndex."
-		WHERE
-		(".$sPrefix."VIEW_COUNTRY_EDIT.COUN_AVAIL_ID = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_COUNTRY_EDIT.COUN_ID = ".$IniCountryIndex.");";
+		COUN_ACCESS_ID = ?,
+		COUN_AVAIL_ID = ?
+		WHERE 
+		COUN_ID = ?;";
 
-		$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-		if(!$InDBConn->HasError())
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("iii", $IniContentAccess, $IniAvail, $IniCountryIndex))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-				throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function CountryDataEditParser(ME_CDBConnManager &$InDBConn, int &$IniCountryDataIndex, string &$InsTitle, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CountryDataEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniCountryDataIndex, string &$InsTitle, int $IniContentAccess, int $IniAvail)
 {
-	if(!empty($InsTitle))
+	if(!empty($InsTitle) &&
+	($IniCountryDataIndex > 0) &&
+	CheckAccessRange($IniContentAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		if(($IniCountryDataIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		$sQuery = "UPDATE ".$InrConn->GetPrefix()."VIEW_COUNTRY_DATA_EDIT
+		SET
+		COUN_DATA_TITLE = ?,
+		COUN_DATA_ACCESS_ID = ?,
+		COUN_DATA_AVAIL_ID = ?
+		WHERE 
+		COUN_DATA_ID = ?;";
+
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			$sDBQuery = "";
-			$sPrefix = $InDBConn->GetPrefix();
-
-			$sDBQuery = "UPDATE
-			".$sPrefix."VIEW_COUNTRY_DATA_EDIT
-			SET
-			".$sPrefix."VIEW_COUNTRY_DATA_EDIT.COUN_DATA_TITLE = \"".$InsTitle."\",
-			".$sPrefix."VIEW_COUNTRY_DATA_EDIT.COUN_DATA_ACCESS_ID = ".$IniContentAccessLevelIndex."
-			WHERE
-			(".$sPrefix."VIEW_COUNTRY_DATA_EDIT.COUN_DATA_AVAIL_ID = ".$IniIsAvailIndex.")
-			AND
-			(".$sPrefix."VIEW_COUNTRY_DATA_EDIT.COUN_DATA_ID = ".$IniCountryDataIndex.");";
-
-			$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-			if(!$InDBConn->HasError())
-			{
-				if($InDBConn->HasWarning())
-					throw new Exception("warning detected: " . $InDBConn->GetWarning());
-			}
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("siii", $InsTitle, $IniContentAccess, $IniAvail, $IniCountryDataIndex))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
 			else
-				throw new Exception("Error: " . $InDBConn->GetError());
-
-			unset($sDBQuery, $sPrefix);
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

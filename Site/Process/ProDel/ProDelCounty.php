@@ -1,60 +1,38 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProDelCounty(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function ProDelCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
 {
-	if(isset($_POST['CouIndex']))
+	if(isset($_POST['CouIndex']) && !empty($_POST['CouIndex']) && is_numeric($_POST['CouIndex']))
 	{
-		if(!empty($_POST['CouIndex']))
+		//variables consindered to be holding ID
+		$iCountyIndex = (int) $_POST['CouIndex'];
+
+		if(($iCountyIndex > 0) && CheckAccessRange($IniUserAccess))
 		{
-			if(is_numeric($_POST['CouIndex']))
+			$rResult = CountySpecificRetriever($InrConn, $InrLogHandle, $iCountyIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+
+			if(!empty($rResult) && ($rResult->num_rows == 1))
 			{
-				//variables consindered to be holding ID
-				$iCountyIndex = (int) $_POST['CouIndex'];
+				$aDataRow = $rResult->fetch_assoc();
 
-				unset($_POST['CouIndex']);
-
-				//database cannot accept Primary or foreign keys below 1
-				//If duplicate the database will throw a exception
-				if(($iCountyIndex > 0) && ($IniUserAccessLevel > 0))
-				{
-					CountySpecificRetriever($InDBConn, $iCountyIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
-
-					$aCountyRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-					$iCountyNumRows = $InDBConn->GetResultNumRows();
-
-					if(!empty($aCountyRow) && ($iCountyNumRows > 0 && $iCountyNumRows < 2))
-					{
-						$iCountyDataIndex = (int) $aCountyRow['COU_DATA_ID'];
-
-						if($iCountyDataIndex > 0)
-						{
-							CountyVisParser($InDBConn, $iCountyIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
-
-							CountyDataVisParser($InDBConn, $iCountyDataIndex, $IniUserAccessLevel, $_ENV['Available']['Hide']);
-						}
-						else
-							throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
-
-						unset($iCountyDataIndex);
-					}
-					else
-						throw new Exception("Could not fetch Table result");
-
-					unset($aCountyRow, $iCountyNumRows);
-				}
+				if(CountyVisParser($InrDBConn, $InrLogHandle, (int) $aDataRow['COU_ID'], $GLOBALS['AVAILABLE']['Hide']) &&
+				CountyDataVisParser($InrDBConn, $InrLogHandle, (int) $aDataRow['COU_DATA_ID'], $GLOBALS['AVAILABLE']['Hide']))
+					$InrConn->Commit();
 				else
-					throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+				{
+					$InrConn->RollBack();
+					$InrLogHandle->AddLogMessage("Failed to update tables", __FILE__, __FUNCTION__, __LINE__);
+				}
 
-				unset($iCountyIndex);
-				header("Location:Index.php?MenuIndex=" . $_ENV['MenuIndex']['County']);
+				$rResult->free();
 			}
-			else 
-                throw new Exception("Some POST variables are not considered numeric type");
+			else
+				$InrLogHandle->AddLogMessage("Could not fetch Table result", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+			$InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+		$InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

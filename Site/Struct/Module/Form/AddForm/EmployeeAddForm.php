@@ -1,146 +1,54 @@
 <?php
-//-------------<FUNCTION>-------------//
-function HTMLEmployeeAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function HTMLEmployeeAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
 {
-  //-------------<PHP-HTML>-------------//
-  print("<div class='Form'>");
-  print("<form method='POST'>");
-  print("<div>");
+    //-------------<PHP-HTML>-------------//
+    print("<div class='Form'><form method='POST'><div>");
 
-  //Title
-  print("<div id='FormTitle'>");
-  print("<h3>New Employee</h3>");
-  print("</div>");
+    //Title
+    print("<div id='FormTitle'><h3>New Employee</h3></div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Name*</h5>");
-  print("</div>");
+    //Input Row - name
+    print("<div><label>Name*<input type='text' name='Name' placeholder='Employee Name' required></label></div>");
 
-  print("<div>");
-  print("<input type='text' name='Name' placeholder='Employee Name' required>");
-  print("</div>");
-  print("</div>");
+    //Input Row - surname
+    print("<div><label>Surname*<input type='text' name='Surname' placeholder='Employee Surname' required></label></div>");
 
-	//Input Row
-	print("<div>");
-	print("<div>");
-	print("<h5>Surname*</h5>");
-	print("</div>");
+    //Input Row - temporary password
+    print("<div><label>Temporary Password*<input type='password' placeholder='Employee Temporary Password' name='Pass' required></label></div>");
 
-	print("<div>");
-	print("<input type='text' name='Surname' placeholder='Employee Surname' required>");
-	print("</div>");
-	print("</div>");
+    //Input Row - email
+    print("<div><label>Email*<input type='email' name='Email' placeholder='Employee Email' required></label></div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Temporary Password*</h5>");
-  print("</div>");
+    //Input Row - salary
+    print("<div><label>Salary<input type='number' name='Salary' min='0.00' step='0.01' placeholder='Employee Salary'></label></div>");
 
-  print("<div>");
-  print("<input type='password' placeholder='Employee Temporary Password' name='Pass' required>");
-  print("</div>");
-  print("</div>");
+    //Input Row - birth date
+    print("<div><label>Birth Date*<input type='date' name='BDay' pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}' required></label></div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Email*</h5>");
-  print("</div>");
+    //Input Row - phone number
+    print("<div><div><h5>Phone Number*</h5></div><div><input type='tel' max='16' name='PN' required></div></div>");
 
-  print("<div>");
-  print("<input type='email' name='Email' placeholder='Employee Email' required>");
-  print("</div>");
-  print("</div>");
+    //Input Row - stable number
+    print("<div><label>Stable Number<input type='tel' max='16' name='SN'></label></div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Salary</h5>");
-  print("</div>");
+    //get rows and render <select> element with data
+    print("<div><label>Company");
+    RenderCompanySelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+    print("</label></div>");
 
-  print("<div>");
-  print("<input type='number' name='Salary' min='0.00' step='0.01' placeholder='Employee Salary'>");
-  print("</div>");
-  print("</div>");
+    //get rows and render <select> element with data
+    print("<div><label>Position");
+    RenderEmployeePosSelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+    print("</label></div>");
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Birth Date*</h5>");
-  print("</div>");
+    //get rows and render <select> element with data
+    print("<div><label>Access");
+    RenderAccessSelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+    print("</label></div></div>");
 
-  print("<div>");
-  print("<input type='date' name='BDay' pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}' required>");
-  print("</div>");
-  print("</div>");
+    printf("<div><input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $GLOBALS['MENU_INDEX']['Employee'], $GLOBALS['MODULE']['Add']);
+    printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['Employee']);
 
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Phone Number*</h5>");
-  print("</div>");
-
-  print("<div>");
-  print("<input type='tel' max='16' name='PN' required>");
-  print("</div>");
-  print("</div>");
-
-  //Input Row
-  print("<div>");
-  print("<div>");
-  print("<h5>Stable Number</h5>");
-  print("</div>");
-
-  print("<div>");
-  print("<input type='tel' max='16' name='SN'>");
-  print("</div>");
-  print("</div>");
-
-  //get rows and render <select> element with data
-  print("<div>");
-  print("<div>");
-  print("<h5>Company</h5>");
-  print("</div>");
-
-  print("<div>");
-  RenderCompanySelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
-  print("</div>");
-  print("</div>");
-
-  //get rows and render <select> element with data
-  print("<div>");
-  print("<div>");
-  print("<h5>Position</h5>");
-  print("</div>");
-
-  print("<div>");
-  RenderEmployeePosSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
-  print("</div>");
-  print("</div>");
-
-	//get rows and render <select> element with data
-  print("<div>");
-  print("<div>");
-  print("<h5>Access</h5>");
-  print("</div>");
-
-  print("<div>");
-  RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
-  print("</div>");
-  print("</div>");
-
-  print("</div>");
-
-  print("<div>");
-  printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $_GET['MenuIndex'], $_GET['Module']);
-  printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>", $_ENV['MenuIndex']['Employee']);
-  print("</div>");
-
-  print("</div>");
-  print("</form>");
+    print("</div></form>");
 }
 ?>

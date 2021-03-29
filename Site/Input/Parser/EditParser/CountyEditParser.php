@@ -1,75 +1,68 @@
 <?php
 //-------------<FUNCTION>-------------//
-function CountyEditParser(ME_CDBConnManager &$InDBConn, int &$IniCountyIndex, int &$IniCountryIndex, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CountyEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniCountyIndex, int $IniCountryIndex, int $IniContentAccess, int $IniAvail)
 {
-	if(($IniCountyIndex > 0) && ($IniCountryIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniCountyIndex > 0) &&
+	($IniCountryIndex > 0) &&
+	CheckAccessRange($IniContentAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$sQuery = "UPDATE ".$InrConn->GetPrefix()."VIEW_COUNTY_EDIT
+		SET 
+		COU_ACCESS_ID = ?,
+		COU_AVAIL_ID = ?
+		WHERE 
+		COU_ID = ?;";
 
-		$sDBQuery = "UPDATE
-		".$sPrefix."VIEW_COUNTY_EDIT
-		SET
-		".$sPrefix."VIEW_COUNTY_EDIT.COUN_ID = ".$IniCountryIndex.",
-		".$sPrefix."VIEW_COUNTY_EDIT.COU_ACCESS_ID = ".$IniContentAccessLevelIndex."
-		WHERE
-		(".$sPrefix."VIEW_COUNTY_EDIT.COU_AVAIL_ID = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_COUNTY_EDIT.COU_ID = ".$IniCountyIndex.");";
-
-		$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-		if(!$InDBConn->HasError())
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("iii", $IniContentAccess, $IniAvail, $IniCountyIndex))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function CountyDataEditParser(ME_CDBConnManager &$InDBConn, int &$IniCountyDataIndex, string &$InsTitle, float &$InfTax, float &$InfInterestRate, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function CountyDataEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniCountyDataIndex, string &$InsTitle, float $InfTax, float $InfInterestRate, int $IniContentAccess, int $IniAvail)
 {
-	if(!empty($InsTitle))
+	if(!empty($InsTitle) &&
+	CheckAccessRange($IniContentAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		if(($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+		$sQuery = "UPDATE ".$InrConn->GetPrefix()."VIEW_COUNTY_DATA_EDIT
+		SET 
+		COU_DATA_TITLE = ?,
+		COU_DATA_TAX = ?,
+		COU_DATA_IR = ?,
+		COU_DATA_ACCESS_ID = ?,
+		COU_DATA_AVAIL_ID = ?
+		WHERE 
+		COU_DATA_ID = ?;";
+
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			$sDBQuery = "";
-			$sPrefix = $InDBConn->GetPrefix();
-
-			$sDBQuery = "UPDATE
-			".$sPrefix."VIEW_COUNTY_DATA_EDIT
-			SET
-			".$sPrefix."VIEW_COUNTY_DATA_EDIT.COU_DATA_TITLE = \"".$InsTitle."\",
-			".$sPrefix."VIEW_COUNTY_DATA_EDIT.COU_DATA_TAX = ".$InfTax.",
-			".$sPrefix."VIEW_COUNTY_DATA_EDIT.COU_DATA_IR = ".$InfInterestRate.",
-			".$sPrefix."VIEW_COUNTY_DATA_EDIT.COU_DATA_ACCESS_ID = ".$IniContentAccessLevelIndex."
-			WHERE
-			(".$sPrefix."VIEW_COUNTY_DATA_EDIT.COU_DATA_AVAIL_ID = ".$IniIsAvailIndex.")
-			AND
-			(".$sPrefix."VIEW_COUNTY_DATA_EDIT.COU_DATA_ID = ".$IniCountyDataIndex.");";
-
-			$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-			if(!$InDBConn->HasError())
-			{
-				if($InDBConn->HasWarning())
-					throw new Exception($InDBConn->GetWarning());
-			}
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("sddiii", $InsTitle, $InfTax, $InfInterestRate, $IniContentAccess, $IniAvail, $IniCountyDataIndex))
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
 			else
-				throw new Exception($InDBConn->GetError());
-
-			unset($sDBQuery, $sPrefix);
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception("Input parameters do not meet requirements range");
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters are empty");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

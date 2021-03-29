@@ -1,82 +1,123 @@
 <?php
-function CompanyRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function CompanySearchConstructor(string &$InsSearchTypeQuery, string &$IniSearchType) : void
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	switch($IniSearchType)
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
-
-		$sDBQuery = "SELECT
-		".$sPrefix."VIEW_COMPANY.COMP_ID,
-		".$sPrefix."VIEW_COMPANY.COMP_DATA_ID,
-		".$sPrefix."VIEW_COMPANY.COU_ID,
-		".$sPrefix."VIEW_COMPANY.COMP_ACCESS
-		FROM
-		".$sPrefix."VIEW_COMPANY
-		WHERE
-		(".$sPrefix."VIEW_COMPANY.COMP_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_COMPANY.COMP_ACCESS > ".($IniUserAccessLevel - 1).");";
-
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		case $GLOBALS['COMPANY_SEARCH_TYPE']['Company_Title']["name"]:
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			$InsSearchTypeQuery .= "COMP_DATA_TITLE";
+			break;
 		}
-		else
-			throw new Exception($InDBConn->GetError());
 
-		unset($sDBQuery, $sPrefix);
+		case $GLOBALS['COMPANY_SEARCH_TYPE']['County_Title']["name"]:
+		{
+			$InsSearchTypeQuery .= "COU_DATA_TITLE";
+			break;
+		}
+
+		case $GLOBALS['COMPANY_SEARCH_TYPE']['Country_Title']["name"]:
+		{
+			$InsSearchTypeQuery .= "COUN_DATA_TITLE";
+			break;
+		}
+
+		case $GLOBALS['COMPANY_SEARCH_TYPE']['County_Tax']["name"]:
+		{
+			$InsSearchTypeQuery .= "COU_DATA_TAX";
+			break;
+		}
+
+		case $GLOBALS['COMPANY_SEARCH_TYPE']['County_IR']["name"]:
+		{
+			$InsSearchTypeQuery .= "COU_DATA_IR";
+			break;
+		}
+
+		default:
+		{
+			$InsSearchTypeQuery .= "COMP_DATA_TITLE";
+			break;
+		}
 	}
-	else
-		throw new Exception("Input parameters do not meet requirements range");
 }
 
-function CompanyDataRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function CompanyRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
-		".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_ID,
-		".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_TITLE,
-		".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_DATE,
-		".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_ACCESS
+		$sQuery = "SELECT
+		COMP_ID,
+		COMP_DATA_ID,
+		COU_ID,
+		COMP_ACCESS
 		FROM
-		".$sPrefix."VIEW_COMPANY_DATA
-		WHERE
-		(".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_ACCESS > ".($IniUserAccessLevel - 1).");";
+		".$InrConn->GetPrefix()."VIEW_COMPANY
+		WHERE (COMP_AVAIL = ?)
+		AND (COMP_ACCESS >= ?)
+		ORDER BY COMP_CDATE;";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("ii", $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function CompanyGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function CompanyDataRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$rStatement = 0;
 
-		$sDBQuery = "SELECT
+		$sQuery = "SELECT
+		COMP_DATA_ID,
+		COMP_DATA_TITLE,
+		COMP_DATA_DATE,
+		COMP_DATA_ACCESS
+		FROM
+		".$InrConn->GetPrefix()."VIEW_COMPANY_DATA
+		WHERE (COMP_DATA_AVAIL = ?)
+		AND (COMP_DATA_ACCESS >= ?);";
+
+		if($rStatement = $InrConn->CreateStatement($sQuery))
+		{
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("ii", $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
+		}
+		else
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
+	}
+	else
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
+}
+
+function CompanyGeneralRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
+{
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
+	{
+		$rStatement = 0;
+
+		$sQuery = "SELECT
 		COMP_ID,
 		COMP_ACCESS,
 		COMP_AVAIL,
@@ -92,38 +133,43 @@ function CompanyGeneralRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAcce
 		COU_DATA_IR,
 		COU_DATA_DATE
 		FROM
-		".$sPrefix."VIEW_COMPANY_GENERAL
-		WHERE
-		(".$sPrefix."VIEW_COMPANY_GENERAL.COMP_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COMPANY_GENERAL.COMP_DATA_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		".$sPrefix."VIEW_COMPANY_GENERAL.COMP_ACCESS > ".($IniUserAccessLevel - 1).";";
+		".$InrConn->GetPrefix()."VIEW_COMPANY_GENERAL
+		WHERE (COMP_AVAIL = ?
+		AND	COMP_DATA_AVAIL = ?)
+		AND	(COMP_ACCESS >= ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iii", $IniAvail, $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function CompanyOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function CompanyOverviewRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail, string &$InsSearchType="", string &$InsSearchQuery="")
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$sSearchConstruction = "";
+		$sSearchQuery = ME_SecDataFilter($InsSearchQuery);
 
-		$sDBQuery = "SELECT
+		CompanySearchConstructor($sSearchConstruction, $InsSearchType);
+
+		SearchQueryConstructor($sSearchQuery);
+
+		$rStatement = 0;
+
+		$sQuery = "SELECT
 		COMP_ID,
 		COMP_DATA_ACCESS,
 		COMP_DATA_TITLE,
@@ -134,72 +180,67 @@ function CompanyOverviewRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAcc
 		COU_DATA_IR,
 		COUN_DATA_ACCESS,
 		COUN_DATA_TITLE
-		FROM
-		".$sPrefix."VIEW_COMPANY_OVERVIEW
-		WHERE
-		(".$sPrefix."VIEW_COMPANY_OVERVIEW.COMP_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COMPANY_OVERVIEW.COMP_DATA_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COMPANY_OVERVIEW.COU_DATA_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COMPANY_OVERVIEW.COUN_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COMPANY_OVERVIEW.COUN_DATA_AVAIL = ".$IniIsAvailIndex.")
-		AND
-		(".$sPrefix."VIEW_COMPANY_OVERVIEW.COMP_ACCESS > ".($IniUserAccessLevel - 1).");";
-
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		FROM ".$InrConn->GetPrefix()."VIEW_COMPANY_OVERVIEW
+		WHERE (COMP_AVAIL = ? 
+		AND COMP_DATA_AVAIL = ? 
+		AND COU_DATA_AVAIL = ? 
+		AND COUN_AVAIL = ?	
+		AND	COUN_DATA_AVAIL = ?)
+		AND	(COMP_ACCESS >= ?) 
+		AND ".$sSearchConstruction." LIKE ?;";
+		
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iiiiiis", $IniAvail, $IniAvail, $IniAvail, $IniAvail, $IniAvail, $IniUserAccess, $sSearchQuery))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 
-function CompanySelectElemRetriever(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel, int &$IniIsAvailIndex) : void
+function CompanySelectElemRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
 {
-	if(($IniUserAccessLevel > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(CheckAccessRange($IniUserAccess) &&
+	($IniAvail > 0 && $IniAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']))
 	{
-		$sDBQuery = "";
-		$sPrefix = $InDBConn->GetPrefix();
+		$sPrefix = $InrConn->GetPrefix();
 
-		$sDBQuery = "SELECT
-		COMP_ID,
-		COMP_DATA_TITLE
+		$rStatement = 0;
+
+		$sQuery = "SELECT
+		".$sPrefix."VIEW_COMPANY.COMP_ID,
+		".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_TITLE
 		FROM
 		".$sPrefix."VIEW_COMPANY,
 		".$sPrefix."VIEW_COMPANY_DATA
 		WHERE
-		".$sPrefix."VIEW_COMPANY.COMP_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_AVAIL = ".$IniIsAvailIndex."
-		AND
-		".$sPrefix."VIEW_COMPANY.COMP_DATA_ID = ".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_ID
-		AND
-		".$sPrefix."VIEW_COMPANY.COMP_ACCESS > ".($IniUserAccessLevel - 1).";";
+		(".$sPrefix."VIEW_COMPANY.COMP_AVAIL = ?
+		AND	".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_AVAIL = ?)
+		AND	(".$sPrefix."VIEW_COMPANY.COMP_DATA_ID = ".$sPrefix."VIEW_COMPANY_DATA.COMP_DATA_ID)
+		AND	(".$sPrefix."VIEW_COMPANY.COMP_ACCESS >= ?);";
 
-		$InDBConn->ExecQuery($sDBQuery, FALSE);
-
-		if(!$InDBConn->HasError())
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("iii", $IniAvail, $IniAvail, $IniUserAccess))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery, $sPrefix);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

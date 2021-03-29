@@ -1,37 +1,28 @@
 <?php
-function ShareholderAddParser(ME_CDBConnManager &$InDBConn, int &$IniEmployeeIndex, int &$IniContentAccessLevelIndex, int &$IniIsAvailIndex) : void
+function ShareholderAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniEmployeeIndex, int $IniContentAccess, int $IniAvail) : bool
 {
-	if(($IniEmployeeIndex > 0) && ($IniContentAccessLevelIndex > 0) && ($IniIsAvailIndex > 0 && $IniIsAvailIndex < (count($_ENV['Available']) + 1)))
+	if(($IniEmployeeIndex > 0) &&
+	CheckAccessRange($IniContentAccess) &&
+	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sDBQuery = "";
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_SHAREHOLDER_ADD(EMP_ID, SHARE_ACCESS_ID, SHARE_AVAIL_ID) 
+		VALUES(?, ?, ?);";
 
-		$sDBQuery = "INSERT INTO
-		".$InDBConn->GetPrefix()."VIEW_SHAREHOLDER_ADD
-		(
-		EMP_ID,
-		SHARE_ACCESS_ID,
-		SHARE_AVAIL_ID
-		)
-		VALUES
-		(
-		".$IniEmployeeIndex.",
-		".$IniContentAccessLevelIndex.",
-		".$IniIsAvailIndex."
-		);";
-
-		$InDBConn->ExecQuery($sDBQuery, TRUE);
-
-		if(!$InDBConn->HasError())
+		//Create the statement query
+		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
-			if($InDBConn->HasWarning())
-				throw new Exception($InDBConn->GetWarning());
+			//Check if the statement binded the variables, else add an error
+			if($rStatement->bind_param("iii", $IniEmployeeIndex, $IniContentAccess, $IniAvail))				
+				return ME_SQLStatementExecAndClose($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
 		}
 		else
-			throw new Exception($InDBConn->GetError());
-
-		unset($sDBQuery);
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
 	}
 	else
-		throw new Exception("Input parameters do not meet requirements range");
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
 }
 ?>

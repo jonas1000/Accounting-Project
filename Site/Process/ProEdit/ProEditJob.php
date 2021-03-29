@@ -1,81 +1,83 @@
 <?php
-function ProEditJob(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel)
+function ProEditJob(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
 {
-    if(isset($_POST['JobIndex'], $_POST['Name'], $_POST['Price'], $_POST['PIA'], $_POST['Expenses'], $_POST['Damage'], $_POST['Date'], $_POST['Company'], $_POST['Access']))
+    if(isset($_POST['JobIndex'], $_POST['Name'], $_POST['Price'], $_POST['PIA'], $_POST['Expenses'], $_POST['Damage'], $_POST['Date'], $_POST['Company'], $_POST['Access']) 
+    && !ME_MultyCheckEmptyType($_POST['JobIndex'], $_POST['Name'], $_POST['Date'], $_POST['Company'], $_POST['Access']) 
+    && ME_MultyCheckNumericType($_POST['JobIndex'], $_POST['Company'], $_POST['Access'], $_POST['Price'], $_POST['PIA'], $_POST['Expenses'], $_POST['Damage']))
     {
-        if(!ME_MultyCheckEmptyType($_POST['JobIndex'], $_POST['Name'], $_POST['Date'], $_POST['Company'], $_POST['Access']))
+        $sName = ME_SecDataFilter($_POST['Name']);
+        $sDate = ME_SecDataFilter($_POST['Date']);
+
+        $fPrice = (float)$_POST['Price'];
+        $fPIA = (float)$_POST['PIA'];
+        $fExpenses = (float)$_POST['Expenses'];
+        $fDamage = (float)$_POST['Damage'];
+
+        $iJobIndex = (int)$_POST['JobIndex'];
+        $iCompanyIndex = (int)$_POST['Company'];
+        $iContentAccess = (int)$_POST['Access'];
+
+        if(($iJobIndex > 0) && ($iCompanyIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
         {
-            if(ME_MultyCheckNumericType($_POST['JobIndex'], $_POST['Company'], $_POST['Access']))
+            $rResult = JobSpecificRetriever($InrConn, $InrLogHandle, $iJobIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+
+            if(!empty($rResult) && ($rResult->num_rows == 1))
             {
-                $sName = $_POST['Name'];
-                $sDate = $_POST['Date'];
+                $aDataRow = $rResult->fetch_assoc();
 
-                $fPrice = (float) $_POST['Price'];
-                $fPIA = (float) $_POST['PIA'];
-                $fExpenses = (float) $_POST['Expenses'];
-                $fDamage = (float) $_POST['Damage'];
+                $iJobDataIndex = (int) $aDataRow['JOB_DATA_ID'];
+                $iJobIncomeIndex = (int) $aDataRow['JOB_INC_ID'];
+                $iJobOutcomeIndex = (int) $aDataRow['JOB_OUT_ID'];
+                $iJobAccess = (int) $aDataRow['JOB_ACCESS'];
 
-                $iJobIndex = (int) $_POST['JobIndex'];
-                $iCompanyIndex = (int) $_POST['Company'];
-                $iContentAccessIndex = (int) $_POST['Access'];
-
-                unset($_POST['JobIndex'], $_POST['Name'], $_POST['Price'], $_POST['PIA'], $_POST['Expenses'], $_POST['Damage'], $_POST['Date'], $_POST['Company'], $_POST['Access']);
-
-                ME_SecDataFilter($sName);
-                ME_SecDataFilter($sDate);
-
-                if(($iJobIndex > 0) && ($iCompanyIndex > 0) && ($iContentAccessIndex > 0) && ($IniUserAccessLevel > 0))
+                if(($iJobDataIndex > 0) && ($iJobIncomeIndex > 0) && ($iJobOutcomeIndex > 0) && CheckAccessRange($iJobAccess))
                 {
-                    JobSpecificRetriever($InDBConn, $iJobIndex, $IniUserAccessLevel, $_ENV['Available']['Show']);
-
-                    $aJobRow = $InDBConn->GetResultArray(MYSQLI_ASSOC);
-                    $iJobNumRows = $InDBConn->GetResultNumRows();
-
-                    if(!empty($aJobRow) && ($iJobNumRows > 0 && $iJobNumRows < 2))
+                    if(JobEditParser($InrConn, $InrLogHandle, $iJobIndex, $iCompanyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
                     {
-                        $iJobDataIndex = (int) $aJobRow['JOB_DATA_ID'];
-                        $iJobIncomeIndex = (int) $aJobRow['JOB_INC_ID'];
-                        $iJobOutcomeIndex = (int) $aJobRow['JOB_OUT_ID'];
-                        $iJobAccessLevel = (int) $aJobRow['JOB_ACCESS'];
-
-                        if(($iJobDataIndex > 0) && ($iJobIncomeIndex > 0) && ($iJobOutcomeIndex > 0) && ($iJobAccessLevel > 0))
+                        if(JobDataEditParser($InrConn, $InrLogHandle, $iJobDataIndex, $sName, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
                         {
-                            if($iJobAccessLevel > ($iJobAccessLevel - 1))
+                            if(JobIncomeEditParser($InrConn, $InrLogHandle, $iJobIncomeIndex, $fPrice, $fPIA, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
                             {
-                                JobEditParser($InDBConn, $iJobIndex, $iCompanyIndex, $iContentAccessIndex, $_ENV['Available']['Show']);
-
-                                JobDataEditParser($InDBConn, $iJobDataIndex, $sName, $sDate, $iContentAccessIndex, $_ENV['Available']['Show']);
-
-                                JobIncomeEditParser($InDBConn, $iJobIncomeIndex, $fPrice, $fPIA, $iContentAccessIndex, $_ENV['Available']['Show']);
-
-                                JobOutcomeEditParser($InDBConn, $iJobOutcomeIndex, $fExpenses, $fDamage, $iContentAccessIndex, $_ENV['Available']['Show']);
+                                if(JobOutcomeEditParser($InrConn, $InrLogHandle, $iJobOutcomeIndex, $fExpenses, $fDamage, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                                    $InrConn->Commit();
+                                else
+                                {
+                                    $InrConn->RollBack();
+                                    $InrLogHandle->AddLogMessage("Failed to edit outcome table", __FILE__, __FUNCTION__, __LINE__);
+                                }
                             }
                             else
-                                throw new Exception("insufficient privilage to access content");
+                            {
+                                $InrConn->RollBack();
+                                $InrLogHandle->AddLogMessage("Failed to edit income table", __FILE__, __FUNCTION__, __LINE__);
+                            }
                         }
                         else
-							throw new Exception("Query returned empty, did not find any ID (Possible data corruption)");
-
-                        unset($iJobDataIndex, $iJobIncomeIndex, $iJobOutcomeIndex);
+                        {
+                            $InrConn->RollBack();
+                            $InrLogHandle->AddLogMessage("Failed to edit data table", __FILE__, __FUNCTION__, __LINE__);
+                        }
                     }
                     else
-                        throw new Exception("Could not fetch Table result");
-
-                    unset($aJobRow, $iJobNumRows);
+                    {
+                        $InrConn->RollBack();
+                        $InrLogHandle->AddLogMessage("Failed to edit table", __FILE__, __FUNCTION__, __LINE__);
+                    }
                 }
                 else
-                    throw new Exception("Some variables do not meet the process requirement range, Check your variables");
+                    $InrLogHandle->AddLogMessage("Query returned empty, did not find any ID (Possible data corruption)", __FILE__, __FUNCTION__, __LINE__);
 
-                unset($sName, $sDate, $fPrice, $fPIA, $fExpenses, $fDamage, $iJobIndex, $iCompanyIndex, $iContentAccessIndex);
-                header("Location:.?MenuIndex=".$_ENV['MenuIndex']['Job']);
+                $rResult->free();
             }
-            else 
-                throw new Exception("Some POST variables are not considered numeric type");
-		}
-		else
-			throw new Exception("Some POST variables are empty, Those POST variables cannot be empty");
+            else
+                $InrLogHandle->AddLogMessage("Could not fetch Table result", __FILE__, __FUNCTION__, __LINE__);
+        }
+        else
+            $InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
+
+        header("Location:.?MenuIndex=".$GLOBALS['MENU_INDEX']['Job']);
 	}
 	else
-		throw new Exception("Missing POST variables to complete transaction");
+        $InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);
 }
 ?>

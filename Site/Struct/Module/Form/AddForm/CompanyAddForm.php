@@ -1,73 +1,32 @@
 <?php
-//-------------<FUNCTION>-------------//
-function HTMLCompanyAddForm(ME_CDBConnManager &$InDBConn, int &$IniUserAccessLevel) : void
+function HTMLCompanyAddForm(ME_CDBConnManager &$InrConn,ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
 {
-	//-------------<PHP-HTML>-------------//
-	print("<div class='Form'>");
+    //-------------<PHP-HTML>-------------//
+    print("<div class='Form'><form method='POST'><div>");
 
-	print("<form method='POST'>");
+    //Title
+    print("<div id='FormTitle'><h3>New Company</h3></div>");
 
-	print("<div>");
+    //Input Row - name
+    print("<div><label>Name*<input name='Name' type='text' placeholder='Company Name' required></label></div>");
 
-	//Title
-	print("<div id='FormTitle'>");
-	print("<h3>New Company</h3>");
-	print("</div>");
+    //Input Row - creation date
+    print("<div><label>creation date*<input name='Date' type='date' required></label></div>");
 
-	//Input Row
-	print("<div>");
-	print("<div>");
-	print("<h5>Name*</h5>");
-	print("</div>");
+    //get rows and render <select> element with data
+    print("<div><label>County");
+    RenderCountySelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+    print("</label></div>");
 
-	print("<div>");
-	print("<input name='Name' type='text' placeholder='Company Name' required>");
-	print("</div>");
-	print("</div>");
+    //get rows and render <select> element with data
+    print("<div><label>Access Type");
+    RenderAccessSelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+    print("</label></div>");
 
-	//Input Row
-	print("<div>");
-	print("<div>");
-	print("<h5>creation date*</h5>");
-	print("</div>");
+    //Input Buttons
+    printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'></div>", $GLOBALS['MENU_INDEX']['Company'], $GLOBALS['MODULE']['Add']);
+    printf("<div><a href='.?MenuIndex=%d'><div><p>Cancel</p></div></a>", $GLOBALS['MENU_INDEX']['Company']);
 
-	print("<div>");
-	print("<input name='Date' type='date' required>");
-	print("</div>");
-	print("</div>");
-
-	//get rows and render <select> element with data
-	print("<div>");
-	print("<div>");
-	print("<h5>County</h5>");
-	print("</div>");
-
-	print("<div>");
-	RenderCountySelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
-	print("</div>");
-	print("</div>");
-
-	//get rows and render <select> element with data
-	print("<div>");
-	print("<div>");
-	print("<h5>Access Type</h5>");
-	print("</div>");
-
-	print("<div>");
-	RenderAccessSelectRow($InDBConn, $IniUserAccessLevel, $_ENV['Available']['Show']);
-	print("</div>");
-	print("</div>");
-
-	print("</div>");
-
-	//Input Buttons
-	print("<div>");
-	printf("<a href='.?MenuIndex=%d'><div><p>Cancel</p></div></a>", $_ENV['MenuIndex']['Company']);
-	printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $_GET['MenuIndex'], $_GET['Module']);
-	print("</div>");
-
-	print("</form>");
-
-	print("</div>");
+    print("</form></div>");
 }
 ?>
