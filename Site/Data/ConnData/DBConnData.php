@@ -3,7 +3,7 @@ if(!isset($_SESSION['AccessID'], $_SESSION['ServerName'], $_SESSION['DBName'], $
 {
 	if($GLOBALS['DEBUG'])
 	{
-		$_SESSION['AccessID'] = $GLOBALS['ACCESS']['Admin'];
+		$_SESSION['AccessID'] = $GLOBALS['ACCESS']['ADMIN'];
 
 		//The Host server name for establishing the desired connection to the database.
 		$_SESSION['ServerDNS'] = "localhost";
@@ -18,7 +18,7 @@ if(!isset($_SESSION['AccessID'], $_SESSION['ServerName'], $_SESSION['DBName'], $
 	}
 	else
 	{
-		$_SESSION['AccessID'] = $GLOBALS['ACCESS']["Guest"];
+		$_SESSION['AccessID'] = $GLOBALS['ACCESS']["GUEST"];
 
 		//The Host server name for establishing the desired connection to the database.
 		$_SESSION['ServerDNS'] = "localhost";

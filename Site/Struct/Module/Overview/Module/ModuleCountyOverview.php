@@ -3,7 +3,7 @@ $rProcessFileHandle = new ME_CFileHandle($GLOBALS['DEFAULT_LOG_FILE'], $GLOBALS[
 
 $rProcessLogHandle = new ME_CLogHandle($rProcessFileHandle, "CountyProcess", __FILE__);
 
-//This is the connection to the database using the MedaLib Folder classes.
+//This is the connection to the database using the MedaLib classes.
 $rConn = new ME_CDBConnManager($rProcessLogHandle, $_SESSION['DBName'], $_SESSION['ServerDNS'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
 //If the module is not set then CompanyOverview from menu was selected, then load the overview.
@@ -11,7 +11,7 @@ if(!isset($_GET['Module']))
 {
 	require_once("Output/Retriever/CountyRetriever.php");
 	
-	ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLCountyOverview", $GLOBALS['ACCESS']['Employee'], "GET");
+	ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLCountyOverview", $GLOBALS['ACCESS']['EMPLOYEE'], "GET");
 }
 else
 {
@@ -19,7 +19,7 @@ else
     //WARNING: while add does not require a post method from the server, the Edit and Delete process require POST method to work.
 	switch($_GET['Module'])
 	{
-		case $GLOBALS['MODULE']['Add']:
+		case $GLOBALS['MODULE']['ADD']:
 		{
 			//If the form was completed from the add form then execute the process to at those data in the database.
 			if(isset($_GET['ProAdd']))
@@ -28,9 +28,9 @@ else
 				require_once("Input/Parser/AddParser/CountyAddParser.php");
 				require_once("Process/ProAdd/ProAddCounty.php");
 
-				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "ProAddCounty", $GLOBALS['ACCESS']['Employee'], "POST");
+				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "ProAddCounty", $GLOBALS['ACCESS']['EMPLOYEE'], "POST");
 
-				header("Location:.?MenuIndex=".$GLOBALS['MENU_INDEX']['County']);
+				header("Location:.?MenuIndex=".urlencode($GLOBALS['MENU_INDEX']['COUNTY']), $http_response_header=200);
 			}
 			else
 			{
@@ -40,12 +40,12 @@ else
 				require_once("Struct/Element/Function/Select/SelectCountryRowRender.php");
 				require_once("Struct/Module/Form/AddForm/CountyAddForm.php");
 
-				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLCountyAddForm", $GLOBALS['ACCESS']['Employee'], "GET");
+				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLCountyAddForm", $GLOBALS['ACCESS']['EMPLOYEE'], "GET");
 			}
 
 			break;
 		}
-		case $GLOBALS['MODULE']['Edit']:
+		case $GLOBALS['MODULE']['EDIT']:
 		{
 			//If the form was completed from the Edit form then execute the process and Edit those data in the database.
             require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
@@ -57,7 +57,9 @@ else
 				require_once("Output/SpecificRetriever/CountySpecificRetriever.php");
 				require_once("Process/ProEdit/ProEditCounty.php");
 				
-                ProQueryFunctionCallback($rConn, $rProcessLogHandle, "ProEditCounty", $GLOBALS['ACCESS']['Employee'], "POST");
+                ProQueryFunctionCallback($rConn, $rProcessLogHandle, "ProEditCounty", $GLOBALS['ACCESS']['EMPLOYEE'], "POST");
+
+				header("Location:.?MenuIndex=".urlencode($GLOBALS['MENU_INDEX']['COUNTY']), $http_response_header=200);
 			}
 			else
 			{
@@ -68,21 +70,21 @@ else
 				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
 				require_once("Struct/Module/Form/EditForm/CountyEditForm.php");
 
-				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLCountyEditForm", $GLOBALS['ACCESS']['Employee'], "POST");
+				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLCountyEditForm", $GLOBALS['ACCESS']['EMPLOYEE'], "POST");
 			}
 
 			break;
 		}
-		case $GLOBALS['MODULE']['Delete']:
+		case $GLOBALS['MODULE']['DELETE']:
 		{
 			//Execute the process and edit the show flag data in the database.
 			require_once("Input/Parser/VisibilityParser/CountyVisParser.php");
 			require_once("Output/SpecificRetriever/CountySpecificRetriever.php");
 			require_once("Process/ProDel/ProDelCounty.php");
 
-			ProQueryFunctionCallback($rConn, $rProcessLogHandle, "ProDelCounty", $GLOBALS['ACCESS']['Employee'], "POST");
+			ProQueryFunctionCallback($rConn, $rProcessLogHandle, "ProDelCounty", $GLOBALS['ACCESS']['EMPLOYEE'], "POST");
 
-			header("Location:Index.php?MenuIndex=" . urlencode($GLOBALS['MENU_INDEX']['County']));
+			header("Location:.?MenuIndex=".urlencode($GLOBALS['MENU_INDEX']['COUNTY']), $http_response_header=200);
 
 			break;
 		}

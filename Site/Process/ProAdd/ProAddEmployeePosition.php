@@ -16,7 +16,7 @@ function ProAddEmployeePosition(ME_CDBConnManager &$InrConn, ME_CLogHandle &$Inr
 		//If duplicate the database will throw a exception
 		if(CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
 		{
-			if(EmployeePositionAddParser($InrConn, $InrLogHandle, $sName, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+			if(EmployeePositionAddParser($InrConn, $InrLogHandle, $sName, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 			{
 				if($InrConn->Commit())
 					return TRUE;

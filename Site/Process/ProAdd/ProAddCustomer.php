@@ -2,9 +2,10 @@
 //-------------<FUNCTION>-------------//
 function ProAddCustomer(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : bool
 {
+	var_dump($_POST['Name'], $_POST['Surname'], $_POST['PhoneNumber'], $_POST['StableNumber'], $_POST['Email'], $_POST['VAT'], $_POST['Addr'], $_POST['Note'], $_POST['Access']);
 	if(isset($_POST['Name'], $_POST['Surname'], $_POST['PhoneNumber'], $_POST['StableNumber'], $_POST['Email'], $_POST['VAT'], $_POST['Addr'], $_POST['Note'], $_POST['Access']) &&
 	!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Surname'], $_POST['PhoneNumber'], $_POST['Access']) &&
-	is_numeric($_POST['Access']))
+	ME_MultyCheckNumericType($_POST['Access'], $_POST['PhoneNumber'], $_POST['StableNumber']))
 	{
 		//format the string to be compatible with HTML and avoid SQL injection
 		$sName = ME_SecDataFilter($_POST['Name']);
@@ -21,13 +22,13 @@ function ProAddCustomer(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandl
 
 		//database cannot accept Primary or foreighn keys below 1
 		//If duplicate the database will throw a exception
-		if(CheckAccessRange($iContentAccess) && CheckAccessRange(($IniUserAccess)))
+		if(CheckAccessRange($iContentAccess) &&	CheckAccessRange(($IniUserAccess)))
 		{
-			if(CustomerDataAddParser($InrConn, $InrLogHandle, $sName, $sSurname, $sPN, $sSN, $sEmail, $sVAT, $sAddr, $sNote, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+			if(CustomerDataAddParser($InrConn, $InrLogHandle, $sName, $sSurname, $sPN, $sSN, $sEmail, $sVAT, $sAddr, $sNote, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 			{
 				$iCustomerDataLastIndex = $InrConn->GetLastInsertID();
 
-				if(CustomerAddParser($InrConn, $InrLogHandle, $iCustomerDataLastIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+				if(CustomerAddParser($InrConn, $InrLogHandle, $iCustomerDataLastIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 				{
 					if($InrConn->Commit())
 						return TRUE;

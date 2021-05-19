@@ -2,23 +2,30 @@
 function HTMLEmployeePositionAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
 {
     //-------------<PHP-HTML>-------------//
-    print("<div class='Form'><form method='POST'><div>");
+    print("
+    <div class='Form'>
+        <form method='POST'>
+            <div>
+                <div id='FormTitle'><h3>New Employee Position</h3></div>
+                <div><label>Title*<input type='text' name='Name' placeholder='title position' required></label></div>
+            </div>");
 
-    //Title
-    print("<div id='FormTitle'><h3>New Employee Position</h3></div>");
-
-    //Input Row - position title
-    print("<div><label>Title*<input type='text' name='Name' placeholder='title position' required></label></div>");
 
     //get rows and render <select> element with data
-    print("<div><label>Access");
-    RenderAccessSelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
-    print("</label></div></div>");
+    print(" <div><label>Access");
+    RenderAccessSelectRow($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
+    print(" </label></div>");
 
     //Button Input
-    printf("<div><input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>", $GLOBALS['MENU_INDEX']['EmployeePosition'], $GLOBALS['MODULE']['Add']);
-    printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['EmployeePosition']);
-
-    print("</form></div>");
+    printf("
+            <div>
+                <input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProAdd'>
+                <a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>
+            </div>
+        </form>
+    </div>",
+    $GLOBALS['MENU_INDEX']['EMPLOYEE_POSITION'],
+    $GLOBALS['MODULE']['ADD'],
+    $GLOBALS['MENU_INDEX']['EMPLOYEE_POSITION']);
 }
 ?>

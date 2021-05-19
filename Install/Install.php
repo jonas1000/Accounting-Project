@@ -33,7 +33,7 @@ try
 	$rDBConnManagerErrorLog = new ME_CLogHandle($rInstalationFileLog, "DBErrorLog");
 	$rInstallationErrorLog = new ME_CLogHandle($rInstalationFileLog, "InstallationErrorLog");
 
-	$rConn = new ME_CDBConnManager($rDBConnManagerErrorLog, $ServerDNS, $DBName, $DBUsername, $DBPassword, $sPrefix);
+	$rConn = new ME_CDBConnManager($rDBConnManagerErrorLog, $DBName, $ServerDNS, $DBUsername, $DBPassword, $sPrefix);
 
 	if($rConn->bFailedToConnect)
 	{
@@ -42,9 +42,13 @@ try
 		exit("Failed to connect, check error log for more information");
 	}
 
-	print("<!DOCTYPE html>");
-	print("<html>");
-	print("<head><meta charset=utf8></head><body>");
+	print("
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset=utf8>
+		</head>
+		<body>");
 
 
 	CreateTables($rConn, $rInstallationErrorLog, $sPrefix, $DBName);
@@ -75,6 +79,9 @@ try
 		print("<br>Failed to Destroy session");
 
 	print("</body></html>");
+
+	$rInstallationErrorLog->WriteToFileAndClear();
+	$rDBConnManagerErrorLog->WriteToFileAndClear();
 }
 catch(Exception $Error)
 {
@@ -86,7 +93,4 @@ catch(Exception $Error)
 
 	$rExceptionLog->WriteToFileAndClear();
 }
-
-$rInstallationErrorLog->WriteToFileAndClear();
-$rDBConnManagerErrorLog->WriteToFileAndClear();
 ?>

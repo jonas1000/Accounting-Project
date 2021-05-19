@@ -1,5 +1,5 @@
 <?php
-function ProEditCompany(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
+function ProEditCompany(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess)
 {
     if(isset($_POST['Name'], $_POST['Date'], $_POST['County'], $_POST['Access']) 
     && !ME_MultyCheckEmptyType($_POST['Name'], $_POST['Date'], $_POST['County'], $_POST['Access'])
@@ -19,7 +19,7 @@ function ProEditCompany(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandl
         if(($iCompanyIndex > 0) && ($iCountyIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
         {
             //Get the information of the row to be able to modifie references
-            $rResult = CompanySpecificRetriever($InrConn, $InrLogHandle, $iCompanyIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+            $rResult = CompanySpecificRetriever($InrConn, $InrLogHandle, $iCompanyIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
             //Check result returns one row and it's not empty 
             if(!empty($rResult) && ($rResult->num_rows == 1))
@@ -31,12 +31,10 @@ function ProEditCompany(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandl
 
                 if(($iCompanyDataIndex > 0) && CheckAccessRange($iCompanyAccess))
                 {
-                    if(CompanyEditParser($InrConn, $InrLogHandle, $iCompanyIndex, $iCountyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                    if(CompanyEditParser($InrConn, $InrLogHandle, $iCompanyIndex, $iCountyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                     {
-                        if(CompanyDataEditParser($InrConn, $InrLogHandle, $iCompanyDataIndex, $sName, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
-                        {
+                        if(CompanyDataEditParser($InrConn, $InrLogHandle, $iCompanyDataIndex, $sName, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                             $InrConn->Commit();
-                        }
                         else
                         {
                             $InrConn->RollBack();
@@ -59,8 +57,6 @@ function ProEditCompany(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandl
         }
         else
             $InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
-
-        header("Location:.?MenuIndex=".$GLOBALS['MENU_INDEX']['Company']);
 	}
 	else
         $InrLogHandle->AddLogMessage("Missing or not complete POST variables to finish transaction transaction", __FILE__, __FUNCTION__, __LINE__);

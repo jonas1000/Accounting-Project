@@ -8,81 +8,60 @@ $DBConn = new ME_CDBConnManager($rErrorProcLogHandle, $_SESSION['DBName'], $_SES
 function HTMLHeader(ME_CDBConnManager &$InrDBConn, ME_CLogHandle &$InrLogHandle)
 {
 	//Header Box
-	print("<div class='Header'><div><div class='HeaderTitle'>");
+	print("
+	<div class='Header'>
+		<div>
+			<div class='HeaderTitle'>");
 
 	if(isset($_GET['MenuIndex']))
 		printf("<h1>%s</h1>", array_search($_GET['MenuIndex'], $GLOBALS['MENU_INDEX']));
 	else
 		print("<h1>Home</h1>");
 
-	print("</div>");
+	print("	</div>");
 
 	HTMLHeaderLogin($InrDBConn, $InrLogHandle);
 
-	print("</div></div>");
+	print("
+		</div>
+	</div>");
 }
 
 function HTMLHeaderLogin(ME_CDBConnManager &$InrDBConn, ME_CLogHandle &$InrLogHandle)
 {
 	//Header check state of user connection and display connected or not in the login box
-	switch(!isset($_GET['Login']))
+	if(!isset($_GET['Login']))
 	{
-		case TRUE:
+		//If $_GET['Logout'] is not set then check if $_SESSION['LogedIn'] is set, else display login form
+		if(!isset($_GET['Logout']))
 		{
-			//If $_GET['Logout'] is not set then check if $_SESSION['LogedIn'] is set, else display logout form
-			switch(!isset($_GET['Logout']))
+			if(isset($_SESSION['LogedIn']))
 			{
-				case TRUE:
-				{
-					switch(isset($_SESSION['LogedIn']))
-					{
-						case TRUE:
-						{
-							switch($_SESSION['LogedIn'])
-							{
-								case TRUE:
-									ProFunctionCallback($InrLogHandle,"HTMLLogedIn", $GLOBALS['ACCESS']['Employee'], "GET");
-									break;
-							}
-
-							break;
-						}
-
-						case FALSE:
-							ProFunctionCallback($InrLogHandle, "HTMLLoginForm", $GLOBALS['ACCESS']['Guest'], "GET");
-							break;
-					}
-
-					break;
-				}
-
-				case FALSE:
-				{
-					require_once("Struct/Module/Session/Logout.php");
-					ProFunctionCallback($InrLogHandle, "Logout", $GLOBALS['ACCESS']['Employee'], "GET");
-
-					header("Location:.");
-
-					break;
-				}
+				if($_SESSION['LogedIn'])
+					ProFunctionCallback($InrLogHandle,"HTMLLogedIn", $GLOBALS['ACCESS']['EMPLOYEE'], "GET");
 			}
-			break;
+			else
+				ProFunctionCallback($InrLogHandle, "HTMLLoginForm", $GLOBALS['ACCESS']['GUEST'], "GET");
 		}
-
-		case FALSE:
+		else
 		{
-			require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataEmptyType.php");
-			require_once("../MedaLib/Function/Filter/ConnFilter/StatementFilter.php");
-			require_once("../MedaLib/Function/SQL/SQLStatementExec.php");
-			require_once("Output/SpecificRetriever/EmployeeSpecificRetriever.php");
-			require_once("Process/ProCheck/ProLoginCheck.php");
+			require_once("Struct/Module/Session/Logout.php");
+			ProFunctionCallback($InrLogHandle, "Logout", $GLOBALS['ACCESS']['EMPLOYEE'], "GET");
 
-			ProQueryFunctionCallback($InrDBConn, $InrLogHandle, "LoginCheck", $GLOBALS['ACCESS']['Guest'], "POST");
-
-			header("Location:Index.php");
-
-			break;
+			header("Location:.");
 		}
+	}
+	else
+	{
+		require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataEmptyType.php");
+		require_once("../MedaLib/Function/Filter/ConnFilter/StatementFilter.php");
+		require_once("../MedaLib/Function/SQL/SQLStatementExec.php");
+		require_once("Output/SpecificRetriever/EmployeeSpecificRetriever.php");
+		require_once("Process/ProCheck/ProLoginCheck.php");
+
+		ProQueryFunctionCallback($InrDBConn, $InrLogHandle, "LoginCheck", $GLOBALS['ACCESS']['GUEST'], "POST");
+
+		header("Location:Index.php");
 	}
 }
 

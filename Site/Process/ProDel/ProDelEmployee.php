@@ -9,19 +9,19 @@ function ProDelEmployee(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandl
 
 		if(($iEmployeeIndex > 0) && CheckAccessRange($IniUserAccess))
 		{
-			$rResult = EmployeeSpecificRetriever($InrConn, $InrLogHandle, $iEmployeeIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+			$rResult = EmployeeSpecificRetriever($InrConn, $InrLogHandle, $iEmployeeIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
 			if(!empty($rResult) && ($rResult->num_rows == 1))
 			{
 				$aDataRow = $rResult->fetch_assoc();
 
-				if(EmployeeVisParser($InrConn, $InrLogHandle, (int) $aDataRow['EMP_ID'], $GLOBALS['AVAILABLE']['Hide']))
-					$InrConn->Commit();
-				else
-					$InrConn->RollBack();
-
-				if(EmployeeDataVisParser($InrConn, $InrLogHandle, (int) $aDataRow['EMP_DATA_ID'], $GLOBALS['AVAILABLE']['Hide']))
-					$InrConn->Commit();
+				if(EmployeeVisParser($InrConn, $InrLogHandle, (int) $aDataRow['EMP_ID'], $GLOBALS['AVAILABLE']['HIDE']))
+				{
+					if(EmployeeDataVisParser($InrConn, $InrLogHandle, (int) $aDataRow['EMP_DATA_ID'], $GLOBALS['AVAILABLE']['HIDE']))
+						$InrConn->Commit();
+					else
+						$InrConn->RollBack();
+				}
 				else
 					$InrConn->RollBack();
 
@@ -32,8 +32,6 @@ function ProDelEmployee(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandl
 		}
 		else
 			$InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
-
-		header("Location:Index.php?MenuIndex=" . $GLOBALS['MENU_INDEX']['Employee']);
 	}
 	else
 		$InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);

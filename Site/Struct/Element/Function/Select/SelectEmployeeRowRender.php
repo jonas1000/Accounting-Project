@@ -2,7 +2,7 @@
 //Render element <select> with the Employee array result from query
 function RenderEmployeeSelectRow(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniIsAvail) : void
 {
-	if(CheckAccessRange($IniUserAccess) && ($IniIsAvail > 0 && $IniIsAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']))
+	if(CheckAccessRange($IniUserAccess) && CheckRange($IniIsAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
 		$rResult = EmployeeSelectElemRetriever($InrConn, $InrLogHandle, $IniUserAccess, $IniIsAvail);
 
@@ -25,7 +25,7 @@ function RenderEmployeeSelectRow(ME_CDBConnManager &$InrConn, ME_CLogHandle &$In
 //Render element <select> with the Employee array result from query
 function RenderEmployeeSelectRowCheck(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniIsAvail, int $IniSelected = 0) : void
 {
-	if(CheckAccessRange($IniUserAccess) && ($IniIsAvail > 0 && $IniIsAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']) && ($IniSelected > 0))
+	if(CheckAccessRange($IniUserAccess) && CheckRange($IniIsAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0) && ($IniSelected > 0))
 	{
 		$rResult = EmployeeSelectElemRetriever($InrConn, $InrLogHandle, $IniUserAccess, $IniIsAvail);
 

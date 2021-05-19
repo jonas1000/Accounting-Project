@@ -8,59 +8,64 @@ function HTMLEmployeeEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLo
         
         if($iEmployeeIndex > 0)
         {
-            $rResult = EmployeeEditFormSpecificRetriever($InrConn, $InrLogHandle, $iEmployeeIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+            $rResult = EmployeeEditFormSpecificRetriever($InrConn, $InrLogHandle, $iEmployeeIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
             if(!empty($rResult) && ($rResult->num_rows == 1))
             {
                 $aDataRow = $rResult->fetch_assoc();
 
                 //-------------<PHP-HTML>-------------//
-                print("<div class='Form'><form method='POST'><div>");
 
-                //Title
-                printf("<div id='FormTitle'><h3>Edit Employee</h3><br><h4>%s %s</h4></div>", $aDataRow['EMP_DATA_NAME'], $aDataRow['EMP_DATA_SURNAME']);
-
-                //Input Row - name
-                printf("<div><label>Name*<input type='text' name='Name' placeholder='Employee Name' value='%s' required></label></div>", $aDataRow['EMP_DATA_NAME']);
-
-                //Input Row - surname
-                printf("<div><label>Surname*<input type='text' name='Surname' placeholder='Employee Surname' value='%s' required></label></div>", $aDataRow['EMP_DATA_SURNAME']);
-
-                //Input Row - email
-                printf("<div><label>Email*<input type='email' name='Email' placeholder='Employee Email' value='%s' required></label></div>", $aDataRow['EMP_DATA_EMAIL']);
-
-                //Input Row - salary
-                printf("<div><label>Salary<input type='number' name='Salary' min='0.00' step='0.01' value='%s' placeholder='Employee Salary'></label></div>", $aDataRow['EMP_DATA_SALARY']);
-
-                //Input Row - birth date
-                printf("<div><label>Birth Date*<input type='date' name='BDay' pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}' value='%s' required></label></div>", $aDataRow['EMP_DATA_BDAY']);
-
-                //Input Row - phone number
-                printf("<div><label>Phone Number*<input type='tel' max='16' name='PN' value='%s' required></label></div>", $aDataRow['EMP_DATA_PN']);
-
-                //Input Row - stable number
-                printf("<div><label>Stable Number<input type='tel' max='16' name='SN' value='%s'></label></div>", $aDataRow['EMP_DATA_SN']);
+                printf("
+                <div class='Form'>
+                    <form method='POST'>
+                        <div>
+                            <div id='FormTitle'><h3>Edit Employee</h3><br><h4>%s %s</h4></div>
+                            <div><label>Name*<input type='text' name='Name' placeholder='Employee Name' value='%s' required></label></div>
+                            <div><label>Surname*<input type='text' name='Surname' placeholder='Employee Surname' value='%s' required></label></div>
+                            <div><label>Email*<input type='email' name='Email' placeholder='Employee Email' value='%s' required></label></div>
+                            <div><label>Salary<input type='number' name='Salary' min='0.00' step='0.01' value='%s' placeholder='Employee Salary'></label></div>
+                            <div><label>Birth Date*<input type='date' name='BDay' pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}' value='%s' required></label></div>
+                            <div><label>Phone Number*<input type='tel' max='16' name='PN' value='%s' required></label></div>
+                            <div><label>Stable Number<input type='tel' max='16' name='SN' value='%s'></label></div>
+                        </div>",
+                $aDataRow['EMP_DATA_NAME'],
+                $aDataRow['EMP_DATA_SURNAME'],
+                $aDataRow['EMP_DATA_NAME'],
+                $aDataRow['EMP_DATA_SURNAME'],
+                $aDataRow['EMP_DATA_EMAIL'],
+                $aDataRow['EMP_DATA_SALARY'],
+                $aDataRow['EMP_DATA_BDAY'],
+                $aDataRow['EMP_DATA_PN'],
+                $aDataRow['EMP_DATA_SN']);
 
                 //get rows and render <select> element with data
                 print("<div><label>Company");
-                RenderCompanySelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], $aDataRow['COMP_ID']);
+                RenderCompanySelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW'], $aDataRow['COMP_ID']);
                 print("</label></div>");
 
                 //get rows and render <select> element with data
                 print("<div><label>Position");
-                RenderEmployeePosSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], $aDataRow['EMP_POS_ID']);
+                RenderEmployeePosSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW'], $aDataRow['EMP_POS_ID']);
                 print("</label></div>");
 
                 //get rows and render <select> element with data
                 print("<div><label>Access");
-                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], $aDataRow['EMP_ACCESS']);
-                print("</label></div></div>");
+                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW'], $aDataRow['EMP_ACCESS']);
+                print("</label></div>");
 
-                printf("<div><input type='hidden' name='EmployeeIndex' value='%s'>", $aDataRow['EMP_ID']);
-                printf("<input type='submit' value='Save' formaction='.?MenuIndex=%s&Module=%s&ProEdit'>", $GLOBALS['MENU_INDEX']['Employee'], $GLOBALS['MODULE']['Edit']);
-                printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['Employee']);
-
-                print("</div></form>");
+                printf("
+                        <div>
+                            <input type='hidden' name='EmployeeIndex' value='%s'>
+                            <input type='submit' value='Save' formaction='.?MenuIndex=%s&Module=%s&ProEdit'>
+                            <a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>
+                        </div>
+                    </div>
+                </form>",
+                $aDataRow['EMP_ID'],
+                $GLOBALS['MENU_INDEX']['EMPLOYEE'],
+                $GLOBALS['MODULE']['EDIT'],
+                $GLOBALS['MENU_INDEX']['EMPLOYEE']);
 
                 $rResult->free();
             }

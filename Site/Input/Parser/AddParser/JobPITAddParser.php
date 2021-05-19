@@ -8,7 +8,12 @@ function JobPITAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHand
 	{
 		$fPIT = round((empty($InfPIT) ? 0 : $InfPIT), $GLOBALS['CURRENCY_DECIMAL_PRECISION']);
 
-		$sQuery="INSERT INTO ".$InrConn->GetPrefix()."VIEW_JOB_INCOME_TIME_ADD(JOB_ID, JOB_PIT_PAYMENT, JOB_PIT_DATE, JOB_PIT_ACCESS_ID, JOB_PIT_AVAIL_ID) 
+		$sQuery="INSERT INTO ".$InrConn->GetPrefix()."VIEW_JOB_INCOME_TIME_ADD
+		(JOB_ID,
+		JOB_PIT_PAYMENT,
+		JOB_PIT_DATE,
+		JOB_PIT_ACCESS_ID,
+		JOB_PIT_AVAIL_ID) 
 		VALUES(?, ?, ?, ?, ?);";
 
 		//Create the statement query

@@ -1,5 +1,5 @@
 <?php
-function ProEditEmployee(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
+function ProEditEmployee(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess)
 {
     if(isset($_POST['EmployeeIndex'], $_POST['Name'], $_POST['Surname'], $_POST['Email'], $_POST['Salary'], $_POST['BDay'], $_POST['PN'], $_POST['SN'], $_POST['Company'], $_POST['EmployeePosition'], $_POST['Access']) 
     && !ME_MultyCheckEmptyType($_POST['EmployeeIndex'], $_POST['Name'], $_POST['Surname'], $_POST['PN']) 
@@ -19,9 +19,14 @@ function ProEditEmployee(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHand
         $iEmployeePositionIndex = (int)$_POST['EmployeePosition'];
         $iContentAccess = (int)$_POST['Access'];
 
-        if(($fSalary > -1) && ($iEmployeeIndex > 0) && ($iCompanyIndex > 0) && ($iEmployeePositionIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
+        if(($fSalary >= 0.0) &&
+        ($iEmployeeIndex > 0) &&
+        ($iCompanyIndex > 0) &&
+        ($iEmployeePositionIndex > 0) &&
+        CheckAccessRange($iContentAccess) &&
+        CheckAccessRange($IniUserAccess))
         {
-            $rResult = EmployeeSpecificRetriever($InrConn, $InrLogHandle, $iEmployeeIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+            $rResult = EmployeeSpecificRetriever($InrConn, $InrLogHandle, $iEmployeeIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
             if(!empty($rResult) && ($rResult->num_rows == 1))
             {
@@ -32,8 +37,8 @@ function ProEditEmployee(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHand
 
                 if(($iEmployeeDataIndex > 0) && CheckAccessRange($iEmployeeAccess))
                 {
-                    if(EmployeeEditParser($InrConn, $InrLogHandle, $iEmployeeIndex, $iEmployeePositionIndex, $iCompanyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show'])
-                    && EmployeeDataEditParser($InrConn, $InrLogHandle, $iEmployeeDataIndex, $sName, $sSurname, $sEmail, $fSalary, $sBDay, $sPhoneNumber, $sStableNumber, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                    if(EmployeeEditParser($InrConn, $InrLogHandle, $iEmployeeIndex, $iEmployeePositionIndex, $iCompanyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW'])
+                    && EmployeeDataEditParser($InrConn, $InrLogHandle, $iEmployeeDataIndex, $sName, $sSurname, $sEmail, $fSalary, $sBDay, $sPhoneNumber, $sStableNumber, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                         $InrConn->Commit();
                     else
                     {

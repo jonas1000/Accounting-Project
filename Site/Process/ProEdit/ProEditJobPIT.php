@@ -1,5 +1,5 @@
 <?php
-function ProEditJobPIT(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
+function ProEditJobPIT(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess)
 {
     if(isset($_POST['JobPITIndex'], $_POST['PIT'], $_POST['Date'], $_POST['Access']) 
     && !ME_MultyCheckEmptyType($_POST['JobPITIndex'], $_POST['Date'], $_POST['Access'])
@@ -14,7 +14,7 @@ function ProEditJobPIT(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle
 
         if(($iJobPITIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
         {
-            $rResult = JobPITSpecificRetriever($InrConn, $InrLogHandle, $iJobPITIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+            $rResult = JobPITSpecificRetriever($InrConn, $InrLogHandle, $iJobPITIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
             if(!empty($rResult) && ($rResult->num_rows == 1))
             {
@@ -24,7 +24,7 @@ function ProEditJobPIT(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle
 
                 if(CheckAccessRange($iJobPITAccess))
                 {
-                    if(JobPITEditParser($InrConn, $InrLogHandle, $iJobPITIndex, $fPIT, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                    if(JobPITEditParser($InrConn, $InrLogHandle, $iJobPITIndex, $fPIT, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                         $InrConn->Commit();
                     else
                     {
@@ -42,8 +42,6 @@ function ProEditJobPIT(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle
         }
         else
             $InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
-
-        header("Location:.?MenuIndex=".$GLOBALS['MENU_INDEX']['Job']);
 	}
 	else
         $InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);

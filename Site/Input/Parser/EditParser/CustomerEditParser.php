@@ -5,7 +5,7 @@ function CustomerEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogH
 	if(CheckAccessRange($IniContentAccess) &&
 	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sQuery = "UPDATE ".$InrConn->GetPrefix()."CUSTOMER_EDIT
+		$sQuery = "UPDATE ".$InrConn->GetPrefix()."VIEW_CUSTOMER_EDIT
 		SET 
 		CUST_ACCESS_ID = ?,
 		CUST_AVAIL_ID = ?
@@ -39,12 +39,10 @@ function CustomerDataEditParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$Inr
 		$sName = (empty($InsName) ? "None" : $InsName);
 		$sSurname = (empty($InsSurname) ? "None" : $InsSurname);
 		$sStableNumber = (empty($InsStableNumber) ? "None" : $InsStableNumber);
-		$sEmail = (empty($InsEmail) ? "null" : $InsEmail);
-		$sVAT = (empty($InsVAT) ? "null" : $InsVAT);
 		$sAddr = (empty($InsAddr) ? "None" : $InsAddr);
 		$sNote = (empty($InsNote) ? "None" : $InsNote);
 
-		$sQuery = "UPDATE ".$InrConn->GetPrefix()."CUSTOMER_DATA_EDIT
+		$sQuery = "UPDATE ".$InrConn->GetPrefix()."VIEW_CUSTOMER_DATA_EDIT
 		SET 
 		CUST_DATA_NAME = ?,
 		CUST_DATA_SURNAME = ?,

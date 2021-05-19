@@ -1,6 +1,6 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProDelCountry(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
+function ProDelCountry(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
 {
 	if(isset($_POST['CounIndex']) && !empty($_POST['CounIndex']) && is_numeric($_POST['CounIndex']))
 	{
@@ -9,14 +9,14 @@ function ProDelCountry(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle
 
 		if(($iCountryIndex > 0) && CheckAccessRange($IniUserAccess))
 		{
-			$rResult = CountrySpecificRetriever($InrConn, $InrLogHandle, $iCountryIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+			$rResult = CountrySpecificRetriever($InrConn, $InrLogHandle, $iCountryIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
 			if(!empty($rResult) && ($rResult->num_rows == 1))
 			{
 				$aDataRow = $rResult->fetch_assoc();
 
-				if(CountryVisParser($InrConn, $InrLogHandle, (int) $aDataRow['COUN_ID'], $GLOBALS['AVAILABLE']['Hide']) &&
-				CountryDataVisParser($InrConn, $InrLogHandle, (int) $aDataRow['COUN_DATA_ID'], $GLOBALS['AVAILABLE']['Hide']))
+				if(CountryVisParser($InrConn, $InrLogHandle, (int) $aDataRow['COUN_ID'], $GLOBALS['AVAILABLE']['HIDE']) &&
+				CountryDataVisParser($InrConn, $InrLogHandle, (int) $aDataRow['COUN_DATA_ID'], $GLOBALS['AVAILABLE']['HIDE']))
 					$InrConn->Commit();
 				else
 				{

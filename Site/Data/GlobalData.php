@@ -1,8 +1,8 @@
 <?php
 $APP_VERSION_MAJOR = 0;
 $APP_VERSION_MIDDLE = 2;
-$APP_VERSION_MINOR = 6;
-$APP_PATCH = 5;
+$APP_VERSION_MINOR = 7;
+$APP_PATCH = 0;
 
 $CONN_ENCODING = "utf8";
 
@@ -20,110 +20,110 @@ $CURRENCY_DECIMAL_PRECISION = 2;
 
 $AVAILABLE = 
 [
-    'Hide' => 1,
-    'Show' => 2
+    'SHOW' => 1,
+    'HIDE' => 2
 ];
 
 $ACCESS = 
 [
-    'Admin' => 1,
+    'ADMIN' => 1,
     'CEO' => 2,
-    'Employee' => 3,
-    'Guest' => 4
+    'EMPLOYEE' => 3,
+    'GUEST' => 4
 ];
 
 $MENU_INDEX = 
 [
-    'AccessError' => -1,
-    'Company' => 0,
-    'Country' => 1,
-    'Employee' => 2,
-    'EmployeePosition' => 3,
-    'Job' => 4,
-    'Shareholder' => 5,
-    'Customer' => 6,
-    'County' => 7
+    'ERROR' => -1,
+    'COMPANY' => 0,
+    'COUNTRY' => 1,
+    'EMPLOYEE' => 2,
+    'EMPLOYEE_POSITION' => 3,
+    'JOB' => 4,
+    'SHAREHOLDER' => 5,
+    'CUSTOMER' => 6,
+    'COUNTY' => 7
 ];
 
 $MODULE = 
 [
-    'Add' => 0,
-    'Edit' => 1,
-    'Delete' => 2,
-    'Extend' => 3
+    'ADD' => 0,
+    'EDIT' => 1,
+    'DELETE' => 2,
+    'EXTEND' => 3
 ];
 
 //The index contains the name value that will appear in the HTML selector document
 $COMPANY_SEARCH_TYPE = 
 [
-    "Company_Title" => ["name" => "Company", "value" => "Company"],
-    "Country_Title" => ["name" => "Country", "value" => "Country"],
-    "County_Title" => ["name" => "County", "value" => "County"],
-    "Company_Date" => ["name" => "Date", "value" => "Date"],
-    "County_Tax" => ["name" => "Tax", "value" => "Tax"],
-    "County_IR" => ["name" => "Interest", "value" => "Interest Rate"]
+    "COMPANY_TITLE" => ["NAME" => "Company", "VALUE" => "Company"],
+    "COUNTRY_TITLE" => ["NAME" => "Country", "VALUE" => "Country"],
+    "COUNTY_TITLE" => ["NAME" => "County", "VALUE" => "County"],
+    "COMPANY_DATE" => ["NAME" => "Date", "VALUE" => "Date"],
+    "COUNTY_TAX" => ["NAME" => "Tax", "VALUE" => "Tax"],
+    "COUNTY_IR" => ["NAME" => "Interest", "VALUE" => "Interest Rate"]
 ];
 
 $COUNTRY_SEARCH_TYPE = 
 [
-    "Country_Title" => ["name" => "Country", "value" => "Country"]
+    "COUNTRY_TITLE" => ["NAME" => "Country", "VALUE" => "Country"]
 ];
 
 $COUNTY_SEARCH_TYPE = 
 [
-    "County_Title" => ["name" => "Country", "value" => "County"],
-    "County_Tax" => ["name" => "Tax", "value" => "Tax"],
-    "County_IR" => ["name" => "Interest", "value" => "Interest Rate"]
+    "COUNTY_TITLE" => ["NAME" => "Country", "VALUE" => "County"],
+    "COUNTY_TAX" => ["NAME" => "Tax", "VALUE" => "Tax"],
+    "COUNTY_IR" => ["NAME" => "Interest", "VALUE" => "Interest Rate"]
 ];
 
 $CUSTOMER_SEARCH_TYPE = 
 [
-    "Customer_Name" => ["name" => "Name", "value" => "Name"],
-    "Customer_Surname" => ["name" => "Surname", "value" => "Surname"],
-    "Customer_Phone" => ["name" => "Phone", "value" => "Phone Number"],
-    "Customer_Stable" => ["name" => "Stable", "value" => "Stable Number"],
-    "Customer_Email" => ["name" => "Email", "value" => "Email"],
-    "Customer_VAT" => ["name" => "VAT", "value" => "VAT"]
+    "CUSTOMER_NAME" => ["NAME" => "Name", "VALUE" => "Name"],
+    "CUSTOMER_SURNAME" => ["NAME" => "Surname", "VALUE" => "Surname"],
+    "CUSTOMER_PHONE" => ["NAME" => "Phone", "VALUE" => "Phone Number"],
+    "CUSTOMER_STABLE" => ["NAME" => "Stable", "VALUE" => "Stable Number"],
+    "CUSTOMER_EMAIL" => ["NAME" => "Email", "VALUE" => "Email"],
+    "CUSTOMER_VAT" => ["NAME" => "VAT", "VALUE" => "VAT"]
 ];
 
 $EMPLOYEE_SEARCH_TYPE = 
 [
-    "Employee_Name" => ["name" => "Name", "value" => "Name"],
-    "Employee_Surname" => ["name" => "Surname", "value" => "Surname"],
-    "Employee_Email" => ["name" => "Email", "value" => "Email"],
-    "Employee_BirthDay" => ["name" => "BirthDate", "value" => "Birth Date"],
-    "Employee_Phone" => ["name" => "Phone", "value" => "Phone Number"],
-    "Employee_Stable" => ["name" => "Stable", "value" => "Stable Number"],
-    "Employee_Title" => ["name" => "Title", "value" => "Title"],
-    "Employee_Salary" => ["name" => "Salary", "value" => "Salary"]
+    "EMPLOYEE_NAME" => ["NAME" => "Name", "VALUE" => "Name"],
+    "EMPLOYEE_SURNAME" => ["NAME" => "Surname", "VALUE" => "Surname"],
+    "EMPLOYEE_EMAIL" => ["NAME" => "Email", "VALUE" => "Email"],
+    "EMPLOYEE_BIRTH_DATE" => ["NAME" => "BirthDate", "VALUE" => "Birth Date"],
+    "EMPLOYEE_PHONE" => ["NAME" => "Phone", "VALUE" => "Phone Number"],
+    "EMPLOYEE_STABLE" => ["NAME" => "Stable", "VALUE" => "Stable Number"],
+    "EMPLOYEE_TITLE" => ["NAME" => "Title", "VALUE" => "Title"],
+    "EMPLOYEE_SALARY" => ["NAME" => "Salary", "VALUE" => "Salary"]
 ];
 
 $EMPLOYEE_POSITION_SEARCH_TYPE = 
 [
-    "Employee_Position_Title" => ["name" => "Title", "value" => "Title"]
+    "EMPLOYEE_POSITION_TITLE" => ["NAME" => "Title", "VALUE" => "Title"]
 ];
 
 $JOB_ASSIGMENT_SEARCH_TYPE = [];
 
 $JOB_SEARCH_TYPE = 
 [
-    "Job_Title" => ["name" => "Title", "value" => "Title"],
-    "Job_Date" => ["name" => "Date", "value" => "Date"],
-    "Job_Price" => ["name" => "Price", "value" => "Price"],
-    "Job_PIA" => ["name" => "PIA", "value" => "Payment In Advance"],
-    "Job_Expenses" => ["name" => "Expenses", "value" => "Expenses"],
-    "Job_Damage" => ["name" => "Damage", "value" => "Damage"],
-    "Job_CompTitle" => ["name" => "CompanyTitle", "value" => "Company Name"]
+    "JOB_TITLE" => ["NAME" => "Title", "VALUE" => "Title"],
+    "JOB_DATE" => ["NAME" => "Date", "VALUE" => "Date"],
+    "JOB_PRICE" => ["NAME" => "Price", "VALUE" => "Price"],
+    "JOB_PIA" => ["NAME" => "PIA", "VALUE" => "Payment In Advance"],
+    "JOB_EXPENSES" => ["NAME" => "Expenses", "VALUE" => "Expenses"],
+    "JOB_DAMAGE" => ["NAME" => "Damage", "VALUE" => "Damage"],
+    "JOB_COMPANY_TITLE" => ["NAME" => "CompanyTitle", "VALUE" => "Company Name"]
 ];
 
 $SHAREHOLDER_SEARCH_TYPE = 
 [
-    "Shareholder_Name" => ["name" => "Name", "value" => "Name"],
-    "Shareholder_Surname" => ["name" => "Surname", "value" => "Surname"],
-    "Shareholder_Email" => ["name" => "Email", "value" => "Email"],
-    "Shareholder_BDay" => ["name" => "Date", "value" => "Birth day Date"],
-    "Shareholder_PosTitle" => ["name" => "PositionTitle", "value" => "Position Title"],
-    "Shareholder_Salary" => ["name" => "Salary", "value" => "Salary"]
+    "SHAREHOLDER_NAME" => ["NAME" => "Name", "VALUE" => "Name"],
+    "SHAREHOLDER_SURNAME" => ["NAME" => "Surname", "VALUE" => "Surname"],
+    "SHAREHOLDER_EMAIL" => ["NAME" => "Email", "VALUE" => "Email"],
+    "SHAREHOLDER_BIRTH_DATE" => ["NAME" => "Date", "VALUE" => "Birth day Date"],
+    "SHAREHOLDER_POSITION_TITLE" => ["NAME" => "PositionTitle", "VALUE" => "Position Title"],
+    "SHAREHOLDER_SALARY" => ["NAME" => "Salary", "VALUE" => "Salary"]
 ];
 
 $AVAILABLE_ARRAY_SIZE = count($GLOBALS['AVAILABLE']);

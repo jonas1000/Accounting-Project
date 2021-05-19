@@ -1,5 +1,5 @@
 <?php
-function ProEditCountry(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
+function ProEditCountry(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess)
 {
     if(isset($_POST['CounIndex'], $_POST['Name'], $_POST['Access']) 
     && !ME_MultyCheckEmptyType($_POST['CounIndex'], $_POST['Name'], $_POST['Access']) 
@@ -17,7 +17,7 @@ function ProEditCountry(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandl
         if(CheckAccessRange($iContentAccess) && ($iCountryIndex > 0) && CheckAccessRange($IniUserAccess))
         {
             //Get the information of the row to be able to modifie references
-            $rResult = CountrySpecificRetriever($InrConn, $InrLogHandle, $iCountryIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+            $rResult = CountrySpecificRetriever($InrConn, $InrLogHandle, $iCountryIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
             //Check result returns one row and it's not empty 
             if(!empty($rResult) && ($rResult->num_rows == 1))
@@ -29,9 +29,9 @@ function ProEditCountry(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandl
 
                 if(($iCountryDataIndex > 0) && CheckAccessRange($iCountryAccess))
                 {
-                    if(CountryEditParser($InrConn, $InrLogHandle, $iCountryIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                    if(CountryEditParser($InrConn, $InrLogHandle, $iCountryIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                     {
-                        if(CountryDataEditParser($InrConn, $InrLogHandle,  $iCountryDataIndex, $sName, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                        if(CountryDataEditParser($InrConn, $InrLogHandle,  $iCountryDataIndex, $sName, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                             $InrConn->Commit();
                         else
                         {

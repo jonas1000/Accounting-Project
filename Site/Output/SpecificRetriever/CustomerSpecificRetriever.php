@@ -74,7 +74,7 @@ function CustomerDataSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandl
 	return FALSE;
 }
 
-function CustomerGeneralSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniCustomerIndex, int $IniUserAccess, int $IniAvail)
+function CustomerEditFormSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniCustomerIndex, int $IniUserAccess, int $IniAvail)
 {
 	if(CheckAccessRange($IniUserAccess) &&
 	($IniCustomerIndex > 0) &&
@@ -84,9 +84,7 @@ function CustomerGeneralSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHa
 
 		$sQuery = "SELECT
 		CUST_ID,
-        CUST_ACCESS,
-        CUST_DATA_ID,
-        CUST_DATA_ACCESS,
+		CUST_DATA_ACCESS,
 		CUST_DATA_NAME,
 		CUST_DATA_SURNAME,
 		CUST_DATA_EMAIL,
@@ -95,11 +93,12 @@ function CustomerGeneralSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHa
 		CUST_DATA_VAT,
 		CUST_DATA_ADDR,
 		CUST_DATA_NOTE
-		FROM ".$InrConn->GetPrefix()."VIEW_CUSTOMER_GENERAL
-		WHERE (CUST_AVAIL = ?
-        AND CUST_DATA_AVAIL = ?)
-		AND (CUST_ACCESS >= ?
-        AND CUST_DATA_ACCESS >= ?)
+		FROM 
+		".$InrConn->GetPrefix()."VIEW_CUSTOMER, 
+		".$InrConn->GetPrefix()."VIEW_CUSTOMER_DATA
+		WHERE ".$InrConn->GetPrefix()."VIEW_CUSTOMER.CUST_DATA_ID = ".$InrConn->GetPrefix()."VIEW_CUSTOMER_DATA.CUST_DATA_ID
+		AND (CUST_AVAIL = ? AND CUST_DATA_AVAIL = ?)
+		AND (CUST_ACCESS >= ? AND CUST_DATA_ACCESS >= ?)
         AND (CUST_ID = ?);";
 
         if($rStatement = $InrConn->CreateStatement($sQuery))

@@ -3,43 +3,43 @@ function JobSearchConstructor(string &$InsSearchTypeQuery, string &$IniSearchTyp
 {
 	switch($IniSearchType)
 	{
-		case $GLOBALS['JOB_SEARCH_TYPE']['Job_Title']["name"]:
+		case $GLOBALS['JOB_SEARCH_TYPE']['JOB_TITLE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "JOB_DATA_Title";
 			break;
 		}
 
-		case $GLOBALS['JOB_SEARCH_TYPE']['Job_Date']["name"]:
+		case $GLOBALS['JOB_SEARCH_TYPE']['JOB_DATE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "JOB_DATA_Date";
 			break;
 		}
 
-		case $GLOBALS['JOB_SEARCH_TYPE']['Job_Price']["name"]:
+		case $GLOBALS['JOB_SEARCH_TYPE']['JOB_PRICE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "JOB_DATA_Price";
 			break;
 		}
 
-		case $GLOBALS['JOB_SEARCH_TYPE']['Job_PIA']["name"]:
+		case $GLOBALS['JOB_SEARCH_TYPE']['JOB_PIA']["NAME"]:
 		{
 			$InsSearchTypeQuery = "JOB_DATA_PIA";
 			break;
 		}
 
-		case $GLOBALS['JOB_SEARCH_TYPE']['Job_Expenses']["name"]:
+		case $GLOBALS['JOB_SEARCH_TYPE']['JOB_EXPENSES']["NAME"]:
 		{
 			$InsSearchTypeQuery = "JOB_DATA_Expenses";
 			break;
 		}
 
-		case $GLOBALS['JOB_SEARCH_TYPE']['Job_Damage']["name"]:
+		case $GLOBALS['JOB_SEARCH_TYPE']['JOB_DAMAGE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "JOB_DATA_Damage";
 			break;
 		}
 
-		case $GLOBALS['JOB_SEARCH_TYPE']['Job_CompTitle']["name"]:
+		case $GLOBALS['JOB_SEARCH_TYPE']['JOB_COMPANY_TITLE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "COMPANY_DATA_Title";
 			break;

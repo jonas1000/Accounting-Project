@@ -7,7 +7,12 @@ function EmployeeAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHa
 	CheckAccessRange($IniContentAccess) &&
 	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_ADD(EMP_POS_ID, EMP_DATA_ID, COMP_ID, EMP_ACCESS_ID, EMP_AVAIL_ID) 
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_ADD
+		(EMP_POS_ID,
+		EMP_DATA_ID,
+		COMP_ID,
+		EMP_ACCESS_ID,
+		EMP_AVAIL_ID) 
 		VALUES(?, ?, ?, ?, ?);";
 
 		//Create the statement query
@@ -41,7 +46,17 @@ function EmployeeDataAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrL
 		$sStableNumber = (empty($InsStableNumber) ? "None" : $InsStableNumber);
 		
 		//database Query
-		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_DATA_ADD(EMP_DATA_SALARY, EMP_DATA_BDAY, EMP_DATA_PN, EMP_DATA_SN, EMP_DATA_EMAIL, EMP_DATA_NAME, EMP_DATA_SURNAME, EMP_DATA_PASS, EMP_DATA_ACCESS_ID, EMP_DATA_AVAIL_ID) 
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_DATA_ADD
+		(EMP_DATA_SALARY,
+		EMP_DATA_BDAY,
+		EMP_DATA_PN,
+		EMP_DATA_SN,
+		EMP_DATA_EMAIL,
+		EMP_DATA_NAME,
+		EMP_DATA_SURNAME,
+		EMP_DATA_PASS,
+		EMP_DATA_ACCESS_ID,
+		EMP_DATA_AVAIL_ID) 
 		VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 		//Create the statement query

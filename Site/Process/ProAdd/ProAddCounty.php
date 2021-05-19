@@ -2,6 +2,7 @@
 //-------------<FUNCTION>-------------//
 function ProAddCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : bool
 {
+	var_dump($_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Access']);
 	if(isset($_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Access']) &&
 	!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Access']) &&
 	ME_MultyCheckNumericType($_POST['Country'], $_POST['Access'], $_POST['Tax'], $_POST['IR']))
@@ -10,7 +11,7 @@ function ProAddCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle,
 		$sTitle = ME_SecDataFilter($_POST['Name']);
 
 		$fTax = (float)$_POST['Tax'];
-		$fInterestRate = (float)$_POST['IR'];
+		$fIR = (float)$_POST['IR'];
 
 		//variables consindered to be holding ID
 		$iCountryIndex = (int)$_POST['Country'];
@@ -19,13 +20,17 @@ function ProAddCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle,
 		//Limit data to a certain acceptable range
 		//database cannot accept Primary or foreighn keys below 1
 		//If duplicate the database will throw a exception
-		if(($iCountryIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
+		if(CheckRange($fTax, 100.0, 0.0) &&
+		CheckRange($fIR, 100.0, 0.0) &&
+		($iCountryIndex > 0) &&
+		CheckAccessRange($iContentAccess) &&
+		CheckAccessRange($IniUserAccess))
 		{
-			if(CountyDataAddParser($InrConn, $InrLogHandle, $sTitle, $fTax, $fInterestRate, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+			if(CountyDataAddParser($InrConn, $InrLogHandle, $sTitle, $fTax, $fIR, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 			{
 				$iLastIndexCountyData = $InrConn->GetLastInsertID();
 
-				if(CountyAddParser($InrConn, $InrLogHandle, $iLastIndexCountyData, $iCountryIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+				if(CountyAddParser($InrConn, $InrLogHandle, $iLastIndexCountyData, $iCountryIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 				{
 					if($InrConn->Commit())
 						return TRUE;

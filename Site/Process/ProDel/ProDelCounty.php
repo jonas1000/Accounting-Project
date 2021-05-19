@@ -1,6 +1,6 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProDelCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
+function ProDelCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
 {
 	if(isset($_POST['CouIndex']) && !empty($_POST['CouIndex']) && is_numeric($_POST['CouIndex']))
 	{
@@ -9,14 +9,14 @@ function ProDelCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle,
 
 		if(($iCountyIndex > 0) && CheckAccessRange($IniUserAccess))
 		{
-			$rResult = CountySpecificRetriever($InrConn, $InrLogHandle, $iCountyIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+			$rResult = CountySpecificRetriever($InrConn, $InrLogHandle, $iCountyIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
 			if(!empty($rResult) && ($rResult->num_rows == 1))
 			{
 				$aDataRow = $rResult->fetch_assoc();
 
-				if(CountyVisParser($InrDBConn, $InrLogHandle, (int) $aDataRow['COU_ID'], $GLOBALS['AVAILABLE']['Hide']) &&
-				CountyDataVisParser($InrDBConn, $InrLogHandle, (int) $aDataRow['COU_DATA_ID'], $GLOBALS['AVAILABLE']['Hide']))
+				if(CountyVisParser($InrConn, $InrLogHandle, (int) $aDataRow['COU_ID'], $GLOBALS['AVAILABLE']['HIDE']) &&
+				CountyDataVisParser($InrConn, $InrLogHandle, (int) $aDataRow['COU_DATA_ID'], $GLOBALS['AVAILABLE']['HIDE']))
 					$InrConn->Commit();
 				else
 				{

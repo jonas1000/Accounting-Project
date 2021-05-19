@@ -1,5 +1,5 @@
 <?php
-function ProEditEmployeePosition(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
+function ProEditEmployeePosition(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess)
 {
     if(isset($_POST['EmpPosIndex'], $_POST['Name'], $_POST['Access']) 
     && !ME_MultyCheckEmptyType($_POST['EmpPosIndex'], $_POST['Name'], $_POST['Access']) 
@@ -12,7 +12,7 @@ function ProEditEmployeePosition(ME_CDBConnManager &$InrConn, ME_CLogHandle &$In
 
         if(($iEmployeePositionIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
         {
-            $rResult = EmployeePositionSpecificRetriever($InrConn, $InrLogHandle, $iEmployeePositionIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+            $rResult = EmployeePositionSpecificRetriever($InrConn, $InrLogHandle, $iEmployeePositionIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
             if(!empty($rResult) && ($rResult->num_rows == 1))
             {
@@ -22,7 +22,7 @@ function ProEditEmployeePosition(ME_CDBConnManager &$InrConn, ME_CLogHandle &$In
 
                 if(CheckAccessRange($iEmployeePositionAccess))
                 {
-                    if(EmployeePositionEditParser($InrConn, $InrLogHandle, $iEmployeePositionIndex, $sName, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                    if(EmployeePositionEditParser($InrConn, $InrLogHandle, $iEmployeePositionIndex, $sName, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                         $InrConn->Commit();
                     else
                     {

@@ -1,5 +1,5 @@
 <?php
-function ProEditJob(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
+function ProEditJob(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess)
 {
     if(isset($_POST['JobIndex'], $_POST['Name'], $_POST['Price'], $_POST['PIA'], $_POST['Expenses'], $_POST['Damage'], $_POST['Date'], $_POST['Company'], $_POST['Access']) 
     && !ME_MultyCheckEmptyType($_POST['JobIndex'], $_POST['Name'], $_POST['Date'], $_POST['Company'], $_POST['Access']) 
@@ -8,18 +8,25 @@ function ProEditJob(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, i
         $sName = ME_SecDataFilter($_POST['Name']);
         $sDate = ME_SecDataFilter($_POST['Date']);
 
-        $fPrice = (float)$_POST['Price'];
-        $fPIA = (float)$_POST['PIA'];
-        $fExpenses = (float)$_POST['Expenses'];
-        $fDamage = (float)$_POST['Damage'];
+        $fPrice = abs((float)$_POST['Price']);
+        $fPIA = abs((float)$_POST['PIA']);
+        $fExpenses = -abs((float)$_POST['Expenses']);
+        $fDamage = -abs((float)$_POST['Damage']);
 
         $iJobIndex = (int)$_POST['JobIndex'];
         $iCompanyIndex = (int)$_POST['Company'];
         $iContentAccess = (int)$_POST['Access'];
 
-        if(($iJobIndex > 0) && ($iCompanyIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
+        if(($fPrice >= 0.0) &&
+        ($fPIA >= 0.0) &&
+        ($fExpenses <= 0.0) &&
+        ($fDamage <= 0.0) &&
+        ($iJobIndex > 0) &&
+        ($iCompanyIndex > 0) &&
+        CheckAccessRange($iContentAccess) &&
+        CheckAccessRange($IniUserAccess))
         {
-            $rResult = JobSpecificRetriever($InrConn, $InrLogHandle, $iJobIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+            $rResult = JobSpecificRetriever($InrConn, $InrLogHandle, $iJobIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
             if(!empty($rResult) && ($rResult->num_rows == 1))
             {
@@ -32,13 +39,13 @@ function ProEditJob(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, i
 
                 if(($iJobDataIndex > 0) && ($iJobIncomeIndex > 0) && ($iJobOutcomeIndex > 0) && CheckAccessRange($iJobAccess))
                 {
-                    if(JobEditParser($InrConn, $InrLogHandle, $iJobIndex, $iCompanyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                    if(JobEditParser($InrConn, $InrLogHandle, $iJobIndex, $iCompanyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                     {
-                        if(JobDataEditParser($InrConn, $InrLogHandle, $iJobDataIndex, $sName, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                        if(JobDataEditParser($InrConn, $InrLogHandle, $iJobDataIndex, $sName, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                         {
-                            if(JobIncomeEditParser($InrConn, $InrLogHandle, $iJobIncomeIndex, $fPrice, $fPIA, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                            if(JobIncomeEditParser($InrConn, $InrLogHandle, $iJobIncomeIndex, $fPrice, $fPIA, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                             {
-                                if(JobOutcomeEditParser($InrConn, $InrLogHandle, $iJobOutcomeIndex, $fExpenses, $fDamage, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                                if(JobOutcomeEditParser($InrConn, $InrLogHandle, $iJobOutcomeIndex, $fExpenses, $fDamage, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                                     $InrConn->Commit();
                                 else
                                 {
@@ -74,8 +81,6 @@ function ProEditJob(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, i
         }
         else
             $InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
-
-        header("Location:.?MenuIndex=".$GLOBALS['MENU_INDEX']['Job']);
 	}
 	else
         $InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);

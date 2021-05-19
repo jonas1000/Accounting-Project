@@ -12,10 +12,8 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $rStatement = $InrConn->CreateStatement($sQuery);
 
     $sCountryDataTitle = "Greece";
-    $iAccessLevelID = 2;
-    $iAvailableID = 2;
 
-    $rStatement->bind_param("sii", $sCountryDataTitle, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("sii", $sCountryDataTitle, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -35,7 +33,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
 
     $iCountryDataID = 1;
 
-    $rStatement->bind_param("iii", $iCountryDataID, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("iii", $iCountryDataID, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -59,7 +57,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iCountyDataTax = 7;
     $iCountyDataIR = 2;
 
-    $rStatement->bind_param("siiii", $sCountyDataTitle, $iCountyDataTax, $iCountyDataIR, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("siiii", $sCountyDataTitle, $iCountyDataTax, $iCountyDataIR, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -81,7 +79,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iCountryID = 1;
     $iCountyDataID = 1;
 
-    $rStatement->bind_param("iiii", $iCountryID, $iCountyDataID, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("iiii", $iCountryID, $iCountyDataID, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -103,7 +101,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $sCompanyDataTitle = "Demo Studio";
     $sCompanyDataDate = "1995-1-1";
 
-    $rStatement->bind_param("ssii", $sCompanyDataTitle, $sCompanyDataDate, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("ssii", $sCompanyDataTitle, $sCompanyDataDate, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -125,7 +123,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iCompanyDataID = 1;
     $iCountyID = 1;
 
-    $rStatement->bind_param("iiii", $iCompanyDataID, $iCountyID, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("iiii", $iCompanyDataID, $iCountyID, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -145,7 +143,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
 
     $sEmployeePositionTitle = "CEO";
 
-    $rStatement->bind_param("sii", $sEmployeePositionTitle, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("sii", $sEmployeePositionTitle, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -292,7 +290,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iAccessLevelID = 1;
     $iAvailableID = 2;
 
-    $rStatement->bind_param("dssssssii", $fEmployeeDataSalary, $sEmployeeDataBDay, $sEmployeeDataName, $sEmployeeDataSurname, $sEmployeeDataPN, $sEmployeeDataEmail, $sEmployeeDataPassword, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("dssssssii", $fEmployeeDataSalary, $sEmployeeDataBDay, $sEmployeeDataName, $sEmployeeDataSurname, $sEmployeeDataPN, $sEmployeeDataEmail, $sEmployeeDataPassword, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -358,7 +356,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iAccessLevelID = 1;
     $iAvailableID = 2;
 
-    $rStatement->bind_param("iiiii", $iEmployeePositionID, $iEmployeeDataID, $iCompanyID, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("iiiii", $iEmployeePositionID, $iEmployeeDataID, $iCompanyID, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -406,7 +404,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iEmployeeID = 2;
     $iAccessLevelID = 2;
 
-    $rStatement->bind_param("iii", $iEmployeeID, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("iii", $iEmployeeID, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -449,7 +447,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iAccessLevelID = 2;
     $iAvailableID = 2;
 
-    $rStatement->bind_param("sssssssii", $sCustomerDataName, $sCustomerDataSurname, $sCustomerDataVAT, $sCustomerDataPN, $sCustomerDataSN, $sCustomerDataEmail, $sCustomerDataAddr, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("sssssssii", $sCustomerDataName, $sCustomerDataSurname, $sCustomerDataVAT, $sCustomerDataPN, $sCustomerDataSN, $sCustomerDataEmail, $sCustomerDataAddr, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -480,7 +478,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
 
     $iCustomerDataID = 1;
 
-    $rStatement->bind_param("iii", $iCustomerDataID, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("iii", $iCustomerDataID, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -507,7 +505,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $fJobIncomePrice = 3000;
     $fJobIncomePIA = 1200;
 
-    $rStatement->bind_param("ddii", $fJobIncomePrice, $fJobIncomePIA, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("ddii", $fJobIncomePrice, $fJobIncomePIA, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -535,7 +533,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $fJobOutcomeExpenses = -500;
     $fJobOutcomeDamage = -1200;
 
-    $rStatement->bind_param("ddii", $fJobOutcomeExpenses, $fJobOutcomeDamage, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("ddii", $fJobOutcomeExpenses, $fJobOutcomeDamage, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -564,7 +562,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $sJobDataTitle = "Video Editing";
     $sJobDataDate = "1970-1-1";
 
-    $rStatement->bind_param("ssii", $sJobDataTitle, $sJobDataDate, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("ssii", $sJobDataTitle, $sJobDataDate, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -596,7 +594,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iJobIncomeID = 1;
     $iJobOutcomeID = 1;
 
-    $rStatement->bind_param("iiiiii", $iJobDataID, $iCompanyID, $iJobIncomeID, $iJobOutcomeID, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("iiiiii", $iJobDataID, $iCompanyID, $iJobIncomeID, $iJobOutcomeID, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -630,7 +628,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iJobID = 1;
     $iCustomerID = 1;
 
-    $rStatement->bind_param("iiiiii", $iEmployeeID, $iCountyID, $iJobID, $iCustomerID, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("iiiiii", $iEmployeeID, $iCountyID, $iJobID, $iCustomerID, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -664,7 +662,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $sJobIncomeTimeDate = "1970-2-1";
     $iJobID = 1;
 
-    $rStatement->bind_param("dsiii", $fJobIncomeTimePIT, $sJobIncomeTimeDate, $iJobID, $iAccessLevelID, $iAvailableID);
+    $rStatement->bind_param("dsiii", $fJobIncomeTimePIT, $sJobIncomeTimeDate, $iJobID, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);

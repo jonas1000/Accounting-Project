@@ -1,6 +1,6 @@
 <?php
 //-------------<FUNCTION>-------------//
-function ProDelCompany(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess) : void
+function ProDelCompany(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
 {
 	if(isset($_POST['CompIndex']) && !empty($_POST['CompIndex']) &&	is_numeric($_POST['CompIndex']))
 	{
@@ -9,14 +9,14 @@ function ProDelCompany(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle
 
 		if(($iCompanyIndex > 0) && CheckAccessRange($IniUserAccess))
 		{
-			$rResult = CompanySpecificRetriever($InrConn, $InrLogHandle, $iCompanyIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+			$rResult = CompanySpecificRetriever($InrConn, $InrLogHandle, $iCompanyIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
 			if(!empty($rResult) && ($rResult->num_rows == 1))
 			{
 				$aDataRow = $rResult->fetch_assoc();
 
-				if(CompanyVisParser($InrConn, $InrLogHandle, (int) $aDataRow['COMP_ID'], $GLOBALS['AVAILABLE']['Hide']) &&
-				CompanyDataVisParser($InrConn, $InrLogHandle, (int) $aDataRow['COMP_DATA_ID'], $GLOBALS['AVAILABLE']['Hide']))
+				if(CompanyVisParser($InrConn, $InrLogHandle, (int) $aDataRow['COMP_ID'], $GLOBALS['AVAILABLE']['HIDE']) &&
+				CompanyDataVisParser($InrConn, $InrLogHandle, (int) $aDataRow['COMP_DATA_ID'], $GLOBALS['AVAILABLE']['HIDE']))
 					$InrConn->Commit();
 				else
 				{

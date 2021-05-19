@@ -5,7 +5,10 @@ function EmployeePositionAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$
 	CheckAccessRange($IniContentAccess) &&
 	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_POSITION_ADD(EMP_POS_TITLE, EMP_POS_ACCESS_ID, EMP_POS_AVAIL_ID) 
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_POSITION_ADD
+		(EMP_POS_TITLE,
+		EMP_POS_ACCESS_ID,
+		EMP_POS_AVAIL_ID) 
 		VALUES(?, ?, ?);";
 
 		//Create the statement query

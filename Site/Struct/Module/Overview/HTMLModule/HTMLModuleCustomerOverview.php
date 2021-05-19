@@ -5,9 +5,12 @@ require_once("Output/Retriever/CustomerRetriever.php");
 
 function HTMLCustomerOverview(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
 {
+	$sSearchQuery = (isset($_GET['SearchQuery'])) ? htmlspecialchars($_GET['SearchQuery']) : "";
+    $sSearchType = (isset($_GET['SearchType'])) ? htmlspecialchars($_GET['SearchType']) : "";
+
 	$rCustListResult = 0;
 
-	if(!$rCustListResult = CustomerOverviewRetriever($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']))
+	if(!$rCustListResult = CustomerOverviewRetriever($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW'], $sSearchType, $sSearchQuery))
 		$InrLogHandle->AddLogMessage("Failed to get result from Customer Retriever" , __FILE__, __FUNCTION__, __LINE__);
 	else
 	{		
@@ -26,41 +29,76 @@ function HTMLCustomerOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle 
     HTMLGenerateSelectStructure($sHTMLGeneratedSelectStructure, $sSearchSelectStructName, $GLOBALS['CUSTOMER_SEARCH_TYPE'], $sSearchTypeSelected);
 
 	//The toolbar for the buttons (tools)
-	printf("<div class='ContentToolBar'><a href='.?MenuIndex=%d&Module=%d'><div class='Button-Left'><h5>ADD</h5></div></a>", $GLOBALS['MENU_INDEX']['Customer'], $GLOBALS['MODULE']['Add']);
-	printf("<form action='.' method='get'><input type='hidden' name='MenuIndex' value='%d'><label>Search by%s</label><label>Query <input type='text' name='SearchQuery' value='%s'></label><button>submit</button></form></div>", $GLOBALS['MENU_INDEX']['Customer'], $sHTMLGeneratedSelectStructure, (isset($_GET['SearchQuery'])) ? $_GET['SearchQuery'] : "");
+	printf("
+	<div class='ContentToolBar'>
+		<a href='.?MenuIndex=%d&Module=%d'>
+			<div class='Button-Left'><h5>ADD</h5></div>
+		</a>
+		<form action='.' method='get'>
+			<input type='hidden' name='MenuIndex' value='%d'><label>Search by%s</label>
+			<label>Query</label><input type='text' name='SearchQuery' value='%s'>
+			<button>submit</button>
+		</form>
+	</div>",
+	$GLOBALS['MENU_INDEX']['CUSTOMER'],
+	$GLOBALS['MODULE']['ADD'],
+	$GLOBALS['MENU_INDEX']['CUSTOMER'],
+	$sHTMLGeneratedSelectStructure,
+	(isset($_GET['SearchQuery'])) ? $_GET['SearchQuery'] : "");
 
 	foreach($InrResult as $aDataRow)
 	{
 		if(((int) $aDataRow['CUST_DATA_ACCESS']) >= $IniUserAccess)
 		{
-			print("<div class='DataBlock'><form method='POST'><div>");
-
-			printf("<div><h5>%s %s</h5></div>", $aDataRow['CUST_DATA_NAME'], $aDataRow['CUST_DATA_SURNAME']);
-
-			//Data Row - customer email
-			printf("<div><div><b><p>Email</p></b></div><div><p>%s</p></div></div>", (empty($aDataRow['CUST_DATA_EMAIL']) ? "None" : $aDataRow['CUST_DATA_EMAIL']));
-
-			//Data Row - customer phone number
-			printf("<div><div><b><p>Phone number</p></b></div><div><p>%s</p></div></div>", (empty($aDataRow['CUST_DATA_PN']) ? "None" : $aDataRow['CUST_DATA_PN']));
-
-			//Data Row - customer stable number
-			printf("<div><div><b><p>Stable number</p></b></div><div><p>%s</p></div></div>", (empty($aDataRow['CUST_DATA_SN']) ? "None" : $aDataRow['CUST_DATA_SN']));
-
-			//Data Row - customer VAT
-			printf("<div><div><b><p>VAT</p></b></div><div><p>%s</p></div></div>", (empty($aDataRow['CUST_DATA_VAT']) ? "None" : $aDataRow['CUST_DATA_VAT']));
-
-			//Data Row - customer Address
-			printf("<div><div><b><p>Address</p></b></div><div><p>%s</p></div></div>", (empty($aDataRow['CUST_DATA_ADDR']) ? "None" : $aDataRow['CUST_DATA_ADDR']));
-
-			//Data Row - customer note
-			printf("<div><div><b><p>Note</p></b></div><div><p>%s</p></div></div></div>", (empty($aDataRow['CUST_DATA_NOTE']) ? "None" : $aDataRow['CUST_DATA_NOTE']));
-
-			//input button types
-			printf("<div><input type='hidden' name='CustIndex' value='%s'>", $aDataRow['CUST_ID']);
-			printf("<input type='submit' value='Delete' formaction='.?MenuIndex=%d&Module=%d'>", $GLOBALS['MENU_INDEX']['Customer'], $GLOBALS['MODULE']['Delete']);
-			printf("<input type='submit' value='Edit' formaction='.?MenuIndex=%d&Module=%d'></div>", $GLOBALS['MENU_INDEX']['Customer'], $GLOBALS['MODULE']['Edit']);
-
-			print("</form></div>");
+			printf("
+			<div class='DataBlock'>
+				<form method='POST'>
+					<div>
+						<div><h5>%s %s</h5></div>
+					<div>
+						<div><b><p>Email</p></b></div>
+						<div><p>%s</p></div>
+					</div>
+					<div>
+						<div><b><p>Phone number</p></b></div>
+						<div><p>%s</p></div>
+					</div>
+					<div>
+						<div><b><p>Stable number</p></b></div>
+						<div><p>%s</p></div>
+					</div>
+					<div>
+						<div><b><p>VAT</p></b></div>
+						<div><p>%s</p></div>
+					</div>
+					<div>
+						<div><b><p>Address</p></b></div>
+						<div><p>%s</p></div>
+					</div>
+					<div>
+						<div><b><p>Note</p></b></div>
+						<div><p>%s</p></div></div>
+					</div>
+					<div>
+						<input type='hidden' name='CustIndex' value='%s'>
+						<input type='submit' value='Delete' formaction='.?MenuIndex=%d&Module=%d'>
+						<input type='submit' value='Edit' formaction='.?MenuIndex=%d&Module=%d'>
+					</div>
+				</form>
+			</div>",
+			$aDataRow['CUST_DATA_NAME'],
+			$aDataRow['CUST_DATA_SURNAME'],
+			(empty($aDataRow['CUST_DATA_EMAIL']) ? "None" : $aDataRow['CUST_DATA_EMAIL']),
+			(empty($aDataRow['CUST_DATA_PN']) ? "None" : $aDataRow['CUST_DATA_PN']),
+			(empty($aDataRow['CUST_DATA_SN']) ? "None" : $aDataRow['CUST_DATA_SN']),
+			(empty($aDataRow['CUST_DATA_VAT']) ? "None" : $aDataRow['CUST_DATA_VAT']),
+			(empty($aDataRow['CUST_DATA_ADDR']) ? "None" : $aDataRow['CUST_DATA_ADDR']),
+			(empty($aDataRow['CUST_DATA_NOTE']) ? "None" : $aDataRow['CUST_DATA_NOTE']),
+			$aDataRow['CUST_ID'],
+			$GLOBALS['MENU_INDEX']['CUSTOMER'],
+			$GLOBALS['MODULE']['DELETE'],
+			$GLOBALS['MENU_INDEX']['CUSTOMER'],
+			$GLOBALS['MODULE']['EDIT']);
 		}
 	}
 }

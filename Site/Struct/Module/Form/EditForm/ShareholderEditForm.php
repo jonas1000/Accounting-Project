@@ -8,32 +8,44 @@ function HTMLShareholderEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$In
 
         if($iShareholderIndex > 0)
         {
-            $rResult = ShareholderSpecificRetriever($InrConn, $InrLogHandle, $iShareholderIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+            $rResult = ShareholderSpecificRetriever($InrConn, $InrLogHandle, $iShareholderIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
             if(!empty($rResult) && ($rResult->num_rows == 1))
             {
                 $aDataRow = $rResult->fetch_assoc();
 
-                print("<div class='Form'><form method='POST'><div>");
+                print("");
 
                 //Title
-                print("<div id='FormTitle'><h3>Edit Shareholder</h3></div>");
+                print("
+                <div class='Form'>
+                    <form method='POST'>
+                        <div>
+                            <div id='FormTitle'><h3>Edit Shareholder</h3></div>
+                        </div>");
 
                 //Input Row - employee list
                 print("<div><label>Employee");
-                RenderEmployeeSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], (int) $aDataRow['EMP_ID']);
+                RenderEmployeeSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW'], (int) $aDataRow['EMP_ID']);
                 print("</label></div>");
 
                 //Input Row - access list
                 print("<div><label>Access");
-                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], (int) $aDataRow['SHARE_ACCESS']);
-                print("</label></div></div>");
+                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW'], (int) $aDataRow['SHARE_ACCESS']);
+                print("</label></div>");
 
-                printf("<div><input type='hidden' value='%s' name='ShareIndex' required>", $aDataRow['SHARE_ID']);
-                printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>", $GLOBALS['MENU_INDEX']['Shareholder'], $GLOBALS['MODULE']['Edit']);
-                printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['Shareholfer']);
-
-                print("</form></div>");
+                printf("
+                        <div>
+                            <input type='hidden' value='%s' name='ShareIndex' required>
+                            <input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>
+                            <a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>
+                        </div>
+                    </form>
+                </div>",
+                $aDataRow['SHARE_ID'],
+                $GLOBALS['MENU_INDEX']['SHAREHOLDER'],
+                $GLOBALS['MODULE']['EDIT'],
+                $GLOBALS['MENU_INDEX']['SHAREHOLDER']);
 
                 $rResult->free();
             }

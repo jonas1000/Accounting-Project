@@ -3,7 +3,7 @@ function CountrySearchConstructor(string &$InsSearchTypeQuery, string &$IniSearc
 {
 	switch($IniSearchType)
 	{
-		case $GLOBALS['COUNTRY_SEARCH_TYPE']['Country_Title']["name"]:
+		case $GLOBALS['COUNTRY_SEARCH_TYPE']['COUNTRY_TITLE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "COUN_DATA_TITLE";
 			break;
@@ -123,7 +123,7 @@ function CountryGeneralRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$In
 	return FALSE;
 }
 
-function CountryOverviewRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail, string &$InsSearchType, string &$InsSearchQuery="")
+function CountryOverviewRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail, string &$InsSearchType="", string &$InsSearchQuery="")
 {
 	if(CheckAccessRange($IniUserAccess) &&
 	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
@@ -170,14 +170,16 @@ function CountrySelectElemRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &
 	($IniAvail > 0 && $IniAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']))
 	{
 		$rStatement = 0;
+		$sPrefix = $InrConn->GetPrefix();
 
 		$sQuery = "SELECT
 		COUN_ID,
 		COUN_DATA_TITLE
 		FROM
-		".$InrConn->GetPrefix()."VIEW_COUNTRY_GENERAL
-		WHERE (COUN_AVAIL = ?
-		AND	COUN_DATA_AVAIL = ?)
+		".$sPrefix."VIEW_COUNTRY,
+		".$sPrefix."VIEW_COUNTRY_DATA
+		WHERE (".$sPrefix."VIEW_COUNTRY.COUN_DATA_ID = ".$sPrefix."VIEW_COUNTRY_DATA.COUN_DATA_ID)
+		AND	(COUN_AVAIL = ? AND COUN_DATA_AVAIL = ?)
 		AND	(COUN_ACCESS >= ?);";
 
 		if($rStatement = $InrConn->CreateStatement($sQuery))

@@ -17,11 +17,11 @@ function ProAddCompany(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle
 		if(CheckAccessRange($iContentAccess) && ($iCountyIndex > 0) && CheckAccessRange($IniUserAccess))
 		{
 			//if the function failed to insert data, then do not continue as the rest of the block as it will not work
-			if(CompanyDataAddParser($InrConn, $InrLogHandle, $sName, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+			if(CompanyDataAddParser($InrConn, $InrLogHandle, $sName, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 			{
 				$iLastIndexCompanyData = $InrConn->GetLastInsertID();
 
-				if(CompanyAddParser($InrConn, $InrLogHandle, $iLastIndexCompanyData, $iCountyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+				if(CompanyAddParser($InrConn, $InrLogHandle, $iLastIndexCompanyData, $iCountyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 				{
 					//Check if the data where commited, else throw a exception
 					if($InrConn->Commit())

@@ -5,7 +5,10 @@ function ShareholderAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLo
 	CheckAccessRange($IniContentAccess) &&
 	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_SHAREHOLDER_ADD(EMP_ID, SHARE_ACCESS_ID, SHARE_AVAIL_ID) 
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_SHAREHOLDER_ADD
+		(EMP_ID,
+		SHARE_ACCESS_ID,
+		SHARE_AVAIL_ID) 
 		VALUES(?, ?, ?);";
 
 		//Create the statement query

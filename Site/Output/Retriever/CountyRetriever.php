@@ -3,19 +3,19 @@ function CountySearchConstructor(string &$InsSearchTypeQuery, string &$IniSearch
 {
 	switch($IniSearchType)
 	{
-		case $GLOBALS['COUNTY_SEARCH_TYPE']['County_Title']["name"]:
+		case $GLOBALS['COUNTY_SEARCH_TYPE']['COUNTY_TITLE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "COU_DATA_TITLE";
 			break;
 		}
 
-		case $GLOBALS['COUNTY_SEARCH_TYPE']['County_Tax']["name"]:
+		case $GLOBALS['COUNTY_SEARCH_TYPE']['COUNTY_TAX']["NAME"]:
 		{
 			$InsSearchTypeQuery = "COU_DATA_TAX";
 			break;
 		}
 
-		case $GLOBALS['COUNTY_SEARCH_TYPE']['County_IR']["name"]:
+		case $GLOBALS['COUNTY_SEARCH_TYPE']['COUNTY_IR']["NAME"]:
 		{
 			$InsSearchTypeQuery = "COU_DATA_IR";
 			break;

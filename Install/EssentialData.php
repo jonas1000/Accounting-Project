@@ -38,7 +38,7 @@ function InsertEssentialData(ME_CDBConnManager &$InrConn, string &$InsPrefix)
 
     $sAccessLevelTitle = "Admin";
     $iAccessLevelClearance = 1;
-    $iAccessLevelAvailableID = 2;
+    $iAccessLevelAvailableID = $GLOBALS['AVAILABLE']['SHOW'];
 
     $rStatement->bind_param("sii", $sAccessLevelTitle, $iAccessLevelClearance, $iAccessLevelAvailableID);
 
@@ -47,21 +47,21 @@ function InsertEssentialData(ME_CDBConnManager &$InrConn, string &$InsPrefix)
 
     $sAccessLevelTitle = "CEO";
     $iAccessLevelClearance = 2;
-    $iAccessLevelAvailableID = 2;
+    $iAccessLevelAvailableID = $GLOBALS['AVAILABLE']['SHOW'];
 
     $rStatement->execute();
 
 
     $sAccessLevelTitle = "Employee";
     $iAccessLevelClearance = 3;
-    $iAccessLevelAvailableID = 2;
+    $iAccessLevelAvailableID = $GLOBALS['AVAILABLE']['SHOW'];
 
     $rStatement->execute();
 
 
     $sAccessLevelTitle = "Guest";
     $iAccessLevelClearance = 4;
-    $iAccessLevelAvailableID = 2;
+    $iAccessLevelAvailableID = $GLOBALS['AVAILABLE']['SHOW'];
 
     $rStatement->execute();
 

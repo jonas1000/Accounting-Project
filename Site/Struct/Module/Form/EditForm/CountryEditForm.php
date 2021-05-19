@@ -8,31 +8,41 @@ function HTMLCountryEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLog
 
         if($iCountryIndex > 0)
         {
-            $rResult = CountryEditFormSpecificRetriever($InrConn, $InrLogHandle, $iCountryIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+            $rResult = CountryEditFormSpecificRetriever($InrConn, $InrLogHandle, $iCountryIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
             if(!empty($rResult) && ($rResult->num_rows == 1))
             {
                 $aDataRow = $rResult->fetch_assoc();
 
                 //-------------<PHP-HTML>-------------//
-                print("<div class='Form'><form method='POST'><div>");
 
-                //Title
-                printf("<div id='FormTitle'><h3>Edit Country</h3><br><h4>%s</h4></div>", $aDataRow['COUN_DATA_TITLE']);
-
-                //Input Row - name
-                printf("<div><label>Name*<input type='text' placeholder='Country name' name='Name' value='%s' required></label></div>", $aDataRow['COUN_DATA_TITLE']);
+                printf("
+                <div class='Form'>
+                    <form method='POST'>
+                        <div>
+                            <div id='FormTitle'><h3>Edit Country</h3><br><h4>%s</h4></div>
+                            <div><label>Name*<input type='text' placeholder='Country name' name='Name' value='%s' required></label></div>
+                        </div>",
+                $aDataRow['COUN_DATA_TITLE'],
+                $aDataRow['COUN_DATA_TITLE']);
 
                 //get rows and render <select> element with data
-                print("<div><label>Access");
-                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], $aDataRow['COUN_ACCESS']);
-                print("</label></div></div>");
+                print(" <div><label>Access");
+                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW'], $aDataRow['COUN_ACCESS']);
+                print(" </label></div>");
 
-                printf("<div><input type='hidden' name='CounIndex' value='%s' required>", $aDataRow['COUN_ID']);
-                printf("<input type='submit' value='Save' formaction='.?MenuIndex=%s&Module=%s&ProEdit'>", $GLOBALS['MENU_INDEX']['Country'], $_GET['Module']);
-                printf("<a href='.?MenuIndex=%s'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['Country']);
-
-                print("</form></div>");
+                printf("
+                        <div>
+                            <input type='hidden' name='CounIndex' value='%s' required>
+                            <input type='submit' value='Save' formaction='.?MenuIndex=%s&Module=%s&ProEdit'>
+                            <a href='.?MenuIndex=%s'><div class='Button-Left'><p>Cancel</p></div></a>
+                        </div>
+                    </form>
+                </div>",
+                $aDataRow['COUN_ID'],
+                $GLOBALS['MENU_INDEX']['COUNTRY'],
+                $GLOBALS['MODULE']['EDIT'],
+                $GLOBALS['MENU_INDEX']['COUNTRY']);
 
                 $rResult->free();
             }

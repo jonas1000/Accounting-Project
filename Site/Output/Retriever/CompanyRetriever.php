@@ -1,44 +1,61 @@
 <?php
-function CompanySearchConstructor(string &$InsSearchTypeQuery, string &$IniSearchType) : void
+function CompanySearchConstructor(string &$InsSearchTypeQuery, string &$InsSearchType, string &$InsSearchQuery) : void
 {
-	switch($IniSearchType)
+	$sVariableFormat = "?";
+
+	switch($InsSearchType)
 	{
-		case $GLOBALS['COMPANY_SEARCH_TYPE']['Company_Title']["name"]:
+		case $GLOBALS['COMPANY_SEARCH_TYPE']['COMPANY_TITLE']["NAME"]:
 		{
+			SearchQueryConstructor($InsSearchQuery);
 			$InsSearchTypeQuery .= "COMP_DATA_TITLE";
 			break;
 		}
 
-		case $GLOBALS['COMPANY_SEARCH_TYPE']['County_Title']["name"]:
+		case $GLOBALS['COMPANY_SEARCH_TYPE']['COUNTY_TITLE']["NAME"]:
 		{
+			SearchQueryConstructor($InsSearchQuery);
 			$InsSearchTypeQuery .= "COU_DATA_TITLE";
 			break;
 		}
 
-		case $GLOBALS['COMPANY_SEARCH_TYPE']['Country_Title']["name"]:
+		case $GLOBALS['COMPANY_SEARCH_TYPE']['COUNTRY_TITLE']["NAME"]:
 		{
+			SearchQueryConstructor($InsSearchQuery);
 			$InsSearchTypeQuery .= "COUN_DATA_TITLE";
 			break;
 		}
 
-		case $GLOBALS['COMPANY_SEARCH_TYPE']['County_Tax']["name"]:
+		case $GLOBALS['COMPANY_SEARCH_TYPE']['COMPANY_DATE']['NAME']:
 		{
+			$InsSearchTypeQuery .= "DATE_FORMAT(COMP_DATA_DATE, '%Y %m')";
+			$sVariableFormat = "DATE_FORMAT(?, '%Y %m')";
+			break;
+		}
+
+		case $GLOBALS['COMPANY_SEARCH_TYPE']['COUNTY_TAX']["NAME"]:
+		{
+			SearchQueryConstructor($InsSearchQuery);
 			$InsSearchTypeQuery .= "COU_DATA_TAX";
 			break;
 		}
 
-		case $GLOBALS['COMPANY_SEARCH_TYPE']['County_IR']["name"]:
+		case $GLOBALS['COMPANY_SEARCH_TYPE']['COUNTY_IR']["NAME"]:
 		{
+			SearchQueryConstructor($InsSearchQuery);
 			$InsSearchTypeQuery .= "COU_DATA_IR";
 			break;
 		}
 
 		default:
 		{
+			SearchQueryConstructor($InsSearchQuery);
 			$InsSearchTypeQuery .= "COMP_DATA_TITLE";
 			break;
 		}
 	}
+
+	$InsSearchTypeQuery .= " LIKE " . $sVariableFormat;
 }
 
 function CompanyRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniAvail)
@@ -163,9 +180,7 @@ function CompanyOverviewRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$I
 		$sSearchConstruction = "";
 		$sSearchQuery = ME_SecDataFilter($InsSearchQuery);
 
-		CompanySearchConstructor($sSearchConstruction, $InsSearchType);
-
-		SearchQueryConstructor($sSearchQuery);
+		CompanySearchConstructor($sSearchConstruction, $InsSearchType, $sSearchQuery);
 
 		$rStatement = 0;
 
@@ -187,8 +202,8 @@ function CompanyOverviewRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$I
 		AND COUN_AVAIL = ?	
 		AND	COUN_DATA_AVAIL = ?)
 		AND	(COMP_ACCESS >= ?) 
-		AND ".$sSearchConstruction." LIKE ?;";
-		
+		AND ".$sSearchConstruction.";";
+
 		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
 			//Check if the statement binded the variables, else throw an exception with the error

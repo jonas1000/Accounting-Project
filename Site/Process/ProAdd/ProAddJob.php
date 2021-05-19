@@ -10,10 +10,10 @@ function ProAddJob(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, in
 		$sName = ME_SecDataFilter($_POST['Name']);
 		$sDate = ME_SecDataFilter($_POST['Date']);
 
-		$fPrice = (float)$_POST['Price'];
-		$fPIA = (float)$_POST['PIA'];
-		$fExpenses = (float)$_POST['Expenses'];
-		$fDamage = (float)$_POST['Damage'];
+		$fPrice = abs((float)$_POST['Price']);
+		$fPIA = abs((float)$_POST['PIA']);
+		$fExpenses = -abs((float)$_POST['Expenses']);
+		$fDamage = -abs((float)$_POST['Damage']);
 
 		//variables consindered to be holding ID
 		$iCompanyIndex = (int)$_POST['Company'];
@@ -21,27 +21,27 @@ function ProAddJob(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, in
 
 		//database cannot accept Primary or foreighn keys below 1
 		//If duplicate the database will throw a exception
-		if(($fPrice > -1) &&
-		($fPIA > -1) &&
-		($fExpenses < 1) &&
-		($fDamage < 1) &&
+		if(($fPrice >= 0.0) &&
+		($fPIA >= 0.0) &&
+		($fExpenses <= 0.0) &&
+		($fDamage <= 0.0) &&
 		($iCompanyIndex > 0) &&
 		CheckAccessRange($iContentAccess) &&
 		CheckAccessRange($IniUserAccess))
 		{
-			if(JobOutcomeAddParser($InrConn, $InrLogHandle, $fExpenses, $fDamage, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+			if(JobOutcomeAddParser($InrConn, $InrLogHandle, $fExpenses, $fDamage, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 			{
 				$iOutcomeLastIndex = $InrConn->GetLastInsertID();
 
-				if(JobIncomeAddParser($InrConn, $InrLogHandle, $fPrice, $fPIA, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+				if(JobIncomeAddParser($InrConn, $InrLogHandle, $fPrice, $fPIA, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 				{
 					$iIncomeLastIndex = $InrConn->GetLastInsertID();
 
-					if(JobDataAddParser($InrConn, $InrLogHandle, $sName, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+					if(JobDataAddParser($InrConn, $InrLogHandle, $sName, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 					{
 						$iDataLastIndex = $InrConn->GetLastInsertID();
 
-						if(JobAddParser($InrConn, $InrLogHandle, $iDataLastIndex, $iOutcomeLastIndex, $iIncomeLastIndex, $iCompanyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+						if(JobAddParser($InrConn, $InrLogHandle, $iDataLastIndex, $iOutcomeLastIndex, $iIncomeLastIndex, $iCompanyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 						{
 							if($InrConn->Commit())
 								return TRUE;

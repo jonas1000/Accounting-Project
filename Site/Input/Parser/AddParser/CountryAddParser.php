@@ -7,7 +7,10 @@ function CountryAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHan
 	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
 		//The query string to be binded by the statement
-		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_COUNTRY_ADD(COUN_DATA_ID, COUN_ACCESS_ID, COUN_AVAIL_ID) 
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_COUNTRY_ADD
+		(COUN_DATA_ID,
+		COUN_ACCESS_ID,
+		COUN_AVAIL_ID) 
 		VALUES(?, ?, ?);";
 
 		//Create the statement query
@@ -35,7 +38,10 @@ function CountryDataAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLo
 	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
 		//The query string to be binded by the statement
-		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_COUNTRY_DATA_ADD(COUN_DATA_TITLE, COUN_DATA_ACCESS_ID, COUN_DATA_AVAIL_ID) 
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_COUNTRY_DATA_ADD
+		(COUN_DATA_TITLE,
+		COUN_DATA_ACCESS_ID,
+		COUN_DATA_AVAIL_ID)
 		VALUES(?, ?, ?);";
 
 		//Create the statement query

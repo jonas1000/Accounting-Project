@@ -1,5 +1,5 @@
 <?php
-function ProEditCustomer(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
+function ProEditCustomer(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess)
 {
     if(isset($_POST['CustIndex'], $_POST['Name'], $_POST['Surname'], $_POST['PhoneNumber'], $_POST['StableNumber'], $_POST['Email'], $_POST['VAT'], $_POST['Addr'], $_POST['Note'], $_POST['Access']) 
     && !ME_MultyCheckEmptyType($_POST['CustIndex'], $_POST['Name'], $_POST['Surname'], $_POST['PhoneNumber'], $_POST['Access']) 
@@ -24,7 +24,7 @@ function ProEditCustomer(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHand
         if(CheckAccessRange($iContentAccess) && ($iCustomerIndex > 0) && CheckAccessRange($IniUserAccess))
         {
             //Get the information of the row to be able to modifie references
-            $rResult = CustomerSpecificRetriever($InrConn, $InrLogHandle, $iCustomerIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+            $rResult = CustomerSpecificRetriever($InrConn, $InrLogHandle, $iCustomerIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
             if(!empty($rResult) && ($rResult->num_rows == 1))
             {
@@ -35,9 +35,9 @@ function ProEditCustomer(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHand
 
                 if(($iCustomerDataIndex > 0) && CheckAccessRange($iCustomerAccess))
                 {
-                    if(CustomerEditParser($InrConn, $InrLogHandle, $iCustomerIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                    if(CustomerEditParser($InrConn, $InrLogHandle, $iCustomerIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                     {
-                        if(CustomerDataEditParser($InrConn, $InrLogHandle, $iCustomerDataIndex, $sName, $sSurname, $sPhoneNumber, $sStableNumber, $sEmail, $sVAT, $sAddr, $sNote, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                        if(CustomerDataEditParser($InrConn, $InrLogHandle, $iCustomerDataIndex, $sName, $sSurname, $sPhoneNumber, $sStableNumber, $sEmail, $sVAT, $sAddr, $sNote, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                             $InrConn->Commit();
                         else
                         {
@@ -61,8 +61,6 @@ function ProEditCustomer(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHand
         }
         else
             $InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
-
-        header("Location:.?MenuIndex=".$GLOBALS['MENU_INDEX']['Customer']);
 	}
 	else
         $InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);

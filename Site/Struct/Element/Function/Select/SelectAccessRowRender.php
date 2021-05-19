@@ -1,6 +1,6 @@
 <?php
 //Render element <select> with the Access array result from query
-function RenderAccessSelectRow(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess, int &$IniIsAvail) : void
+function RenderAccessSelectRow(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniIsAvail) : void
 {
     if (($IniUserAccess > 0) && ($IniIsAvail > 0 && $IniIsAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']))
     {
@@ -23,7 +23,7 @@ function RenderAccessSelectRow(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrL
 }
 
 //Render element <select> with the Access array result from query
-function RenderAccessSelectRowCheck(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess, int &$IniIsAvail, int &$IniSelected) : void
+function RenderAccessSelectRowCheck(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniIsAvail, int $IniSelected) : void
 {
     if (CheckAccessRange($IniUserAccess) && ($IniIsAvail > 0 && $IniIsAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']) && ($IniSelected > 0)) 
     {

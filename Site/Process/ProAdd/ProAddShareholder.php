@@ -4,7 +4,7 @@ function ProAddShareholder(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHa
 {
 	if(isset($_POST['Employee'], $_POST['Access']) &&
 	!ME_MultyCheckEmptyType($_POST['Employee'], $_POST['Access']) &&
-	is_numeric($_POST['Employee'], $_POST['Access']))
+	ME_MultyCheckNumericType($_POST['Employee'], $_POST['Access']))
 	{
 		//variables consindered to be holding ID
 		$iEmployeeIndex = (int)$_POST['Employee'];
@@ -14,7 +14,7 @@ function ProAddShareholder(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHa
 		//If duplicate the database will throw a exception
 		if(($iEmployeeIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
 		{
-			if(ShareholderAddParser($InrConn, $InrLogHandle, $iEmployeeIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+			if(ShareholderAddParser($InrConn, $InrLogHandle, $iEmployeeIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 			{
 				if($InrConn->Commit())
 					return TRUE;

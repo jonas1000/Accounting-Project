@@ -1,5 +1,5 @@
 <?php
-function ProEditCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int &$IniUserAccess)
+function ProEditCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess)
 {
     if(isset($_POST['CountyIndex'], $_POST['Name'], $_POST['Tax'], $_POST['IR'], $_POST['Country'], $_POST['Access']) 
     && !ME_MultyCheckEmptyType($_POST['CountyIndex'], $_POST['Name'], $_POST['Country'], $_POST['Access']) 
@@ -19,10 +19,14 @@ function ProEditCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle
 
         //database cannot accept Primary or foreighn keys below 1
         //If duplicate the database will throw a exception
-        if(($fTax > -1 && $fTax < 101) && ($fIR > -1 && $fIR < 101) && ($iCountryIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
+        if(CheckRange($fTax, 100.0, 0.0) &&
+        CheckRange($fIR, 100.0, 0.0) &&
+        ($iCountryIndex > 0) &&
+        CheckAccessRange($iContentAccess) &&
+        CheckAccessRange($IniUserAccess))
         {
             //Get the information of the row to be able to modifie references
-            $rResult = CountySpecificRetriever($InrConn, $InrLogHandle, $iCountyIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+            $rResult = CountySpecificRetriever($InrConn, $InrLogHandle, $iCountyIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
             //Check result returns one row and it's not empty 
             if(!empty($rResult) && ($rResult->num_rows == 1))
@@ -34,9 +38,9 @@ function ProEditCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle
 
                 if(($iCountyDataIndex > 0) && ($iCountyAccessLevel > 0))
                 {
-                    if(CountyEditParser($InrConn, $InrLogHandle, $iCountyIndex, $iCountryIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                    if(CountyEditParser($InrConn, $InrLogHandle, $iCountyIndex, $iCountryIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                     {
-                        if(CountyDataEditParser($InrConn, $InrLogHandle, $iCountyDataIndex, $sName, $fTax, $fIR, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+                        if(CountyDataEditParser($InrConn, $InrLogHandle, $iCountyDataIndex, $sName, $fTax, $fIR, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
                             $InrConn->Commit();
                         else
                         {
@@ -60,8 +64,6 @@ function ProEditCounty(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle
         }
         else
             $InrLogHandle->AddLogMessage("Some variables do not meet the process requirement range, Check your variables", __FILE__, __FUNCTION__, __LINE__);
-
-        header("Location:.?MenuIndex=".$GLOBALS['MENU_INDEX']['County']);
 	}
 	else
         $InrLogHandle->AddLogMessage("Missing POST variables to complete transaction", __FILE__, __FUNCTION__, __LINE__);

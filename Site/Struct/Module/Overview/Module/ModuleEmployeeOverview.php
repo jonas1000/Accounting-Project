@@ -3,13 +3,13 @@ $rProcessFileHandle = new ME_CFileHandle($GLOBALS['DEFAULT_LOG_FILE'], $GLOBALS[
 
 $rProcessLogHandle = new ME_CLogHandle($rProcessFileHandle, "EmployeeProcess", __FILE__);
 
-//This is the connection to the database using the MedaLib Folder classes.
+//This is the connection to the database using the MedaLib classes.
 $rConn = new ME_CDBConnManager($rProcessLogHandle, $_SESSION['DBName'], $_SESSION['ServerDNS'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
 //If the module is not set then CompanyOverview from menu was selected, then load the overview.
 if(!isset($_GET['Module']))
 {
-	ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLEmployeeOverview", $GLOBALS['ACCESS']['Employee'], "GET");
+	ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLEmployeeOverview", $GLOBALS['ACCESS']['EMPLOYEE'], "GET");
 }
 else
 {
@@ -17,7 +17,7 @@ else
     //WARNING: while add does not require a post method from the server, the Edit and Delete process require POST method to work.
 	switch($_GET['Module'])
 	{
-		case $GLOBALS['MODULE']['Add']:
+		case $GLOBALS['MODULE']['ADD']:
 		{
 			//If the form was completed from the add form then execute the process to at those data in the database.
 			if(isset($_GET['ProAdd']))
@@ -27,9 +27,9 @@ else
 				require_once("Input/Parser/AddParser/EmployeeAddParser.php");
 				require_once("Process/ProAdd/ProAddEmployee.php");
 
-				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "ProAddEmployee", $GLOBALS['ACCESS']['Employee'], "POST");
+				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "ProAddEmployee", $GLOBALS['ACCESS']['EMPLOYEE'], "POST");
 
-				header("Location:Index.php?MenuIndex=".$GLOBALS['MENU_INDEX']['Employee']);
+				header("Location:.?MenuIndex=".urlencode($GLOBALS['MENU_INDEX']['EMPLOYEE']), $http_response_header=200);
 			}
 			else
 			{
@@ -41,12 +41,12 @@ else
 				require_once("Struct/Element/Function/Select/SelectAccessRowRender.php");
 				require_once("Struct/Module/Form/AddForm/EmployeeAddForm.php");
 
-				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLEmployeeAddForm", $GLOBALS['ACCESS']['Employee'], "GET");
+				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLEmployeeAddForm", $GLOBALS['ACCESS']['EMPLOYEE'], "GET");
 			}
 			
 			break;
 		}
-		case $GLOBALS['MODULE']['Edit']:
+		case $GLOBALS['MODULE']['EDIT']:
 		{
 			//If the form was completed from the Edit form then execute the process and Edit those data in the database.
             require_once("../MedaLib/Function/Filter/SecurityFilter/SecurityFormFilter.php");
@@ -59,9 +59,9 @@ else
 				require_once("Output/SpecificRetriever/EmployeeSpecificRetriever.php");
 				require_once("Process/ProEdit/ProEditEmployee.php");
 
-				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "ProEditEmployee", $GLOBALS['ACCESS']['Employee'], "POST");
+				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "ProEditEmployee", $GLOBALS['ACCESS']['EMPLOYEE'], "POST");
 
-				header('Location:.?MenuIndex='.urlencode($GLOBALS['MENU_INDEX']['Employee']));
+				header("Location:.?MenuIndex=".urlencode($GLOBALS['MENU_INDEX']['EMPLOYEE']), $http_response_header=200);
 			}
 			else
 			{
@@ -75,21 +75,21 @@ else
 				require_once("Struct/Element/Function/Select/SelectEmployeePositionRowRender.php");
 				require_once("Struct/Module/Form/EditForm/EmployeeEditForm.php");
 
-				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLEmployeeEditForm", $GLOBALS['ACCESS']['Employee'], "POST");
+				ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLEmployeeEditForm", $GLOBALS['ACCESS']['EMPLOYEE'], "POST");
 			}
 
 			break;
 		}
-		case $GLOBALS['MODULE']['Delete']:
+		case $GLOBALS['MODULE']['DELETE']:
 		{
 			//Execute the process and edit the show flag data in the database.
 			require_once("Input/Parser/VisibilityParser/EmployeeVisParser.php");
 			require_once("Output/SpecificRetriever/EmployeeSpecificRetriever.php");
 			require_once("Process/ProDel/ProDelEmployee.php");
 
-			ProQueryFunctionCallback($rConn, $rProcessLogHandle, "ProDelEmployee", $GLOBALS['ACCESS']['Employee'], "POST");
+			ProQueryFunctionCallback($rConn, $rProcessLogHandle, "ProDelEmployee", $GLOBALS['ACCESS']['EMPLOYEE'], "POST");
 
-			header('Location:.?MenuIndex='.urlencode($GLOBALS['MENU_INDEX']['Employee']));
+			header("Location:.?MenuIndex=".urlencode($GLOBALS['MENU_INDEX']['EMPLOYEE']), $http_response_header=200);
 
 			break;
 		}

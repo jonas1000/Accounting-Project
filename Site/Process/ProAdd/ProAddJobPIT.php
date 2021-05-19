@@ -9,7 +9,7 @@ function ProAddJobPIT(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle,
 		//format the string to be compatible with HTML and avoid SQL injection
 		$sDate = ME_SecDataFilter($_POST['Date']);
 
-		$fPayment = (float)$_POST['PIT'];
+		$fPayment = abs((float)$_POST['PIT']);
 
 		//variables consindered to be holding ID
 		$iJobIndex = (int)$_POST['JobIndex'];
@@ -17,9 +17,9 @@ function ProAddJobPIT(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle,
 
 		//database cannot accept Primary or foreighn keys below 1
 		//If duplicate the database will throw a exception
-		if(($iJobIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
+		if(($fPayment >= 0.0) && ($iJobIndex > 0) && CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
 		{
-			if(JobPitAddParser($InrConn, $InrLogHandle, $iJobIndex, $fPayment, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+			if(JobPitAddParser($InrConn, $InrLogHandle, $iJobIndex, $fPayment, $sDate, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 			{
 				if($InrConn->Commit())
 					return TRUE;

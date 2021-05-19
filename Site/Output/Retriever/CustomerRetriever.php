@@ -3,37 +3,37 @@ function CustomerSearchConstructor(string &$InsSearchTypeQuery, string &$IniSear
 {
 	switch($IniSearchType)
 	{
-		case $GLOBALS['CUSTOMER_SEARCH_TYPE']['Customer_Name']["name"]:
+		case $GLOBALS['CUSTOMER_SEARCH_TYPE']['CUSTOMER_NAME']["NAME"]:
 		{
 			$InsSearchTypeQuery = "CUST_DATA_Name";
 			break;
 		}
 
-		case $GLOBALS['CUSTOMER_SEARCH_TYPE']['Customer_Surname']["name"]:
+		case $GLOBALS['CUSTOMER_SEARCH_TYPE']['CUSTOMER_SURNAME']["NAME"]:
 		{
 			$InsSearchTypeQuery = "CUST_DATA_Surname";
 			break;
 		}
 
-		case $GLOBALS['CUSTOMER_SEARCH_TYPE']['Customer_Phone']["name"]:
+		case $GLOBALS['CUSTOMER_SEARCH_TYPE']['CUSTOMER_PHONE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "CUST_DATA_PN";
 			break;
 		}
 
-		case $GLOBALS['CUSTOMER_SEARCH_TYPE']['Customer_Stable']["name"]:
+		case $GLOBALS['CUSTOMER_SEARCH_TYPE']['CUSTOMER_STABLE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "CUST_DATA_SN";
 			break;
 		}
 
-		case $GLOBALS['CUSTOMER_SEARCH_TYPE']['Customer_Email']["name"]:
+		case $GLOBALS['CUSTOMER_SEARCH_TYPE']['CUSTOMER_EMAIL']["NAME"]:
 		{
 			$InsSearchTypeQuery = "CUST_DATA_Email";
 			break;
 		}
 
-		case $GLOBALS['CUSTOMER_SEARCH_TYPE']['Customer_VAT']["name"]:
+		case $GLOBALS['CUSTOMER_SEARCH_TYPE']['CUSTOMER_VAT']["NAME"]:
 		{
 			$InsSearchTypeQuery = "CUST_DATA_VAT";
 			break;

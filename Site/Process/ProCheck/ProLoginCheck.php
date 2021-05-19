@@ -7,7 +7,7 @@ function LoginCheck(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle)
         $sEmail = ME_SecDataFilter($_POST['Email']);
         $sPass = ME_SecDataFilter($_POST['Pass']); 
 
-        $rResult = EmployeeLoginRetriever($InrConn, $InrLogHandle, $sEmail, $GLOBALS['AVAILABLE']['Show']);
+        $rResult = EmployeeLoginRetriever($InrConn, $InrLogHandle, $sEmail, $GLOBALS['AVAILABLE']['SHOW']);
 
         if(!empty($rResult) && ($rResult->num_rows == 1))
         {

@@ -8,7 +8,13 @@ function JobAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle,
 	CheckAccessRange($IniContentAccess) &&
 	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_JOB_ADD(JOB_DATA_ID, JOB_INC_ID, JOB_OUT_ID, COMP_ID, JOB_ACCESS_ID, JOB_AVAIL_ID) 
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_JOB_ADD
+		(JOB_DATA_ID,
+		JOB_INC_ID,
+		JOB_OUT_ID,
+		COMP_ID,
+		JOB_ACCESS_ID,
+		JOB_AVAIL_ID) 
 		VALUES(?, ?, ?, ?, ?, ?);";
 
 		//Create the statement query
@@ -35,7 +41,11 @@ function JobDataAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHan
 	CheckAccessRange($IniContentAccess) &&
 	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
-		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_JOB_DATA_ADD(JOB_DATA_TITLE, JOB_DATA_DATE, JOB_DATA_ACCESS_ID, JOB_DATA_AVAIL_ID) 
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_JOB_DATA_ADD
+		(JOB_DATA_TITLE,
+		JOB_DATA_DATE,
+		JOB_DATA_ACCESS_ID,
+		JOB_DATA_AVAIL_ID) 
 		VALUES(?, ?, ?, ?);";
 
 		//Create the statement query
@@ -64,7 +74,11 @@ function JobIncomeAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogH
 		$fPrice = round(((empty($InfPrice)) ? 0 : abs($InfPrice)), $GLOBALS['CURRENCY_DECIMAL_PRECISION']);
 		$fPIA = round(((empty($InfPIA))? 0 : abs($InfPIA)), $GLOBALS['CURRENCY_DECIMAL_PRECISION']);
 
-		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_JOB_INCOME_ADD(JOB_INC_PRICE, JOB_INC_PIA, JOB_INC_ACCESS_ID, JOB_INC_AVAIL_ID)
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_JOB_INCOME_ADD
+		(JOB_INC_PRICE,
+		JOB_INC_PIA,
+		JOB_INC_ACCESS_ID,
+		JOB_INC_AVAIL_ID)
 		VALUES(?, ?, ?, ?);";
 
 		//Create the statement query
@@ -93,7 +107,11 @@ function JobOutcomeAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLog
 		$fExpenses = round((empty($InfExpenses)) ? 0 : -(abs($InfExpenses)), $GLOBALS['CURRENCY_DECIMAL_PRECISION']);
 		$fDamage = round((empty($InfDamage)) ? 0 : -(abs($InfDamage)), $GLOBALS['CURRENCY_DECIMAL_PRECISION']);
 
-		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_JOB_OUTCOME_ADD(JOB_OUT_EXPENSES, JOB_OUT_DAMAGE, JOB_OUT_ACCESS_ID, JOB_OUT_AVAIL_ID) 
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_JOB_OUTCOME_ADD
+		(JOB_OUT_EXPENSES,
+		JOB_OUT_DAMAGE,
+		JOB_OUT_ACCESS_ID,
+		JOB_OUT_AVAIL_ID) 
 		VALUES(?, ?, ?, ?);";
 
 		//Create the statement query

@@ -200,6 +200,52 @@ function JobGeneralSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle 
 	return FALSE;
 }
 
+function JobEditSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniJobIndex, int $IniUserAccess, int $IniAvail)
+{
+	if(CheckAccessRange($IniUserAccess) && ($IniJobIndex > 0) && ($IniAvail > 0 && $IniAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']))
+	{
+        $sQuery = "";
+		$sPrefix = $InrConn->GetPrefix();
+
+		$rStatement = 0;
+
+		$sQuery = "SELECT
+		".$sPrefix."VIEW_JOB.JOB_ID,
+		".$sPrefix."VIEW_JOB.JOB_ACCESS,
+		".$sPrefix."VIEW_JOB.COMP_ID,
+		".$sPrefix."VIEW_JOB_DATA.JOB_DATA_TITLE,
+		".$sPrefix."VIEW_JOB_DATA.JOB_DATA_DATE,
+		".$sPrefix."VIEW_JOB_INCOME.JOB_INC_PRICE,
+		".$sPrefix."VIEW_JOB_INCOME.JOB_INC_PIA,
+		".$sPrefix."VIEW_JOB_OUTCOME.JOB_OUT_EXPENSES,
+		".$sPrefix."VIEW_JOB_OUTCOME.JOB_OUT_DAMAGE
+		FROM
+		".$sPrefix."VIEW_JOB,
+		".$sPrefix."VIEW_JOB_DATA,
+		".$sPrefix."VIEW_JOB_INCOME,
+		".$sPrefix."VIEW_JOB_OUTCOME
+		WHERE (".$sPrefix."VIEW_JOB.JOB_ID = ?)
+		AND (".$sPrefix."VIEW_JOB.JOB_DATA_ID = ".$sPrefix."VIEW_JOB_DATA.JOB_DATA_ID)
+		AND (".$sPrefix."VIEW_JOB.JOB_INC_ID = ".$sPrefix."VIEW_JOB_INCOME.JOB_INC_ID)
+		AND (".$sPrefix."VIEW_JOB.JOB_OUT_ID = ".$sPrefix."VIEW_JOB_OUTCOME.JOB_OUT_ID);";
+
+		if($rStatement = $InrConn->CreateStatement($sQuery))
+		{
+			//Check if the statement binded the variables, else throw an exception with the error
+			if($rStatement->bind_param("i", $IniJobIndex))
+				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
+			else
+				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);
+		}
+		else
+			$InrLogHandle->AddLogMessage("Error creating statement object", __FILE__, __FUNCTION__, __LINE__);
+	}
+	else
+		$InrLogHandle->AddLogMessage("Input parameters do not meet requirements range", __FILE__, __FUNCTION__, __LINE__);
+
+	return FALSE;
+}
+
 function JobPITSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniJobPITIndex, int $IniUserAccess, int $IniAvail)
 {
 	if(CheckAccessRange($IniUserAccess) && ($IniJobPITIndex > 0) && ($IniAvail > 0 && $IniAvail <= $GLOBALS['AVAILABLE_ARRAY_SIZE']))

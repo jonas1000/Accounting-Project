@@ -3,49 +3,49 @@ function EmployeeSearchConstructor(string &$InsSearchTypeQuery, string &$IniSear
 {
 	switch($IniSearchType)
 	{
-		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Name']["name"]:
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['EMPLOYEE_NAME']["NAME"]:
 		{
 			$InsSearchTypeQuery = "EMP_DATA_NAME";
 			break;
 		}
 
-		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Surname']["name"]:
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['EMPLOYEE_SURNAME']["NAME"]:
 		{
 			$InsSearchTypeQuery = "EMP_DATA_SURNAME";
 			break;
 		}
 
-		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Phone']["name"]:
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['EMPLOYEE_PHONE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "EMP_DATA_PN";
 			break;
 		}
 
-		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Stable']["name"]:
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['EMPLOYEE_STABLE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "EMP_DATA_SN";
 			break;
 		}
 
-		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Email']["name"]:
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['EMPLOYEE_EMAIL']["NAME"]:
 		{
 			$InsSearchTypeQuery = "EMP_DATA_EMAIL";
 			break;
 		}
 
-		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Salary']["name"]:
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['EMPLOYEE_SALARY']["NAME"]:
 		{
 			$InsSearchTypeQuery = "EMP_DATA_SALARY";
 			break;
 		}
 
-		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_Title']["name"]:
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['EMPLOYEE_TITLE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "EMP_DATA_TITLE";
 			break;
 		}
 
-		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['Employee_BirthDay']["name"]:
+		case $GLOBALS['EMPLOYEE_SEARCH_TYPE']['EMPLOYEE_BIRTH_DATE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "EMP_DATA_BDAY";
 			break;
@@ -63,7 +63,7 @@ function EmployeePosSearchConstructor(string &$InsSearchTypeQuery, string &$IniS
 {
 	switch($IniSearchType)
 	{
-		case $GLOBALS['EMPLOYEE_POSITION_SEARCH_TYPE']['Employee_Position_Title']["name"]:
+		case $GLOBALS['EMPLOYEE_POSITION_SEARCH_TYPE']['EMPLOYEE_POSITION_TITLE']["NAME"]:
 		{
 			$InsSearchTypeQuery = "EMP_POS_TITLE";
 			break;
@@ -292,21 +292,23 @@ function EmployeeSelectElemRetriever(ME_CDBConnManager &$InrConn, ME_CLogHandle 
 	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
 		$rStatement = 0;
+		$sPrefix = $InrConn->GetPrefix();
 
 		$sQuery = "SELECT
 		EMP_ID,
 		EMP_DATA_NAME
-		FROM ".$InrConn->GetPrefix()."VIEW_EMPLOYEE_GENERAL
-		WHERE (EMP_AVAIL = ?
-		AND EMP_DATA_AVAIL = ?
-		AND EMP_POS_AVAIL = ?)
-		AND (EMP_ACCESS >= ?)
+		FROM 
+		".$sPrefix."VIEW_EMPLOYEE,
+		".$sPrefix."VIEW_EMPLOYEE_DATA
+		WHERE ".$sPrefix."VIEW_EMPLOYEE.EMP_DATA_ID = ".$sPrefix."VIEW_EMPLOYEE_DATA.EMP_DATA_ID 
+		AND (EMP_AVAIL = ? AND EMP_DATA_AVAIL = ?)
+		AND (EMP_ACCESS >= ? AND EMP_DATA_ACCESS >= ?)
 		ORDER BY EMP_ID DESC;";
 
 		if($rStatement = $InrConn->CreateStatement($sQuery))
 		{
 			//Check if the statement binded the variables, else throw an exception with the error
-			if($rStatement->bind_param("iiii", $IniAvail, $IniAvail, $IniAvail, $IniUserAccess))
+			if($rStatement->bind_param("iiii", $IniAvail, $IniAvail, $IniUserAccess, $IniUserAccess))
 				return ME_SQLStatementExecAndResult($InrConn, $rStatement, $InrLogHandle);
 			else
 				$InrLogHandle->AddLogMessage("Error Binding parameters to query", __FILE__, __FUNCTION__, __LINE__);

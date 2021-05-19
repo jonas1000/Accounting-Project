@@ -8,7 +8,10 @@ function CountyAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHand
 	CheckRange($IniAvail, $GLOBALS['AVAILABLE_ARRAY_SIZE'], 0))
 	{
 		//The query string to be binded by the statement
-		$sQuery = "INSERT INTO VIEW_COUNTY_ADD(COU_DATA_ID, COUN_ID, COU_ACCESS_ID, COU_AVAIL_ID) 
+		$sQuery = "INSERT INTO " . $InrConn->GetPrefix() . "VIEW_COUNTY_ADD
+		(COU_DATA_ID, COUN_ID,
+		COU_ACCESS_ID,
+		COU_AVAIL_ID) 
 		VALUES(?, ?, ?, ?);";
 
 		//Create the statement query
@@ -39,7 +42,12 @@ function CountyDataAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLog
 		$fInterestRate = abs($InfInterestRate);
 
 		//The query string to be binded by the statement
-		$sQuery = "INSERT INTO VIEW_COUNTY_DATA_ADD(COU_DATA_TITLE, COU_DATA_TAX, COU_DATA_IR, COU_DATA_ACCESS_ID, COU_DATA_AVAIL_ID) 
+		$sQuery = "INSERT INTO " . $InrConn->GetPrefix() . "VIEW_COUNTY_DATA_ADD
+		(COU_DATA_TITLE,
+		COU_DATA_TAX,
+		COU_DATA_IR,
+		COU_DATA_ACCESS_ID,
+		COU_DATA_AVAIL_ID) 
 		VALUES(?, ?, ?, ?, ?);";
 
 		//Create the statement query

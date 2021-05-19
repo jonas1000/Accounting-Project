@@ -10,7 +10,11 @@ function CompanyAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHan
 		$rStatement = 0;
 
 		//The query string to be binded by the statement
-		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_COMPANY_ADD(COMP_DATA_ID, COU_ID, COMP_ACCESS_ID, COMP_AVAIL_ID) 
+		$sQuery = "INSERT INTO ".$InrConn->GetPrefix()."VIEW_COMPANY_ADD
+		(COMP_DATA_ID,
+		COU_ID,
+		COMP_ACCESS_ID,
+		COMP_AVAIL_ID) 
 		VALUES(?, ?, ?, ?);";
 
 		//Create the statement query
@@ -39,7 +43,11 @@ function CompanyDataAddParser(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLo
 	{
 		//The query string to be binded by the statement
 		$sQuery = "INSERT INTO 
-		".$InrConn->GetPrefix()."VIEW_COMPANY_DATA_ADD(COMP_DATA_TITLE, COMP_DATA_DATE, COMP_DATA_ACCESS_ID, COMP_DATA_AVAIL_ID) 
+		".$InrConn->GetPrefix()."VIEW_COMPANY_DATA_ADD
+		(COMP_DATA_TITLE,
+		COMP_DATA_DATE,
+		COMP_DATA_ACCESS_ID,
+		COMP_DATA_AVAIL_ID) 
 		VALUES(?, ?, ?, ?);";
 
 		//Create the statement query

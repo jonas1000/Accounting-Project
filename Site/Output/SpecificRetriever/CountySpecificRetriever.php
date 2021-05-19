@@ -89,11 +89,9 @@ function CountyEditFormSpecificRetriever(ME_CDBConnManager &$InrConn, ME_CLogHan
         ".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_IR,
         ".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_ACCESS
         FROM ".$sPrefix."VIEW_COUNTY, ".$sPrefix."VIEW_COUNTY_DATA
-        WHERE (".$sPrefix."VIEW_COUNTY.COU_AVAIL = ?
-        AND ".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_AVAIL = ?)
-        AND (".$sPrefix."VIEW_COUNTY.COU_ACCESS > ?
-        AND ".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_ACCESS >= ?)
-        AND (".$sPrefix."VIEW_COUNTY.COU_ID = ?
+        WHERE (".$sPrefix."VIEW_COUNTY.COU_AVAIL = ? AND ".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_AVAIL = ?)
+        AND (".$sPrefix."VIEW_COUNTY.COU_ACCESS > ? AND ".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_ACCESS >= ?)
+        AND (".$sPrefix."VIEW_COUNTY.COU_ID = ?)
         AND (".$sPrefix."VIEW_COUNTY.COU_DATA_ID = ".$sPrefix."VIEW_COUNTY_DATA.COU_DATA_ID);";
 
 		if($rStatement = $InrConn->CreateStatement($sQuery))

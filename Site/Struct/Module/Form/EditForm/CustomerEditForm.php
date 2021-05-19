@@ -8,52 +8,55 @@ function HTMLCustomerEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLo
 
         if($iCustomerIndex > 0)
         {
-            $rResult = CustomerGeneralSpecificRetriever($InrConn, $InrLogHandle, $iCustomerIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['Show']);
+            $rResult = CustomerEditFormSpecificRetriever($InrConn, $InrLogHandle, $iCustomerIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
             if(!empty($rResult) && ($rResult->num_rows == 1)) 
             {
                 $aDataRow = $rResult->fetch_assoc();
 
                 //-------------<PHP-HTML>-------------//
-                print("<div class='Form'><form method='POST'><div>");
 
-                //Title
-                printf("<div id='FormTitle'><h3>Edit Customer</h3><br><h4>%s</h4></div>", $aDataRow['CUST_DATA_NAME']);
-
-                //Input Row - name
-                printf("<div><label>Name*<input type='text' maxlength='64' placeholder='Name' name='Name' value='%s' required></label></div>", $aDataRow['CUST_DATA_NAME']);
-
-                //Input Row - surname
-                printf("<div><label>Surname*<input type='text' maxlength='64' placeholder='Surname' name='Surname' value='%s' required></label></div>", $aDataRow['CUST_DATA_SURNAME']);
-
-                //Input Row - phone number
-                printf("<div><label>Phone number*<input type='tel' maxlength='16' placeholder='cell phone' name='PhoneNumber' value='%s' required></label></div>", $aDataRow['CUST_DATA_PN']);
-
-                //Input Row - stable number
-                printf("<div><label>Stable number<input type='tel' maxlength='16' placeholder='Stable number(house or bussiness)' name='StableNumber' value='%s'></label></div>", $aDataRow['CUST_DATA_SN']);
-
-                //Input Row - email
-                printf("<div><label>Email<input type='email' maxlength='64' placeholder='customer@email.com' name='Email' value='%s'></label></div>", $aDataRow['CUST_DATA_EMAIL']);
-
-                //Input Row - VAT
-                printf("<div><label>VAT<input type='text' maxlength='32' placeholder='GR123456789' name='VAT' value='%s'></label></div>", $aDataRow['CUST_DATA_VAT']);
-
-                //Input Row - address
-                printf("<div><label>Address<textarea placeholder='Description' spellcheck='true' rows='5' cols='10' maxlegnth='128' name='Addr' value='%s'></textarea></label></div>", $aDataRow['CUST_DATA_ADDR']);
-
-                //Input Row
-                printf("<div><label>Note<textarea placeholder='Note' spellcheck='true' rows='5' 'cols='10' maxlegnth='256' name='Note' value='%s'></textarea></label></div>", $aDataRow['CUST_DATA_NOTE']);
+                printf("
+                <div class='Form'>
+                    <form method='POST'>
+                        <div>
+                            <div id='FormTitle'><h3>Edit Customer</h3><br><h4>%s</h4></div>
+                            <div><label>Name*<input type='text' maxlength='64' placeholder='Name' name='Name' value='%s' required></label></div>
+                            <div><label>Surname*<input type='text' maxlength='64' placeholder='Surname' name='Surname' value='%s' required></label></div>
+                            <div><label>Phone number*<input type='tel' maxlength='16' placeholder='cell phone' name='PhoneNumber' value='%s' required></label></div>
+                            <div><label>Stable number<input type='tel' maxlength='16' placeholder='Stable number(house or bussiness)' name='StableNumber' value='%s'></label></div>
+                            <div><label>Email<input type='email' maxlength='64' placeholder='customer@email.com' name='Email' value='%s'></label></div>
+                            <div><label>VAT<input type='text' maxlength='32' placeholder='GR123456789' name='VAT' value='%s'></label></div>
+                            <div><label>Address<textarea placeholder='Description' spellcheck='true' rows='5' cols='10' maxlegnth='128' name='Addr' value='%s'></textarea></label></div>
+                            <div><label>Note<textarea placeholder='Note' spellcheck='true' rows='5' 'cols='10' maxlegnth='256' name='Note' value='%s'></textarea></label></div>
+                        </div>",
+                $aDataRow['CUST_DATA_NAME'],
+                $aDataRow['CUST_DATA_NAME'],
+                $aDataRow['CUST_DATA_SURNAME'],
+                $aDataRow['CUST_DATA_PN'],
+                $aDataRow['CUST_DATA_SN'],
+                $aDataRow['CUST_DATA_EMAIL'],
+                $aDataRow['CUST_DATA_VAT'],
+                $aDataRow['CUST_DATA_ADDR'],
+                $aDataRow['CUST_DATA_NOTE']);
 
                 //get rows and render <select> element with data
-                print("<div><label>Access");
-                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['Show'], $aDataRow['CUST_DATA_ACCESS']);
-                print("</label></div></div>");
+                print(" <div><label>Access");
+                RenderAccessSelectRowCheck($InrConn, $InrLogHandle, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW'], $aDataRow['CUST_DATA_ACCESS']);
+                print(" </label></div>");
 
-                printf("<div><input type='hidden' value='%s' name='CustIndex'>", $aDataRow['CUST_ID']);
-                printf("<input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>", $GLOBALS['MENU_INDEX']['Customer'], $GLOBALS['MODULE']['Edit']);
-                printf("<a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a></div>", $GLOBALS['MENU_INDEX']['Customer']);
-
-                print("</form></div>");
+                printf("
+                        <div>
+                            <input type='hidden' value='%s' name='CustIndex'>
+                            <input type='submit' value='Save' formaction='.?MenuIndex=%d&Module=%d&ProEdit'>
+                            <a href='.?MenuIndex=%d'><div class='Button-Left'><p>Cancel</p></div></a>
+                        </div>
+                    </form>
+                </div>",
+                $aDataRow['CUST_ID'],
+                $GLOBALS['MENU_INDEX']['CUSTOMER'],
+                $GLOBALS['MODULE']['EDIT'],
+                $GLOBALS['MENU_INDEX']['CUSTOMER']);
 
                 $rResult->free();
             }

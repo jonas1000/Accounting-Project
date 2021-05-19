@@ -889,6 +889,7 @@ function CreateViewTables(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstal
     $sQuery="CREATE ALGORITHM = MERGE VIEW ".$InsPrefix."VIEW_JOB_EDIT AS
     SELECT
     JOB_ID AS JOB_ID,
+    JOB_DATA_ID AS JOB_DATA_ID,
     COMPANY_ID AS COMP_ID,
     ACCESS_LEVEL_ID AS JOB_ACCESS_ID,
     AVAILABLE_ID AS JOB_AVAIL_ID
@@ -903,6 +904,7 @@ function CreateViewTables(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstal
     SELECT
     JOB_DATA_ID AS JOB_DATA_ID,
     JOB_DATA_TITLE AS JOB_DATA_TITLE,
+    JOB_DATA_DATE AS JOB_DATA_DATE,
     ACCESS_LEVEL_ID AS JOB_DATA_ACCESS_ID,
     AVAILABLE_ID AS JOB_DATA_AVAIL_ID
     FROM
@@ -1143,7 +1145,7 @@ function CreateViewTables(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstal
     ".$InsPrefix."VIEW_JOB,
     ".$InsPrefix."VIEW_JOB_INCOME_TIME
     WHERE
-    (".$InsPrefix."VIEW_JOB_INCOME_TIME.JOB_PIT_AVAIL = ".$GLOBALS['AVAILABLE']['Show'].")
+    (".$InsPrefix."VIEW_JOB_INCOME_TIME.JOB_PIT_AVAIL = ".$GLOBALS['AVAILABLE']['SHOW'].")
     AND
     (".$InsPrefix."VIEW_JOB_INCOME_TIME.JOB_ID = ".$InsPrefix."VIEW_JOB.JOB_ID)
     GROUP BY

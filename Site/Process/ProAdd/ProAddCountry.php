@@ -17,11 +17,11 @@ function ProAddCountry(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle
 		if(CheckAccessRange($iContentAccess) && CheckAccessRange($IniUserAccess))
 		{
 			//if the function failed to insert data, then do not continue as the rest of the block will not work
-			if(CountryDataAddParser($InrConn, $InrLogHandle, $sTitle, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+			if(CountryDataAddParser($InrConn, $InrLogHandle, $sTitle, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 			{
 				$iCountryDataLastIndex = $InrConn->GetLastInsertID();
 
-				if(CountryAddParser($InrConn, $InrLogHandle, $iCountryDataLastIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+				if(CountryAddParser($InrConn, $InrLogHandle, $iCountryDataLastIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 				{
 					if($InrConn->Commit())
 						return TRUE;

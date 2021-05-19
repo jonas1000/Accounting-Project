@@ -4,7 +4,7 @@ function ProAddEmployee(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandl
 {
 	if(isset($_POST['Name'], $_POST['Surname'], $_POST['Pass'], $_POST['Email'], $_POST['Salary'], $_POST['BDay'], $_POST['PN'], $_POST['SN'], $_POST['Access'], $_POST['Company'], $_POST['EmployeePosition']) &&
 	!ME_MultyCheckEmptyType($_POST['Name'], $_POST['Surname'], $_POST['Pass'], $_POST['Email'], $_POST['BDay'], $_POST['PN'], $_POST['Access'], $_POST['Company'], $_POST['EmployeePosition']) &&
-	ME_MultyCheckNumericType($_POST['Access'], $_POST['Company'], $_POST['EmployeePosition'], $_POST['Salary']))
+	ME_MultyCheckNumericType($_POST['Access'], $_POST['Company'], $_POST['EmployeePosition'], $_POST['PN'], $_POST['SN'], $_POST['Salary']))
 	{
 		//format the string to be compatible with HTML and avoid SQL injection
 		$sName = ME_SecDataFilter($_POST['Name']);
@@ -24,13 +24,17 @@ function ProAddEmployee(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandl
 
 		//database cannot accept Primary or foreighn keys below 1
 		//If duplicate the database will throw a exception
-		if(($fSalary > -1) && CheckAccessRange($iContentAccess) && ($iCompanyIndex > 0) && ($iEmployeePositionIndex > 0) && CheckAccessRange($IniUserAccess))
+		if(($fSalary >= 0.0) &&
+		CheckAccessRange($iContentAccess) &&
+		($iCompanyIndex > 0) &&
+		($iEmployeePositionIndex > 0) &&
+		CheckAccessRange($IniUserAccess))
 		{
-			if(EmployeeDataAddParser($InrConn, $InrLogHandle, $sName, $sSurname, $sPassword, $sEmail, $fSalary, $sBDay, $sPhoneNumber, $sStableNumber, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+			if(EmployeeDataAddParser($InrConn, $InrLogHandle, $sName, $sSurname, $sPassword, $sEmail, $fSalary, $sBDay, $sPhoneNumber, $sStableNumber, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 			{
 				$iEmployeeDataLastIndex = $InrConn->GetLastInsertID();
 
-				if(EmployeeAddParser($InrConn, $InrLogHandle, $iEmployeeDataLastIndex, $iEmployeePositionIndex, $iCompanyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['Show']))
+				if(EmployeeAddParser($InrConn, $InrLogHandle, $iEmployeeDataLastIndex, $iEmployeePositionIndex, $iCompanyIndex, $iContentAccess, $GLOBALS['AVAILABLE']['SHOW']))
 				{
 					if($InrConn->Commit())
 						return TRUE;
