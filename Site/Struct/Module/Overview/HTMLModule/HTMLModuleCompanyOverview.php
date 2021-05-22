@@ -38,15 +38,15 @@ function HTMLCompanyDataBlock(mysqli_result &$InrResult, ME_CLogHandle &$InrLogH
             <div class='Button-Left'><h5>ADD</h5></div>
         </a>
         <form action='.' method='get'>
-            <input type='hidden' name='MenuIndex' value='%d'><label>Search by%s</label>
-            <label>Query <input type='text' id='QueryInput' name='SearchQuery' value='%s'></label>
+            <input type='hidden' name='MenuIndex' value='%d'><label>Search by</label>%s
+            <label>Query</label><input type='text' id='QueryInput' name='SearchQuery' value='%s'>
             <button>submit</button>
         </form>
     </div>
     ",
-    $GLOBALS['MENU_INDEX']['COMPANY'],
+    $GLOBALS['MENU']['COMPANY']['INDEX'],
     $GLOBALS['MODULE']['ADD'],
-    $GLOBALS['MENU_INDEX']['COMPANY'],
+    $GLOBALS['MENU']['COMPANY']['INDEX'],
     $sHTMLGeneratedSelectStructure,
     (isset($_GET['SearchQuery'])) ? $_GET['SearchQuery'] : "");
 
@@ -69,12 +69,14 @@ function HTMLCompanyDataBlock(mysqli_result &$InrResult, ME_CLogHandle &$InrLogH
 
             //Data Row - country title
             if((((int) $aDataRow['COUN_DATA_ACCESS']) >= $IniUserAccess))
+            {
                 printf("
                     <div>
                         <div><b><p>Country</p></b></div>
                         <div><p>%s</p></div>
                     </div>",
                     $aDataRow['COUN_DATA_TITLE']);
+            }
 
             if(((int) $aDataRow['COU_DATA_ACCESS']) >= $IniUserAccess)
             {
@@ -106,9 +108,9 @@ function HTMLCompanyDataBlock(mysqli_result &$InrResult, ME_CLogHandle &$InrLogH
                 </form>
             </div> ",
             $aDataRow['COMP_ID'],
-            $GLOBALS['MENU_INDEX']['COMPANY'],
+            $GLOBALS['MENU']['COMPANY']['INDEX'],
             $GLOBALS['MODULE']['DELETE'],
-            $GLOBALS['MENU_INDEX']['COMPANY'],
+            $GLOBALS['MENU']['COMPANY']['INDEX'],
             $GLOBALS['MODULE']['EDIT']);
         }
         else

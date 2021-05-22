@@ -40,9 +40,9 @@ function HTMLCustomerOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle 
 			<button>submit</button>
 		</form>
 	</div>",
-	$GLOBALS['MENU_INDEX']['CUSTOMER'],
+	$GLOBALS['MENU']['CUSTOMER']['INDEX'],
 	$GLOBALS['MODULE']['ADD'],
-	$GLOBALS['MENU_INDEX']['CUSTOMER'],
+	$GLOBALS['MENU']['CUSTOMER']['INDEX'],
 	$sHTMLGeneratedSelectStructure,
 	(isset($_GET['SearchQuery'])) ? $_GET['SearchQuery'] : "");
 
@@ -95,9 +95,9 @@ function HTMLCustomerOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle 
 			(empty($aDataRow['CUST_DATA_ADDR']) ? "None" : $aDataRow['CUST_DATA_ADDR']),
 			(empty($aDataRow['CUST_DATA_NOTE']) ? "None" : $aDataRow['CUST_DATA_NOTE']),
 			$aDataRow['CUST_ID'],
-			$GLOBALS['MENU_INDEX']['CUSTOMER'],
+			$GLOBALS['MENU']['CUSTOMER']['INDEX'],
 			$GLOBALS['MODULE']['DELETE'],
-			$GLOBALS['MENU_INDEX']['CUSTOMER'],
+			$GLOBALS['MENU']['CUSTOMER']['INDEX'],
 			$GLOBALS['MODULE']['EDIT']);
 		}
 	}

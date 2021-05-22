@@ -6,7 +6,7 @@ $APP_PATCH = 0;
 
 $CONN_ENCODING = "utf8";
 
-$DEBUG = TRUE;
+$DEBUG = FALSE;
 
 $DEFAULT_LOG_FILE="Log.txt";
 
@@ -16,7 +16,7 @@ $CURRENCY = "EURO";
 
 $CURRENCY_SYMBOL = "&#x20AC";
 
-$CURRENCY_DECIMAL_PRECISION = 2;
+$CURRENCY_DECIMAL_PRECISION = 3;
 
 $AVAILABLE = 
 [
@@ -32,17 +32,17 @@ $ACCESS =
     'GUEST' => 4
 ];
 
-$MENU_INDEX = 
+$MENU = 
 [
-    'ERROR' => -1,
-    'COMPANY' => 0,
-    'COUNTRY' => 1,
-    'EMPLOYEE' => 2,
-    'EMPLOYEE_POSITION' => 3,
-    'JOB' => 4,
-    'SHAREHOLDER' => 5,
-    'CUSTOMER' => 6,
-    'COUNTY' => 7
+    'ERROR' => ["TITLE" => "Error", "INDEX" => -1],
+    'COMPANY' => ["TITLE" => "Company", "INDEX" => 0],
+    'COUNTRY' => ["TITLE" => "Country", "INDEX" => 1],
+    'EMPLOYEE' => ["TITLE" => "Employee", "INDEX" => 2],
+    'EMPLOYEE_POSITION' => ["TITLE" => "Employee Position", "INDEX" => 3],
+    'JOB' => ["TITLE" => "Job", "INDEX" => 4],
+    'SHAREHOLDER' => ["TITLE" => "Shareholder", "INDEX" => 5],
+    'CUSTOMER' => ["TITLE" => "Customer", "INDEX" => 6],
+    'COUNTY' => ["TITLE" => "County", "INDEX" => 7]
 ];
 
 $MODULE = 

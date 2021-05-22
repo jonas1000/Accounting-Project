@@ -3,9 +3,9 @@ $rErrorProcFileHandle = new ME_CFileHandle($GLOBALS['DEFAULT_LOG_FILE'], $GLOBAL
 
 $rErrorProcLogHandle = new ME_CLogHandle($rErrorProcFileHandle, "LoginProcess", __FILE__);
 
-$DBConn = new ME_CDBConnManager($rErrorProcLogHandle, $_SESSION['DBName'], $_SESSION['ServerDNS'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
+$rConn = new ME_CDBConnManager($rErrorProcLogHandle, $_SESSION['DBName'], $_SESSION['ServerDNS'], $_SESSION['DBUsername'], $_SESSION['DBPassword'], $_SESSION['DBPrefix']);
 
-function HTMLHeader(ME_CDBConnManager &$InrDBConn, ME_CLogHandle &$InrLogHandle)
+function HTMLHeader(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle)
 {
 	//Header Box
 	print("
@@ -14,56 +14,68 @@ function HTMLHeader(ME_CDBConnManager &$InrDBConn, ME_CLogHandle &$InrLogHandle)
 			<div class='HeaderTitle'>");
 
 	if(isset($_GET['MenuIndex']))
-		printf("<h1>%s</h1>", array_search($_GET['MenuIndex'], $GLOBALS['MENU_INDEX']));
+	{
+		switch($_GET['MenuIndex'])
+		{
+			case $GLOBALS['MENU']['COMPANY']['INDEX']:
+				printf("<h1>%s</h1>", $GLOBALS['MENU']['COMPANY']['TITLE']);
+				break;
+
+			case $GLOBALS['MENU']['COUNTRY']['INDEX']:
+				printf("<h1>%s</h1>", $GLOBALS['MENU']['COUNTRY']['TITLE']);
+				break;
+
+			case $GLOBALS['MENU']['EMPLOYEE']['INDEX']:
+				printf("<h1>%s</h1>", $GLOBALS['MENU']['EMPLOYEE']['TITLE']);
+				break;
+
+			case $GLOBALS['MENU']['EMPLOYEE_POSITION']['INDEX']:
+				printf("<h1>%s</h1>", $GLOBALS['MENU']['EMPLOYEE_POSITION']['TITLE']);
+				break;
+
+			case $GLOBALS['MENU']['JOB']['INDEX']:
+				printf("<h1>%s</h1>", $GLOBALS['MENU']['JOB']['TITLE']);
+				break;
+
+			case $GLOBALS['MENU']['SHAREHOLDER']['INDEX']:
+				printf("<h1>%s</h1>", $GLOBALS['MENU']['SHAREHOLDER']['TITLE']);
+				break;
+
+			case $GLOBALS['MENU']['CUSTOMER']['INDEX']:
+				printf("<h1>%s</h1>", $GLOBALS['MENU']['CUSTOMER']['TITLE']);
+				break;
+
+			case $GLOBALS['MENU']['COUNTY']['INDEX']:
+				printf("<h1>%s</h1>", $GLOBALS['MENU']['COUNTY']['TITLE']);
+				break;
+
+			default:
+				printf("<h1>Home</h1>");
+				break;
+		}
+	}
 	else
-		print("<h1>Home</h1>");
+		printf("<h1>Home</h1>");
 
 	print("	</div>");
 
-	HTMLHeaderLogin($InrDBConn, $InrLogHandle);
+	HTMLHeaderLogin($InrConn, $InrLogHandle);
 
 	print("
 		</div>
 	</div>");
 }
 
-function HTMLHeaderLogin(ME_CDBConnManager &$InrDBConn, ME_CLogHandle &$InrLogHandle)
+function HTMLHeaderLogin(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle)
 {
 	//Header check state of user connection and display connected or not in the login box
-	if(!isset($_GET['Login']))
+	if(isset($_SESSION['Login']) && $_SESSION['Login'])
 	{
-		//If $_GET['Logout'] is not set then check if $_SESSION['LogedIn'] is set, else display login form
-		if(!isset($_GET['Logout']))
-		{
-			if(isset($_SESSION['LogedIn']))
-			{
-				if($_SESSION['LogedIn'])
-					ProFunctionCallback($InrLogHandle,"HTMLLogedIn", $GLOBALS['ACCESS']['EMPLOYEE'], "GET");
-			}
-			else
-				ProFunctionCallback($InrLogHandle, "HTMLLoginForm", $GLOBALS['ACCESS']['GUEST'], "GET");
-		}
-		else
-		{
-			require_once("Struct/Module/Session/Logout.php");
-			ProFunctionCallback($InrLogHandle, "Logout", $GLOBALS['ACCESS']['EMPLOYEE'], "GET");
-
-			header("Location:.");
-		}
+		ProFunctionCallback($InrLogHandle,"HTMLLogedIn", $GLOBALS['ACCESS']['EMPLOYEE'], "GET");
 	}
 	else
-	{
-		require_once("../MedaLib/Function/Filter/DataFilter/MultyCheckDataTypeFilter/MultyCheckDataEmptyType.php");
-		require_once("../MedaLib/Function/Filter/ConnFilter/StatementFilter.php");
-		require_once("../MedaLib/Function/SQL/SQLStatementExec.php");
-		require_once("Output/SpecificRetriever/EmployeeSpecificRetriever.php");
-		require_once("Process/ProCheck/ProLoginCheck.php");
-
-		ProQueryFunctionCallback($InrDBConn, $InrLogHandle, "LoginCheck", $GLOBALS['ACCESS']['GUEST'], "POST");
-
-		header("Location:Index.php");
-	}
+		ProFunctionCallback($InrLogHandle, "HTMLLoginForm", $GLOBALS['ACCESS']['GUEST'], "GET");
 }
 
-HTMLHeader($DBConn, $rErrorProcLogHandle);
+HTMLHeader($rConn, $rErrorProcLogHandle);
 ?>

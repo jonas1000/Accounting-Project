@@ -2,7 +2,7 @@
 require_once("../MedaLib/Function/SQL/SQLStatementExec.php");
 require_once("../MedaLib/Function/Generator/HTMLSelectStructure.php");
 
-function HTMLJobPITTransOverview(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
+function HTMLJobPITOverview(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess) : void
 {
 	if(isset($_POST['JobIndex']) && !empty($_POST['JobIndex']) && is_numeric($_POST['JobIndex']))
 	{
@@ -14,7 +14,7 @@ function HTMLJobPITTransOverview(ME_CDBConnManager &$InrConn, ME_CLogHandle &$In
 			$InrLogHandle->AddLogMessage("Failed to get result from Job transtaction Retriever" , __FILE__, __FUNCTION__, __LINE__);
 		else
 		{
-			HTMLJobPITTransOverviewDataBlock($rResult, $InrLogHandle, $IniUserAccess, $iJobIndex);
+			HTMLJobPITDataBlock($rResult, $InrLogHandle, $IniUserAccess, $iJobIndex);
 
 			$rResult->free();
 		}
@@ -23,17 +23,19 @@ function HTMLJobPITTransOverview(ME_CDBConnManager &$InrConn, ME_CLogHandle &$In
 		$InrLogHandle->AddLogMessage("ID does not meet requirement range", __FILE__, __FUNCTION__, __LINE__);
 }
 
-function HTMLJobPITTransOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniJobIndex) : void
+function HTMLJobPITDataBlock(mysqli_result &$InrResult, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniJobIndex) : void
 {
 	//The toolbar for the buttons (tools)
 	printf("
 	<div class='ContentToolBar'>
 		<form method='POST'>
 			<input type='hidden' name='JobIndex' value='%d' required>
-			<input class='Input-Left' type='submit' value='ADD' formaction='.?MenuIndex=%d&Module=%d&SubModule=0'>
+			<input class='Input-Left' type='submit' value='ADD' formaction='.?MenuIndex=%d&Module=%d&SubModule=%s'>
 		</form>
-	</div>", $IniJobIndex,
-	$GLOBALS['MENU_INDEX']['JOB'],
+	</div>",
+	$IniJobIndex,
+	$GLOBALS['MENU']['JOB']['INDEX'],
+	$GLOBALS['MODULE']['EXTEND'],
 	$GLOBALS['MODULE']['ADD']);
 
 	foreach($InrResult->fetch_all(MYSQLI_ASSOC) as $aDataRow)
@@ -59,13 +61,14 @@ function HTMLJobPITTransOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHand
 						<input type='submit' value='Edit' formaction='.?MenuIndex=%d&Module=%d&SubModule=%s'>
 					</div>
 				</form>
-			</div>", $aDataRow['JOB_PIT_PAYMENT'],
+			</div>",
+			$aDataRow['JOB_PIT_PAYMENT'],
 			$aDataRow['JOB_PIT_DATE'],
 			$aDataRow['JOB_PIT_ID'],
-			$GLOBALS['MENU_INDEX']['JOB'],
+			$GLOBALS['MENU']['JOB']['INDEX'],
 			$GLOBALS['MODULE']['EXTEND'],
 			$GLOBALS['MODULE']['DELETE'],
-			$GLOBALS['MENU_INDEX']['JOB'],
+			$GLOBALS['MENU']['JOB']['INDEX'],
 			$GLOBALS['MODULE']['EXTEND'],
 			$GLOBALS['MODULE']['EDIT']);
 		}
@@ -108,9 +111,10 @@ function HTMLJobOverviewDataBlock(ME_CDBConnManager &$InrConn, mysqli_result &$I
 			<label>Query</label><input type='text' name='SearchQuery' value='%s'>
 			<button>submit</button>
 		</form>
-	</div>", $GLOBALS['MENU_INDEX']['JOB'],
+	</div>",
+	$GLOBALS['MENU']['JOB']['INDEX'],
 	$GLOBALS['MODULE']['ADD'],
-	$GLOBALS['MENU_INDEX']['JOB'],
+	$GLOBALS['MENU']['JOB']['INDEX'],
 	$sHTMLGeneratedSelectStructure,
 	(isset($_GET['SearchQuery'])) ? $_GET['SearchQuery'] : "");
 
@@ -131,12 +135,14 @@ function HTMLJobOverviewDataBlock(ME_CDBConnManager &$InrConn, mysqli_result &$I
 					<div><h5>%s</h5></div>", $aJobRow['JOB_DATA_TITLE']);
 
 			if(((int) $aJobRow['COMP_DATA_ACCESS']) >= $IniUserAccess)
+			{
 				//Data Row
 				printf("
 					<div>
 						<div><b><p>Company</p></b></div>
 						<div><p>%s</p></div>
 					</div>", $aJobRow['COMP_DATA_TITLE']);
+			}
 
 			//Data Row
 			printf("
@@ -156,7 +162,8 @@ function HTMLJobOverviewDataBlock(ME_CDBConnManager &$InrConn, mysqli_result &$I
 					<div>
 						<div><b><p>Payment in advance</p></b></div>
 						<div style='color:rgba(0,230,0,1)'><p>+%s %s</p></div>
-					</div>", $aJobRow['JOB_INC_PRICE'],
+					</div>",
+				$aJobRow['JOB_INC_PRICE'],
 				$GLOBALS['CURRENCY_SYMBOL'],
 				$aJobRow['JOB_INC_PIA'],
 				$GLOBALS['CURRENCY_SYMBOL']);
@@ -173,10 +180,11 @@ function HTMLJobOverviewDataBlock(ME_CDBConnManager &$InrConn, mysqli_result &$I
 					<div>
 						<div><b><p>Damage</p></b></div>
 						<div style='color:rgba(230,0,0,1)'><p>%s %s</p></div>
-					</div>", $aJobRow['JOB_OUT_EXPENSES'],
-					$GLOBALS['CURRENCY_SYMBOL'],
-					$aJobRow['JOB_OUT_DAMAGE'],
-					$GLOBALS['CURRENCY_SYMBOL']);
+					</div>",
+				$aJobRow['JOB_OUT_EXPENSES'],
+				$GLOBALS['CURRENCY_SYMBOL'],
+				$aJobRow['JOB_OUT_DAMAGE'],
+				$GLOBALS['CURRENCY_SYMBOL']);
 			}
 
 			if($bIsJobIncOutSameAccess)
@@ -199,7 +207,9 @@ function HTMLJobOverviewDataBlock(ME_CDBConnManager &$InrConn, mysqli_result &$I
 
 				printf("
 						<p>%1.2f %s</p></div>
-					</div>", $fJobSum, $GLOBALS['CURRENCY_SYMBOL']);
+					</div>",
+				$fJobSum,
+				$GLOBALS['CURRENCY_SYMBOL']);
 			}
 
 			//Button list for specific Data Row
@@ -208,18 +218,18 @@ function HTMLJobOverviewDataBlock(ME_CDBConnManager &$InrConn, mysqli_result &$I
 						<input type='hidden' name='JobIndex' value='%d'>
 						<input type='submit' value='Delete' formaction='.?MenuIndex=%d&Module=%d'>",
 			$aJobRow['JOB_ID'],
-			$GLOBALS['MENU_INDEX']['JOB'],
+			$GLOBALS['MENU']['JOB']['INDEX'],
 			$GLOBALS['MODULE']['DELETE']);
 
 			if(($bIsJobIncOutSameAccess))
-				printf("<input id='JobPIT' type='submit' value='Payments' formaction='.?MenuIndex=%s&Module=3'>", $GLOBALS['MENU_INDEX']['JOB']);
+				printf("<input id='JobPIT' type='submit' value='Payments' formaction='.?MenuIndex=%s&Module=%s'>", $GLOBALS['MENU']['JOB']['INDEX'], $GLOBALS['MODULE']['EXTEND']);
 
 			printf("
 						<input type='submit' value='Edit' formaction='.?MenuIndex=%d&Module=%d'>
 					</div>
 				</form>
 			</div>",
-			$GLOBALS['MENU_INDEX']['JOB'],
+			$GLOBALS['MENU']['JOB']['INDEX'],
 			$GLOBALS['MODULE']['EDIT']);
 		}
 	}
@@ -228,7 +238,7 @@ function HTMLJobOverviewDataBlock(ME_CDBConnManager &$InrConn, mysqli_result &$I
 
 function HTMLJobPITTransSum(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniJobIndex) : float
 {
-	$fPITSum =(float) 0;
+	$fPITSum = 0.0;
 
 	$rResult = JobPITByJobIDSpecificRetriever($InrConn, $InrLogHandle, $IniJobIndex, $IniUserAccess, $GLOBALS['AVAILABLE']['SHOW']);
 
@@ -241,7 +251,7 @@ function HTMLJobPITTransSum(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogH
 		$rResult->free();
 	}
 	else
-		$InrLogHandle->AddLogMessage("Failed to retrieve data", __FILE__, __FUNCTION__, __LINE__);
+		$InrLogHandle->AddLogMessage("No data retrieved", __FILE__, __FUNCTION__, __LINE__);
 
 	return round($fPITSum, $GLOBALS['CURRENCY_DECIMAL_PRECISION']);
 }

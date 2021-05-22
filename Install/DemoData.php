@@ -287,8 +287,8 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $sEmployeeDataPN = "6767676767";
     $sEmployeeDataEmail = "Adm@email.com";
     $sEmployeeDataPassword = password_hash("AdminPass", PASSWORD_BCRYPT, ["cost" => 10]);
-    $iAccessLevelID = 1;
-    $iAvailableID = 2;
+    $iAccessLevelID = $GLOBALS['ACCESS']['ADMIN'];
+    $iAvailableID = $GLOBALS['AVAILABLE']['SHOW'];
 
     $rStatement->bind_param("dssssssii", $fEmployeeDataSalary, $sEmployeeDataBDay, $sEmployeeDataName, $sEmployeeDataSurname, $sEmployeeDataPN, $sEmployeeDataEmail, $sEmployeeDataPassword, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
@@ -303,8 +303,8 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $sEmployeeDataPN = "6868686868";
     $sEmployeeDataEmail = "Men@email.com";
     $sEmployeeDataPassword = password_hash("MenPass", PASSWORD_BCRYPT, ["cost" => 10]);
-    $iAccessLevelID = 2;
-    $iAvailableID = 2;
+    $iAccessLevelID = $GLOBALS['ACCESS']['CEO'];
+    $iAvailableID = $GLOBALS['AVAILABLE']['SHOW'];
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -316,8 +316,8 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $sEmployeeDataPN = "6969696969";
     $sEmployeeDataEmail = "Mix@email.com";
     $sEmployeeDataPassword = password_hash("MixPass", PASSWORD_BCRYPT, ["cost" => 10]);
-    $iAccessLevelID = 3;
-    $iAvailableID = 2;
+    $iAccessLevelID = $GLOBALS['ACCESS']['EMPLOYEE'];
+    $iAvailableID = $GLOBALS['AVAILABLE']['SHOW'];
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -330,8 +330,8 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $sEmployeeDataPN = "7070707070";
     $sEmployeeDataEmail = "Kal@email.com";
     $sEmployeeDataPassword = password_hash("KalPass", PASSWORD_BCRYPT, ["cost" => 10]);
-    $iAccessLevelID = 3;
-    $iAvailableID = 2;
+    $iAccessLevelID = $GLOBALS['ACCESS']['EMPLOYEE'];
+    $iAvailableID = $GLOBALS['AVAILABLE']['SHOW'];
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -353,8 +353,8 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iEmployeePositionID = 8;
     $iEmployeeDataID = 1;
     $iCompanyID = 1;
-    $iAccessLevelID = 1;
-    $iAvailableID = 2;
+    $iAccessLevelID = $GLOBALS['ACCESS']['ADMIN'];
+    $iAvailableID = $GLOBALS['AVAILABLE']['SHOW'];
 
     $rStatement->bind_param("iiiii", $iEmployeePositionID, $iEmployeeDataID, $iCompanyID, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
@@ -365,7 +365,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iEmployeePositionID = 7;
     $iEmployeeDataID = 2;
     $iCompanyID = 1;
-    $iAccessLevelID = 2;
+    $iAccessLevelID = $GLOBALS['ACCESS']['CEO'];
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -374,7 +374,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iEmployeePositionID = 1;
     $iEmployeeDataID = 3;
     $iCompanyID = 1;
-    $iAccessLevelID = 3;
+    $iAccessLevelID = $GLOBALS['ACCESS']['EMPLOYEE'];
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -383,7 +383,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $iEmployeePositionID = 20;
     $iEmployeeDataID = 4;
     $iCompanyID = 1;
-    $iAccessLevelID = 3;
+    $iAccessLevelID = $GLOBALS['ACCESS']['EMPLOYEE'];
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -402,7 +402,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $rStatement->prepare($sQuery);
 
     $iEmployeeID = 2;
-    $iAccessLevelID = 2;
+    $iAccessLevelID = $GLOBALS['ACCESS']['CEO'];
 
     $rStatement->bind_param("iii", $iEmployeeID, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 
@@ -411,7 +411,7 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
 
 
     $iEmployeeID = 1;
-    $iAccessLevelID = 2;
+    $iAccessLevelID = $GLOBALS['ACCESS']['CEO'];
 
     if(!$rStatement->execute())
         $InrInstallationErrorLog->AddLogMessage("Failed to execute query", __FILE__, __FUNCTION__, __LINE__);
@@ -444,8 +444,8 @@ function InsertDemoData(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrInstalla
     $sCustomerDataSN = "2271023333";
     $sCustomerDataEmail = "JohnM@Email.com";
     $sCustomerDataAddr = "ST. Luther Street 32";
-    $iAccessLevelID = 2;
-    $iAvailableID = 2;
+    $iAccessLevelID = $GLOBALS['ACCESS']['CEO'];
+    $iAvailableID = $GLOBALS['AVAILABLE']['SHOW'];
 
     $rStatement->bind_param("sssssssii", $sCustomerDataName, $sCustomerDataSurname, $sCustomerDataVAT, $sCustomerDataPN, $sCustomerDataSN, $sCustomerDataEmail, $sCustomerDataAddr, $GLOBALS['ACCESS']['CEO'], $GLOBALS['AVAILABLE']['SHOW']);
 

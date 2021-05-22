@@ -29,8 +29,8 @@ function HTMLCountyAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHa
             </div>
         </form>
     </div>",
-    $GLOBALS['MENU_INDEX']['COUNTY'],
+    $GLOBALS['MENU']['COUNTY']['INDEX'],
     $GLOBALS['MODULE']['ADD'],
-    $GLOBALS['MENU_INDEX']['COUNTY']);
+    $GLOBALS['MENU']['COUNTY']['INDEX']);
 }
 ?>

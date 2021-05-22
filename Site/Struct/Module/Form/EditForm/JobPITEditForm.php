@@ -40,8 +40,8 @@ function HTMLJobPITEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogH
                     </form>
                 </div>",
                 $aDataRow['JOB_PIT_ID'],
-                $GLOBALS['MENU_INDEX']['JOB'],
-                $GLOBALS['MENU_INDEX']['JOB'],
+                $GLOBALS['MENU']['JOB']['INDEX'],
+                $GLOBALS['MENU']['JOB']['INDEX'],
                 $GLOBALS['MODULE']['EXTEND'],
                 $GLOBALS['MODULE']['EDIT']);
 

@@ -22,8 +22,8 @@ function HTMLCountryAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogH
             </div>
         </form>
     </div>",
-    $GLOBALS['MENU_INDEX']['COUNTRY'],
+    $GLOBALS['MENU']['COUNTRY']['INDEX'],
     $GLOBALS['MODULE']['ADD'],
-    $GLOBALS['MENU_INDEX']['COUNTRY']);
+    $GLOBALS['MENU']['COUNTRY']['INDEX']);
 }
 ?>

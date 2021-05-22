@@ -41,9 +41,9 @@ function HTMLEmployeeOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle 
 			<button>submit</button>
 		</form>
 	</div>",
-	$GLOBALS['MENU_INDEX']['EMPLOYEE'],
+	$GLOBALS['MENU']['EMPLOYEE']['INDEX'],
 	$GLOBALS['MODULE']['ADD'],
-	$GLOBALS['MENU_INDEX']['EMPLOYEE'],
+	$GLOBALS['MENU']['EMPLOYEE']['INDEX'],
 	$sHTMLGeneratedSelectStructure,
 	(isset($_GET['SearchQuery'])) ? $_GET['SearchQuery'] : "");
 
@@ -70,6 +70,7 @@ function HTMLEmployeeOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle 
 
 			//If the user has no access to this layer of data then ghost it
 			if(((int) $aDataRow['EMP_POS_ACCESS']) >= $IniUserAccess)
+			{
 			    //Data Row - employee title
 				printf("
 					<div>
@@ -77,6 +78,7 @@ function HTMLEmployeeOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle 
 						<div><p>%s</p></div>
 					</div>",
 					$aDataRow['EMP_POS_TITLE']);
+			}
 
 			//Data Row - employee birth day
 			printf("
@@ -103,9 +105,9 @@ function HTMLEmployeeOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle 
 			$aDataRow['EMP_DATA_PN'],
 			$aDataRow['EMP_DATA_SN'],
 			$aDataRow['EMP_ID'],
-			$GLOBALS['MENU_INDEX']['EMPLOYEE'],
+			$GLOBALS['MENU']['EMPLOYEE']['INDEX'],
 			$GLOBALS['MODULE']['DELETE'],
-			$GLOBALS['MENU_INDEX']['EMPLOYEE'],
+			$GLOBALS['MENU']['EMPLOYEE']['INDEX'],
 			$GLOBALS['MODULE']['EDIT']);
 
 		}

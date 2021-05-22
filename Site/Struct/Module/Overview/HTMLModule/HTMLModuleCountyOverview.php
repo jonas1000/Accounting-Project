@@ -40,9 +40,9 @@ function HTMLCountryOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle &
 			<button>submit</button>
 		</form>
 	</div>",
-	$GLOBALS['MENU_INDEX']['COUNTY'],
+	$GLOBALS['MENU']['COUNTY']['INDEX'],
 	$GLOBALS['MODULE']['ADD'],
-	$GLOBALS['MENU_INDEX']['COUNTY'],
+	$GLOBALS['MENU']['COUNTY']['INDEX'],
 	$sHTMLGeneratedSelectStructure,
 	(isset($_GET['SearchQuery'])) ? $_GET['SearchQuery'] : "");
 
@@ -73,9 +73,9 @@ function HTMLCountryOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle &
 			$aDataRow['COU_DATA_TAX'],
 			$aDataRow['COU_DATA_IR'],
 			$aDataRow['COU_ID'],
-			$GLOBALS['MENU_INDEX']['COUNTY'],
+			$GLOBALS['MENU']['COUNTY']['INDEX'],
 			$GLOBALS['MODULE']['DELETE'],
-			$GLOBALS['MENU_INDEX']['COUNTY'],
+			$GLOBALS['MENU']['COUNTY']['INDEX'],
 			$GLOBALS['MODULE']['EDIT']);
 		}
 		else

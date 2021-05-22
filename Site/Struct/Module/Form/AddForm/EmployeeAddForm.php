@@ -39,8 +39,8 @@ function HTMLEmployeeAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLog
             </div>
         </form>
     </div>",
-    $GLOBALS['MENU_INDEX']['EMPLOYEE'],
+    $GLOBALS['MENU']['EMPLOYEE']['INDEX'],
     $GLOBALS['MODULE']['ADD'],
-    $GLOBALS['MENU_INDEX']['EMPLOYEE']);
+    $GLOBALS['MENU']['EMPLOYEE']['INDEX']);
 }
 ?>

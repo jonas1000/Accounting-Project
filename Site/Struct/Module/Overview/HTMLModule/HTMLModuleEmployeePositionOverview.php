@@ -40,9 +40,9 @@ function HTMLEmployeePositionOverviewDataBlock(mysqli_result &$InrResult, ME_CLo
 			<button>submit</button>
 		</form>
 	</div>",
-	$GLOBALS['MENU_INDEX']['EMPLOYEE_POSITION'],
+	$GLOBALS['MENU']['EMPLOYEE_POSITION']['INDEX'],
 	$GLOBALS['MODULE']['ADD'],
-	$GLOBALS['MENU_INDEX']['EMPLOYEE_POSITION'],
+	$GLOBALS['MENU']['EMPLOYEE_POSITION']['INDEX'],
 	$sHTMLGeneratedSelectStructure,
 	(isset($_GET['SearchQuery'])) ? $_GET['SearchQuery'] : "");
 
@@ -63,9 +63,9 @@ function HTMLEmployeePositionOverviewDataBlock(mysqli_result &$InrResult, ME_CLo
 			</div>",
 			$aDataRow['EMP_POS_TITLE'],
 			$aDataRow['EMP_POS_ID'],
-			$GLOBALS['MENU_INDEX']['EMPLOYEE_POSITION'],
+			$GLOBALS['MENU']['EMPLOYEE_POSITION']['INDEX'],
 			$GLOBALS['MODULE']['DELETE'],
-			$GLOBALS['MENU_INDEX']['EMPLOYEE_POSITION'],
+			$GLOBALS['MENU']['EMPLOYEE_POSITION']['INDEX'],
 			$GLOBALS['MODULE']['EDIT']);
 		}
 	}

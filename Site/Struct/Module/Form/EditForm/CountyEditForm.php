@@ -49,9 +49,9 @@ function HTMLCountyEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogH
                     </form>
                 </div>",
                 $aDataRow['COU_ID'],
-                $GLOBALS['MENU_INDEX']['COUNTY'],
+                $GLOBALS['MENU']['COUNTY']['INDEX'],
                 $GLOBALS['MODULE']['EDIT'],
-                $GLOBALS['MENU_INDEX']['COUNTY']);
+                $GLOBALS['MENU']['COUNTY']['INDEX']);
 
                 $rResult->free();
             }

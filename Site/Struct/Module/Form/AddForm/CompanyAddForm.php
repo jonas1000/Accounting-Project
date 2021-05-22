@@ -29,8 +29,8 @@ function HTMLCompanyAddForm(ME_CDBConnManager &$InrConn,ME_CLogHandle &$InrLogHa
             </div>
         </form>
     </div>",
-    $GLOBALS['MENU_INDEX']['COMPANY'],
+    $GLOBALS['MENU']['COMPANY']['INDEX'],
     $GLOBALS['MODULE']['ADD'],
-    $GLOBALS['MENU_INDEX']['COMPANY']);
+    $GLOBALS['MENU']['COMPANY']['INDEX']);
 }
 ?>

@@ -40,9 +40,9 @@ function HTMLCountryEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLog
                     </form>
                 </div>",
                 $aDataRow['COUN_ID'],
-                $GLOBALS['MENU_INDEX']['COUNTRY'],
+                $GLOBALS['MENU']['COUNTRY']['INDEX'],
                 $GLOBALS['MODULE']['EDIT'],
-                $GLOBALS['MENU_INDEX']['COUNTRY']);
+                $GLOBALS['MENU']['COUNTRY']['INDEX']);
 
                 $rResult->free();
             }

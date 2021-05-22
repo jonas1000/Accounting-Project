@@ -63,9 +63,9 @@ function HTMLEmployeeEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLo
                     </div>
                 </form>",
                 $aDataRow['EMP_ID'],
-                $GLOBALS['MENU_INDEX']['EMPLOYEE'],
+                $GLOBALS['MENU']['EMPLOYEE']['INDEX'],
                 $GLOBALS['MODULE']['EDIT'],
-                $GLOBALS['MENU_INDEX']['EMPLOYEE']);
+                $GLOBALS['MENU']['EMPLOYEE']['INDEX']);
 
                 $rResult->free();
             }

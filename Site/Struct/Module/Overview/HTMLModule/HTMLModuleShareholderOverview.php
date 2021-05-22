@@ -40,9 +40,9 @@ function HTMLShareholderDataBlock(mysqli_result &$InrResult, ME_CLogHandle &$Inr
 			<button>submit</button>
 		</form>
 	</div>",
-	$GLOBALS['MENU_INDEX']['SHAREHOLDER'],
+	$GLOBALS['MENU']['SHAREHOLDER']['INDEX'],
 	$GLOBALS['MODULE']['ADD'],
-	$GLOBALS['MENU_INDEX']['SHAREHOLDER'],
+	$GLOBALS['MENU']['SHAREHOLDER']['INDEX'],
 	$sHTMLGeneratedSelectStructure,
 	(isset($_GET['SearchQuery'])) ? $_GET['SearchQuery'] : "");
 
@@ -82,9 +82,9 @@ function HTMLShareholderDataBlock(mysqli_result &$InrResult, ME_CLogHandle &$Inr
 		$aDataRow['EMP_DATA_EMAIL'],
 		$aDataRow['EMP_POS_TITLE'],
 		$aDataRow['SHARE_ID'],
-		$GLOBALS['MENU_INDEX']['SHAREHOLDER'],
+		$GLOBALS['MENU']['SHAREHOLDER']['INDEX'],
 		$GLOBALS['MODULE']['DELETE'],
-		$GLOBALS['MENU_INDEX']['SHAREHOLDER'],
+		$GLOBALS['MENU']['SHAREHOLDER']['INDEX'],
 		$GLOBALS['MODULE']['EDIT']);
 	}
 }

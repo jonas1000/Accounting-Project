@@ -55,9 +55,9 @@ function HTMLJobEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHand
                     </form>
                 </div>",
                 $aDataRow['JOB_ID'],
-                $GLOBALS['MENU_INDEX']['JOB'],
+                $GLOBALS['MENU']['JOB']['INDEX'],
                 $GLOBALS['MODULE']['EDIT'],
-                $GLOBALS['MENU_INDEX']['JOB']);
+                $GLOBALS['MENU']['JOB']['INDEX']);
 
                 $rResult->free();
             }

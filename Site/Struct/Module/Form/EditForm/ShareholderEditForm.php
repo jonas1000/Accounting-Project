@@ -43,9 +43,9 @@ function HTMLShareholderEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$In
                     </form>
                 </div>",
                 $aDataRow['SHARE_ID'],
-                $GLOBALS['MENU_INDEX']['SHAREHOLDER'],
+                $GLOBALS['MENU']['SHAREHOLDER']['INDEX'],
                 $GLOBALS['MODULE']['EDIT'],
-                $GLOBALS['MENU_INDEX']['SHAREHOLDER']);
+                $GLOBALS['MENU']['SHAREHOLDER']['INDEX']);
 
                 $rResult->free();
             }

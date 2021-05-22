@@ -1,7 +1,7 @@
 <?php
 function HTMLLogedIn(ME_CLogHandle &$InrLogHandle)
 {
-	if(isset($_SESSION['Username']))
+	if(isset($_SESSION['UserName']))
 	{
 		//Employee name
 		printf("
@@ -14,7 +14,7 @@ function HTMLLogedIn(ME_CLogHandle &$InrLogHandle)
 				<a href='.?Logout'><h4>Logout</h4></a>
 			</div>
 		</div>",
-		(!empty($_SESSION['Username']) ? $_SESSION['Username'] : "No Name"));
+		(!empty($_SESSION['UserName']) ? $_SESSION['UserName'] : "No Name"));
 	}
 	else
 		$InrLogHandle->AddLogMessage("Session username not declared", __FILE__, __FUNCTION__, __LINE__);

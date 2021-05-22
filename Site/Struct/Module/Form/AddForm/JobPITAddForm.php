@@ -30,10 +30,10 @@ function HTMLJobPITAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHa
             </form>
         </div>",
         $iJobIndex,
-        $GLOBALS['MENU_INDEX']['JOB'],
+        $GLOBALS['MENU']['JOB']['INDEX'],
         $GLOBALS['MODULE']['EXTEND'],
         $GLOBALS['MODULE']['ADD'],
-        $GLOBALS['MENU_INDEX']['JOB']);
+        $GLOBALS['MENU']['JOB']['INDEX']);
     }
 }
 ?>

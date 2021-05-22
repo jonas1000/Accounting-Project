@@ -27,8 +27,8 @@ function HTMLShareholderAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$Inr
 			</div>
 		</form>
 	</div>",
-	$GLOBALS['MENU_INDEX']['SHAREHOLDER'],
+	$GLOBALS['MENU']['SHAREHOLDER']['INDEX'],
 	$GLOBALS['MODULE']['ADD'],
-	$GLOBALS['MENU_INDEX']['SHAREHOLDER']);
+	$GLOBALS['MENU']['SHAREHOLDER']['INDEX']);
 }
 ?>

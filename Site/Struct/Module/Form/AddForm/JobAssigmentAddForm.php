@@ -33,8 +33,8 @@ function HTMLJobAssigmentAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$In
             </div>
         </form>
     </div>",
-    $GLOBALS['MENU_INDEX']['JobAssigment'],
+    $GLOBALS['MENU']['JobAssigment']['INDEX'],
     $GLOBALS['MODULE']['ADD'],
-    $GLOBALS['MENU_INDEX']['JobAssigment']);
+    $GLOBALS['MENU']['JobAssigment']['INDEX']);
 }
 ?>

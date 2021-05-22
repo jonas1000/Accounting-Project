@@ -29,8 +29,8 @@ function HTMLCustomerAddForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLog
             </div>
         </form>
     </div>",
-    $GLOBALS['MENU_INDEX']['CUSTOMER'],
+    $GLOBALS['MENU']['CUSTOMER']['INDEX'],
     $GLOBALS['MODULE']['ADD'],
-    $GLOBALS['MENU_INDEX']['CUSTOMER']);
+    $GLOBALS['MENU']['CUSTOMER']['INDEX']);
 }
 ?>

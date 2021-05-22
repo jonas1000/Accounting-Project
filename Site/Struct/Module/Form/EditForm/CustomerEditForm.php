@@ -54,9 +54,9 @@ function HTMLCustomerEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLo
                     </form>
                 </div>",
                 $aDataRow['CUST_ID'],
-                $GLOBALS['MENU_INDEX']['CUSTOMER'],
+                $GLOBALS['MENU']['CUSTOMER']['INDEX'],
                 $GLOBALS['MODULE']['EDIT'],
-                $GLOBALS['MENU_INDEX']['CUSTOMER']);
+                $GLOBALS['MENU']['CUSTOMER']['INDEX']);
 
                 $rResult->free();
             }

@@ -47,8 +47,8 @@ function HTMLCompanyEditForm(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLog
                     </form>
                 </div>",
                 $aDataRow['COMP_ID'],
-                $GLOBALS['MENU_INDEX']['COMPANY'],
-                $GLOBALS['MENU_INDEX']['COMPANY'],
+                $GLOBALS['MENU']['COMPANY']['INDEX'],
+                $GLOBALS['MENU']['COMPANY']['INDEX'],
                 $GLOBALS['MODULE']['EDIT']);
 
                 $rResult->free();
