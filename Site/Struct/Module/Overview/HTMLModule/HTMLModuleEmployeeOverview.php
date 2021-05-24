@@ -27,7 +27,7 @@ function HTMLEmployeeOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle 
     $sHTMLGeneratedSelectStructure = "";
     $sSearchTypeSelected = isset($_GET[$sSearchSelectStructName]) ? $_GET[$sSearchSelectStructName] : "";
 
-    HTMLGenerateSelectStructure($sHTMLGeneratedSelectStructure, $sSearchSelectStructName, $GLOBALS['CUSTOMER_SEARCH_TYPE'], $sSearchTypeSelected, "QueryDataType", "onchange", "EmployeeQueryDataType()");
+    HTMLGenerateSelectStructure($sHTMLGeneratedSelectStructure, $sSearchSelectStructName, $GLOBALS['CUSTOMER_SEARCH_TYPE'], $sSearchTypeSelected, "QueryDataType", "onchange", "EmpQueryDataType()");
 	
 	//The toolbar for the buttons (tools)
 	printf("

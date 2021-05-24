@@ -121,7 +121,7 @@ $SHAREHOLDER_SEARCH_TYPE =
     "SHAREHOLDER_NAME" => ["NAME" => "Name", "VALUE" => "Name"],
     "SHAREHOLDER_SURNAME" => ["NAME" => "Surname", "VALUE" => "Surname"],
     "SHAREHOLDER_EMAIL" => ["NAME" => "Email", "VALUE" => "Email"],
-    "SHAREHOLDER_BIRTH_DATE" => ["NAME" => "Date", "VALUE" => "Birth day Date"],
+    "SHAREHOLDER_BIRTH_DATE" => ["NAME" => "Date", "VALUE" => "Birth Date"],
     "SHAREHOLDER_POSITION_TITLE" => ["NAME" => "PositionTitle", "VALUE" => "Position Title"],
     "SHAREHOLDER_SALARY" => ["NAME" => "Salary", "VALUE" => "Salary"]
 ];

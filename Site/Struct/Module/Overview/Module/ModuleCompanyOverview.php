@@ -79,19 +79,19 @@ function CompOverviewStructSolver(ME_CDBConnManager &$InrConn, ME_CLogHandle &$I
     {
         case $GLOBALS['MODULE']['ADD']:
         {
-            CompAddStructSolver();
+            CompAddStructSolver($InrConn, $InrLogHandle);
 
             break;
         }
         case $GLOBALS['MODULE']['EDIT']:
         {
-            CompEditStructSolver();
+            CompEditStructSolver($InrConn, $InrLogHandle);
             
             break;
         }
         case $GLOBALS['MODULE']['DELETE']:
         {
-            CompDeleteStructSolver();
+            CompDeleteStructSolver($InrConn, $InrLogHandle);
 
             break;
         }

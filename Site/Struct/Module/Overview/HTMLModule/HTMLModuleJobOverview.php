@@ -25,6 +25,12 @@ function HTMLJobPITOverview(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogH
 
 function HTMLJobPITDataBlock(mysqli_result &$InrResult, ME_CLogHandle &$InrLogHandle, int $IniUserAccess, int $IniJobIndex) : void
 {
+	$sSearchSelectStructName = "SearchType";
+    $sHTMLGeneratedSelectStructure = "";
+    $sSearchTypeSelected = isset($_GET[$sSearchSelectStructName]) ? $_GET[$sSearchSelectStructName] : "";
+
+	HTMLGenerateSelectStructure($sHTMLGeneratedSelectStructure, $sSearchSelectStructName, $GLOBALS['JOB_SEARCH_TYPE'], $sSearchTypeSelected, "QueryDataType", "onchange", "JobPITQueryDataType()");
+
 	//The toolbar for the buttons (tools)
 	printf("
 	<div class='ContentToolBar'>
@@ -98,7 +104,7 @@ function HTMLJobOverviewDataBlock(ME_CDBConnManager &$InrConn, mysqli_result &$I
     $sHTMLGeneratedSelectStructure = "";
     $sSearchTypeSelected = isset($_GET[$sSearchSelectStructName]) ? $_GET[$sSearchSelectStructName] : "";
 
-    HTMLGenerateSelectStructure($sHTMLGeneratedSelectStructure, $sSearchSelectStructName, $GLOBALS['EMPLOYEE_POSITION_SEARCH_TYPE'], $sSearchTypeSelected);
+    HTMLGenerateSelectStructure($sHTMLGeneratedSelectStructure, $sSearchSelectStructName, $GLOBALS['JOB_SEARCH_TYPE'], $sSearchTypeSelected, "QueryDataType", "onchange", "JobQueryDataType()");
 
 	//The toolbar for the buttons (tools)
 	printf("
@@ -108,7 +114,7 @@ function HTMLJobOverviewDataBlock(ME_CDBConnManager &$InrConn, mysqli_result &$I
 		</a>
 		<form action='.' method='get'>
 			<input type='hidden' name='MenuIndex' value='%d'><label>Search by%s</label>
-			<label>Query</label><input type='text' name='SearchQuery' value='%s'>
+			<label>Query</label><input type='text' id='QueryInput' name='SearchQuery' value='%s'>
 			<button>submit</button>
 		</form>
 	</div>",
