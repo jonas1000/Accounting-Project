@@ -11,7 +11,7 @@ function InitSession() : void
 	{
 		if($GLOBALS['DEBUG'])
 		{
-			$_SESSION['Login'] = FALSE;
+			$_SESSION['Login'] = false;
 
 			$_SESSION['AccessID'] = $GLOBALS['ACCESS']['ADMIN'];
 

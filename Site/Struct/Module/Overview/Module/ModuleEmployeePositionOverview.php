@@ -110,7 +110,7 @@ if(!isset($_GET['Module']))
 	ProQueryFunctionCallback($rConn, $rProcessLogHandle, "HTMLEmployeePositionOverview", $GLOBALS['ACCESS']['EMPLOYEE'], "GET");
 }
 else
-	EmpPosOverviewStructSolver($InrConn, $InrLogHandle);
+	EmpPosOverviewStructSolver($rConn, $rProcessLogHandle);
 
 $rProcessLogHandle->WriteToFileAndClear();
 ?>

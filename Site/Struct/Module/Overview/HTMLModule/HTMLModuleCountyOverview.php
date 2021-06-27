@@ -26,7 +26,7 @@ function HTMLCountryOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle &
     $sHTMLGeneratedSelectStructure = "";
     $sSearchTypeSelected = isset($_GET[$sSearchSelectStructName]) ? $_GET[$sSearchSelectStructName] : "";
 
-    HTMLGenerateSelectStructure($sHTMLGeneratedSelectStructure, $sSearchSelectStructName, $GLOBALS['COUNTY_SEARCH_TYPE'], $sSearchTypeSelected, "QueryDataType", "onchange", "CouQueryDataType()");
+    HTMLGenerateSelectStructure($sHTMLGeneratedSelectStructure, $sSearchSelectStructName, $GLOBALS['COUNTY_SEARCH_TYPE'], $sSearchTypeSelected, "QueryDataType", "onchange", "CountyQueryDataType()");
 
 	//The toolbar for the buttons (tools)
 	printf("

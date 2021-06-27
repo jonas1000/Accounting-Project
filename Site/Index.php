@@ -90,7 +90,6 @@ if(isset($_GET['MenuIndex']))
             require_once("../MedaLib/Function/SQL/SQLStatementExec.php");
             require_once("../MedaLib/Function/Generator/QuerySearchConstructor.php");
             require_once("../MedaLib/Function/Tool/RangeCheck.php");
-            require_once("Function/SearchQueryConstructor/CompanySearchQueryConstr.php");
             break;
 
         //Country
@@ -99,7 +98,6 @@ if(isset($_GET['MenuIndex']))
             require_once("Function/AccessLevelCheck.php");
             require_once("../MedaLib/Function/Generator/QuerySearchConstructor.php");
             require_once("../MedaLib/Function/Tool/RangeCheck.php");
-            require_once("Function/SearchQueryConstructor/CountrySearchQueryConstr.php");
             break;
 
         //Employee
@@ -108,7 +106,6 @@ if(isset($_GET['MenuIndex']))
             require_once("Function/AccessLevelCheck.php");
             require_once("../MedaLib/Function/Generator/QuerySearchConstructor.php");
             require_once("../MedaLib/Function/Tool/RangeCheck.php");
-            require_once("Function/SearchQueryConstructor/EmployeeSearchQueryConstr.php");
             break;
 
         //Employee Position
@@ -117,7 +114,6 @@ if(isset($_GET['MenuIndex']))
             require_once("Function/AccessLevelCheck.php");
             require_once("../MedaLib/Function/Generator/QuerySearchConstructor.php");
             require_once("../MedaLib/Function/Tool/RangeCheck.php");
-            require_once("Function/SearchQueryConstructor/EmployeePositionSearchQueryConstr.php");
             break;
 
         //Job
@@ -126,7 +122,6 @@ if(isset($_GET['MenuIndex']))
             require_once("Function/AccessLevelCheck.php");
             require_once("../MedaLib/Function/Generator/QuerySearchConstructor.php");
             require_once("../MedaLib/Function/Tool/RangeCheck.php");
-            require_once("Function/SearchQueryConstructor/JobSearchQueryConstr.php");
             break;
 
         //Shareholder
@@ -135,7 +130,6 @@ if(isset($_GET['MenuIndex']))
             require_once("Function/AccessLevelCheck.php");
             require_once("../MedaLib/Function/Generator/QuerySearchConstructor.php");
             require_once("../MedaLib/Function/Tool/RangeCheck.php");
-            require_once("Function/SearchQueryConstructor/ShareholderSearchQueryConstr.php");
             break;
 
         //Customer
@@ -144,7 +138,6 @@ if(isset($_GET['MenuIndex']))
             require_once("Function/AccessLevelCheck.php");
             require_once("../MedaLib/Function/Generator/QuerySearchConstructor.php");
             require_once("../MedaLib/Function/Tool/RangeCheck.php");
-            require_once("Function/SearchQueryConstructor/CustomerSearchQueryConstr.php");
             break;
 
         //County
@@ -153,7 +146,6 @@ if(isset($_GET['MenuIndex']))
             require_once("Function/AccessLevelCheck.php");
             require_once("../MedaLib/Function/Generator/QuerySearchConstructor.php");
             require_once("../MedaLib/Function/Tool/RangeCheck.php");
-            require_once("Function/SearchQueryConstructor/CountySearchQueryConstr.php");
             break;
 
         default:

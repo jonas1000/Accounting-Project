@@ -29,7 +29,7 @@ function HTMLCompanyDataBlock(mysqli_result &$InrResult, ME_CLogHandle &$InrLogH
     $sHTMLGeneratedSelectStructure = "";
     $sSearchTypeSelected = isset($_GET[$sSearchSelectStructName]) ? $_GET[$sSearchSelectStructName] : "";
 
-    HTMLGenerateSelectStructure($sHTMLGeneratedSelectStructure, $sSearchSelectStructName, $GLOBALS['COMPANY_SEARCH_TYPE'], $sSearchTypeSelected, "QueryDataType", "onchange", "CompQueryDataType()");
+    HTMLGenerateSelectStructure($sHTMLGeneratedSelectStructure, $sSearchSelectStructName, $GLOBALS['COMPANY_SEARCH_TYPE'], $sSearchTypeSelected, "QueryDataType", "onchange", "CompanyQueryDataType()");
 
     //The toolbar for the buttons (tools)
     printf("

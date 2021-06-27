@@ -4,16 +4,16 @@ function ProAddJob(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle, in
 {
 	if(isset($_POST['Company'], $_POST['Name'], $_POST['Date'], $_POST['Price'], $_POST['PIA'], $_POST['Expenses'], $_POST['Damage'], $_POST['Access']) &&
 	!ME_MultyCheckEmptyType($_POST['Company'], $_POST['Name'], $_POST['Date'], $_POST['Access']) &&
-	ME_MultyCheckNumericType($_POST['Company'], $_POST['Access'], $_POST['Price'], $_POST['PIA'], $_POST['Expenses'], $_POST['Damage']))
+	ME_MultyCheckNumericType($_POST['Company'], $_POST['Access']))
 	{
 		//format the string to be compatible with HTML and avoid SQL injection
 		$sName = ME_SecDataFilter($_POST['Name']);
 		$sDate = ME_SecDataFilter($_POST['Date']);
 
-		$fPrice = abs((float)$_POST['Price']);
-		$fPIA = abs((float)$_POST['PIA']);
-		$fExpenses = -abs((float)$_POST['Expenses']);
-		$fDamage = -abs((float)$_POST['Damage']);
+		$fPrice = is_numeric($_POST['Price']) ? abs((float)$_POST['Price']) : 0;
+		$fPIA = is_numeric($_POST['PIA']) ? abs((float)$_POST['PIA']) : 0;
+		$fExpenses = is_numeric($_POST['Expenses']) ? -abs((float)$_POST['Expenses']) : 0;
+		$fDamage = is_numeric($_POST['Damage']) ? -abs((float)$_POST['Damage']) : 0;
 
 		//variables consindered to be holding ID
 		$iCompanyIndex = (int)$_POST['Company'];

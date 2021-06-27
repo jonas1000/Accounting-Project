@@ -17,6 +17,8 @@ try
 
 	error_reporting(E_ALL);
 
+	InitSession();
+
 	if(isset($_SESSION['Debug']) && $_SESSION['Debug'] == TRUE)
 		ini_set("display_errors", 0);
 	else if(isset($_SESSION['Debug']) && $_SESSION['Debug'] == FALSE)

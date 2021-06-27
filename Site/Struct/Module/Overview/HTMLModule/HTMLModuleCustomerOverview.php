@@ -26,7 +26,7 @@ function HTMLCustomerOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle 
     $sHTMLGeneratedSelectStructure = "";
     $sSearchTypeSelected = isset($_GET[$sSearchSelectStructName]) ? $_GET[$sSearchSelectStructName] : "";
 
-    HTMLGenerateSelectStructure($sHTMLGeneratedSelectStructure, $sSearchSelectStructName, $GLOBALS['CUSTOMER_SEARCH_TYPE'], $sSearchTypeSelected, "QueryDataType", "onchange", "CustQueryDataType()");
+    HTMLGenerateSelectStructure($sHTMLGeneratedSelectStructure, $sSearchSelectStructName, $GLOBALS['CUSTOMER_SEARCH_TYPE'], $sSearchTypeSelected);
 
 	//The toolbar for the buttons (tools)
 	printf("
@@ -36,7 +36,7 @@ function HTMLCustomerOverviewDataBlock(mysqli_result &$InrResult, ME_CLogHandle 
 		</a>
 		<form action='.' method='get'>
 			<input type='hidden' name='MenuIndex' value='%d'><label>Search by%s</label>
-			<label>Query</label><input type='text' id='QueryInput' name='SearchQuery' value='%s'>
+			<label>Query</label><input type='text' name='SearchQuery' value='%s'>
 			<button>submit</button>
 		</form>
 	</div>",

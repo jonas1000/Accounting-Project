@@ -9,7 +9,7 @@ function ProAddJobPIT(ME_CDBConnManager &$InrConn, ME_CLogHandle &$InrLogHandle,
 		//format the string to be compatible with HTML and avoid SQL injection
 		$sDate = ME_SecDataFilter($_POST['Date']);
 
-		$fPayment = abs((float)$_POST['PIT']);
+		$fPayment = is_numeric($_POST['PIT']) ? abs((float)$_POST['PIT']) : 0;
 
 		//variables consindered to be holding ID
 		$iJobIndex = (int)$_POST['JobIndex'];

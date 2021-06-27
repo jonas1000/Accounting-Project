@@ -80,19 +80,19 @@ function CouOverviewStructSolver(ME_CDBConnManager &$InrConn, ME_CLogHandle &$In
 	{
 		case $GLOBALS['MODULE']['ADD']:
 		{
-			CouAddStructSolver($rConn, $rProcessLogHandle);
+			CouAddStructSolver($InrConn, $InrLogHandle);
 
 			break;
 		}
 		case $GLOBALS['MODULE']['EDIT']:
 		{
-			CouEditStructSolver($rConn, $rProcessLogHandle);
+			CouEditStructSolver($InrConn, $InrLogHandle);
 
 			break;
 		}
 		case $GLOBALS['MODULE']['DELETE']:
 		{
-			CouDeleteStructSolver($rConn, $rProcessLogHandle);
+			CouDeleteStructSolver($InrConn, $InrLogHandle);
 
 			break;
 		}
